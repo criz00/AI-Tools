@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Learning Outline Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#141F2B;
+    --ink-soft:#1D2C3C;
+    --ink-line:#2C3E52;
+    --paper:#F1EFE8;
+    --paper-card:#FBFAF6;
+    --line:#D8D4C8;
+    --text-dark:#1B2430;
+    --text-mute:#6B7280;
+    --amber:#C97E2E;
+    --amber-soft:#F3E2C9;
+    --success:#4F7A5D;
+    --danger:#B3564A;
+    --rail-inactive:#3C4E62;
+    --rail-active:#D68A3D;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:'IBM Plex Sans', sans-serif;
+    background:var(--paper);
+    color:var(--text-dark);
+    overflow:hidden;
+  }
+  .app{
+    display:grid;
+    grid-template-columns:minmax(320px,420px) 1fr;
+    height:100vh;
+  }
+  @media (max-width:860px){
+    .app{grid-template-columns:1fr; grid-template-rows:52vh 48vh;}
+  }
+
+  /* ---------- LEFT: CHAT ---------- */
+  .chat-panel{
+    background:var(--ink);
+    display:flex;
+    color:#EDEFF2;
+    min-height:0;
+  }
+  .rail{
+    width:38px;
+    flex-shrink:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:0;
+    padding:24px 0;
+    border-right:1px solid var(--ink-line);
+  }
+  .rail-track{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    height:100%;
+    justify-content:space-between;
+  }
+  .rail-dot{
+    width:9px;height:9px;border-radius:50%;
+    background:var(--rail-inactive);
+    position:relative;
+    transition:background .3s ease, box-shadow .3s ease;
+  }
+  .rail-dot.active{
+    background:var(--rail-active);
+    box-shadow:0 0 0 4px rgba(214,138,61,0.18);
+  }
+  .rail-dot.done{ background:#5C7A63; }
+  .rail-label{
+    position:absolute;
+    left:16px;
+    top:50%;
+    transform:translateY(-50%);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:9.5px;
+    letter-spacing:.06em;
+    color:var(--text-mute);
+    white-space:nowrap;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s ease;
+  }
+  .rail-item{position:relative; display:flex; align-items:center;}
+  .rail-item:hover .rail-label{opacity:1;}
+  .rail-line{
+    width:1px; flex:1; background:var(--ink-line); margin:2px 0;
+  }
+
+  .chat-main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+  }
+  .chat-header{
+    padding:18px 22px 14px;
+    border-bottom:1px solid var(--ink-line);
+    flex-shrink:0;
+  }
+  .chat-header .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--rail-active);
+  }
+  .chat-header h1{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:20px;
+    margin:4px 0 0;
+    color:#F5F3EE;
+  }
+  .chat-log{
+    flex:1;
+    overflow-y:auto;
+    padding:18px 22px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .chat-log::-webkit-scrollbar{width:8px;}
+  .chat-log::-webkit-scrollbar-thumb{background:var(--ink-line); border-radius:4px;}
+
+  .msg{
+    max-width:92%;
+    font-size:14px;
+    line-height:1.55;
+    animation:rise .28s ease both;
+  }
+  @keyframes rise{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+  .msg.bot{ align-self:flex-start; }
+  .msg .bubble{
+    background:var(--ink-soft);
+    border:1px solid var(--ink-line);
+    padding:10px 13px;
+    border-radius:3px 10px 10px 10px;
+    color:#E7E9EE;
+  }
+  .msg .bubble strong{ color:#F6D9A8; font-weight:600;}
+  .msg.user{ align-self:flex-end; }
+  .msg.user .bubble{
+    background:var(--amber);
+    border:1px solid var(--amber);
+    color:#231604;
+    border-radius:10px 3px 10px 10px;
+    font-weight:500;
+  }
+  .field-tag{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:9.5px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--rail-active);
+    margin-bottom:5px;
+    display:block;
+  }
+
+  .choice-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    align-self:flex-start;
+    max-width:92%;
+    animation:rise .28s ease both;
+  }
+  .choice-btn{
+    background:transparent;
+    border:1px solid var(--amber);
+    color:#F6D9A8;
+    padding:8px 14px;
+    border-radius:20px;
+    font-size:13px;
+    cursor:pointer;
+    font-family:'IBM Plex Sans',sans-serif;
+    transition:background .15s ease, color .15s ease, transform .15s ease;
+  }
+  .choice-btn:hover{ background:var(--amber); color:#221503; transform:translateY(-1px); }
+  .choice-btn:active{ transform:translateY(0); }
+
+  .chat-input-row{
+    flex-shrink:0;
+    border-top:1px solid var(--ink-line);
+    padding:14px 22px 18px;
+    display:flex;
+    gap:8px;
+    align-items:flex-end;
+  }
+  .chat-input-row textarea{
+    flex:1;
+    resize:none;
+    background:var(--ink-soft);
+    border:1px solid var(--ink-line);
+    color:#EDEFF2;
+    font-family:'IBM Plex Sans',sans-serif;
+    font-size:14px;
+    padding:10px 12px;
+    border-radius:8px;
+    outline:none;
+    max-height:110px;
+    line-height:1.4;
+  }
+  .chat-input-row textarea:focus{ border-color:var(--amber); }
+  .chat-input-row textarea:disabled{ opacity:.45; }
+  .chat-input-row .hint{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    color:var(--text-mute);
+    margin-top:6px;
+  }
+  .send-btn{
+    background:var(--amber);
+    border:none;
+    color:#221503;
+    width:40px;height:40px;
+    border-radius:8px;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    transition:transform .15s ease, background .15s ease;
+  }
+  .send-btn:hover{ transform:translateY(-1px); background:#DB9440; }
+  .send-btn:active{ transform:translateY(0); }
+  .send-btn:disabled{ opacity:.4; cursor:not-allowed; transform:none; }
+  .list-hint{ font-size:11.5px; color:#B9BDC6; margin-top:4px; font-style:italic; }
+
+  /* ---------- RIGHT: DOCUMENT ---------- */
+  .doc-panel{
+    background:var(--paper);
+    overflow-y:auto;
+    padding:36px 44px 80px;
+    position:relative;
+  }
+  .doc-panel::-webkit-scrollbar{width:9px;}
+  .doc-panel::-webkit-scrollbar-thumb{background:#CFCABB; border-radius:4px;}
+
+  .doc-topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:22px;
+    padding-bottom:14px;
+    border-bottom:2px solid var(--text-dark);
+  }
+  .doc-topbar .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--text-mute);
+  }
+  .doc-topbar h2{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:26px;
+    margin:2px 0 0;
+  }
+  .doc-topbar .rev{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    color:var(--text-mute);
+  }
+
+  .card{
+    background:var(--paper-card);
+    border:1px solid var(--line);
+    border-radius:6px;
+    margin-bottom:18px;
+    overflow:hidden;
+    animation:cardIn .35s ease both;
+  }
+  @keyframes cardIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+  .card-head{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:#8A7451;
+    background:var(--amber-soft);
+    padding:8px 16px;
+    border-bottom:1px solid var(--line);
+  }
+  .card-body{ padding:16px 18px; }
+  .field{ margin-bottom:12px; }
+  .field:last-child{ margin-bottom:0; }
+  .field-label-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    margin-bottom:3px;
+  }
+  .field-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--text-mute);
+  }
+  .field-value{
+    font-size:14.5px;
+    line-height:1.5;
+    color:var(--text-dark);
+  }
+  .field-value.empty{ color:#B3AE9F; font-style:italic; }
+  ul.tags{ margin:0; padding-left:18px; }
+  ul.tags li{ margin-bottom:2px; }
+
+  .edit-icon{
+    background:none;
+    border:none;
+    color:var(--text-mute);
+    cursor:pointer;
+    padding:2px;
+    display:flex;
+    align-items:center;
+    opacity:.55;
+    flex-shrink:0;
+    transition:opacity .15s ease, color .15s ease;
+  }
+  .edit-icon:hover{ opacity:1; color:var(--amber); }
+
+  .heading-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:4px;
+  }
+  .heading-row .edit-icon{ opacity:.4; }
+  .heading-row:hover .edit-icon{ opacity:1; }
+
+  .edit-input, .edit-textarea{
+    width:100%;
+    font-family:'IBM Plex Sans',sans-serif;
+    font-size:14px;
+    padding:8px 10px;
+    border:1px solid var(--amber);
+    border-radius:6px;
+    outline:none;
+    box-sizing:border-box;
+    background:#fff;
+  }
+  .edit-textarea{ min-height:64px; resize:vertical; }
+  .edit-actions{ display:flex; gap:8px; margin-top:8px; }
+  .edit-save-btn{
+    background:var(--amber);
+    color:#221503;
+    border:none;
+    padding:6px 14px;
+    border-radius:6px;
+    font-size:12.5px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .edit-save-btn:hover{ background:#DB9440; }
+  .edit-cancel-btn{
+    background:none;
+    border:1px solid var(--line);
+    color:var(--text-mute);
+    padding:6px 14px;
+    border-radius:6px;
+    font-size:12.5px;
+    cursor:pointer;
+  }
+  .edit-cancel-btn:hover{ background:#F0EEE7; }
+  .edit-list-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+    padding:5px 0;
+    border-bottom:1px dashed var(--line);
+    font-size:13.5px;
+  }
+  .edit-remove-btn{
+    background:none;
+    border:none;
+    color:var(--danger);
+    cursor:pointer;
+    font-size:13px;
+    flex-shrink:0;
+  }
+  .edit-list-add{ display:flex; gap:6px; margin-top:8px; }
+  .edit-mini-btn{
+    background:var(--text-dark);
+    color:#fff;
+    border:none;
+    padding:6px 12px;
+    border-radius:6px;
+    font-size:12px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .edit-mini-btn:hover{ background:#2A3B4E; }
+
+  .lesson-card{
+    border:1px dashed var(--line);
+    border-radius:5px;
+    margin-top:12px;
+    padding:12px 14px;
+    background:#FEFEFC;
+  }
+  .lesson-card .lesson-name{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:18px;
+  }
+  .module-name-head{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:24px;
+    margin:0;
+  }
+
+  .empty-doc{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    color:var(--text-mute);
+    padding:80px 20px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    letter-spacing:.04em;
+  }
+  .download-btn{
+    position:fixed;
+    top:20px;
+    right:28px;
+    z-index:20;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    background:var(--text-dark);
+    color:#F5F3EE;
+    border:none;
+    padding:9px 16px;
+    border-radius:20px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    letter-spacing:.03em;
+    cursor:pointer;
+    box-shadow:0 3px 10px rgba(20,31,43,0.18);
+    transition:transform .15s ease, background .15s ease;
+  }
+  .download-btn:hover{ transform:translateY(-1px); background:#243447; }
+  .download-btn:active{ transform:translateY(0); }
+  @media (max-width:860px){
+    .download-btn{ top:auto; bottom:calc(48% + 14px); right:16px; }
+  }
+  .doc-footer{
+    margin-top:26px;
+    padding-top:14px;
+    border-top:1px solid var(--line);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--text-mute);
+    letter-spacing:.03em;
+  }
+  .empty-doc .big{
+    font-family:'Fraunces',serif;
+    font-size:22px;
+    color:var(--text-dark);
+    margin-bottom:10px;
+    letter-spacing:0;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="chat-panel">
+    <div class="rail">
+      <div class="rail-track" id="railTrack"></div>
+    </div>
+    <div class="chat-main">
+      <div class="chat-header">
+        <span class="eyebrow">Draft in progress</span>
+        <h1>Learning Outline Builder</h1>
+      </div>
+      <div class="chat-log" id="chatLog"></div>
+      <div class="chat-input-row">
+        <div style="flex:1;">
+          <textarea id="inputBox" rows="1" placeholder="Type your answer…"></textarea>
+          <div class="list-hint" id="listHint" style="display:none;">Separate multiple items with commas.</div>
+        </div>
+        <button class="send-btn" id="sendBtn" title="Send">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 12L20 4L13 20L11 13L4 12Z" fill="currentColor"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-panel" id="docPanel">
+    <div class="empty-doc" id="emptyDoc">
+      <div class="big">Your outline will build here</div>
+      <div>Answer the questions on the left — this document<br/>fills in live and stays fully editable when you're done.</div>
+    </div>
+  </div>
+  <button class="download-btn" id="downloadBtn" style="display:none;" title="Download as an editable Word document">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M6.5 10.5L12 16l5.5-5.5"/><path d="M5 21h14"/></svg>
+    Download as Word
+  </button>
+
+</div>
+
+<script>
+/* ---------------- DATA MODEL ---------------- */
+const data = {
+  author:'', name:'', purpose:'', audience:'', duration:'', delivery:'', prerequisites:'',
+  objectives:[],
+  modules:[],
+  capstone:'', finalAssessment:'', createdAt:''
+};
+
+const LEVELS = ['Course','Module','Lesson','Topic','Activity','Assessment'];
+let activeLevel = 0;
+
+const EDIT_SVG = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`;
+
+/* ---------------- STEP SCRIPT ---------------- */
+let step = 'welcome';
+let modIdx = -1, lesIdx = -1;
+
+function currentModule(){ return data.modules[modIdx]; }
+function currentLesson(){ return data.modules[modIdx].lessons[lesIdx]; }
+
+function splitList(text){
+  return text.split(/[,\n]/).map(s=>s.trim()).filter(Boolean);
+}
+
+function botSay(html){ addMsg('bot', html); }
+function fieldTag(label){ return `<span class="field-tag">${label}</span>`; }
+
+function startSequence(){
+  botSay(fieldTag('Welcome') + `I'm here to help you build a learning outline. I'll ask a series of questions, working through each level of the course in turn:<br><br>
+  <strong>Program</strong> — a multi-course journey toward a role or outcome<br>
+  <strong>Course</strong> — a full learning experience made of modules<br>
+  <strong>Module</strong> — related lessons organized around a topic<br>
+  <strong>Lesson</strong> — teaches one concept or skill<br>
+  <strong>Topic</strong> — an individual idea within a lesson<br>
+  <strong>Activity</strong> — practice that reinforces learning<br>
+  <strong>Assessment</strong> — how you measure learning<br><br>
+  Type <strong>Start</strong> to begin.`);
+}
+
+/* ---- Course-level questions ---- */
+function askAuthor(){ setLevel(0); botSay(fieldTag('Author') + 'Who will be building this course?'); }
+function askName(){ botSay(fieldTag('Course Name') + 'What is the name of your course?'); }
+function askPurpose(){ botSay(fieldTag('Purpose') + 'What is the purpose of the course?'); }
+function askAudience(){ botSay(fieldTag('Target Audience') + 'Who is the target audience?'); }
+function askDuration(){ botSay(fieldTag('Duration') + 'What is the estimated duration of the course? You can update this later.'); }
+function askDelivery(){ botSay(fieldTag('Delivery Methods') + 'What delivery methods will be used to transfer knowledge and skills (e.g., instructor-led, virtual instructor-led, self-paced, blended)?'); }
+function askPrereq(){ botSay(fieldTag('Prerequisites') + 'What does a participant need to know before taking this course?'); }
+
+function askCourseObjective(){
+  step='objectives.entry';
+  const n = data.objectives.length + 1;
+  const msg = n === 1
+    ? `Now, let's define the learning objectives for your course. Starting with your first objective, what will participants be able to do by the end of the course? Begin with an action verb.`
+    : `Learning Objective ${n}: By the end of the course, what will participants be able to do? Start with an action verb.`;
+  botSay(fieldTag('Course Learning Objectives') + msg);
+}
+function askCourseObjectiveContinue(){
+  step='objectives.continue';
+  botSay(`Add another course learning objective?`);
+  showChoices([{label:'+ Add another objective', value:'yes'},{label:"No, that's all", value:'no'}]);
+}
+
+/* ---- Modules ---- */
+function beginModules(){
+  botSay(`That completes the course-level details. Now let's fill in the modules that support your course objectives. It may help to jot down all your planned modules first.`);
+  newModule();
+}
+function newModule(){
+  modIdx++; lesIdx=-1;
+  data.modules.push({name:'',purpose:'',duration:'',objectives:[],lessons:[],assessment:''});
+  setLevel(1);
+  step='module.name';
+  const ordinal = modIdx===0 ? 'your first' : 'this next';
+  botSay(fieldTag(`Module ${modIdx+1} Name`) + `What is the name of ${ordinal} module? The module should support at least one of your course learning objectives.`);
+}
+function askModulePurpose(){ botSay(fieldTag('Purpose') + 'What is the purpose of this module?'); }
+function askModuleDuration(){ botSay(fieldTag('Duration') + 'What is the estimated duration of this module?'); }
+function askModuleObjective(){
+  step='module.objectives.entry';
+  const n = currentModule().objectives.length + 1;
+  const msg = n === 1
+    ? `Module Learning Objective 1: By the end of this module, what will participants be able to do? Your objective should support at least one of your course learning objectives and begin with an action verb.`
+    : `Module Learning Objective ${n}: By the end of this module, what will participants be able to do? Start with an action verb.`;
+  botSay(fieldTag('Module Learning Objectives') + msg);
+}
+function askModuleObjectiveContinue(){
+  step='module.objectives.continue';
+  botSay(`Add another module learning objective?`);
+  showChoices([{label:'+ Add another objective', value:'yes'},{label:"No, that's all", value:'no'}]);
+}
+
+/* ---- Lessons ---- */
+function newLesson(){
+  lesIdx++;
+  currentModule().lessons.push({name:'',objective:'',topics:[],activities:[]});
+  setLevel(2);
+  showListHint(false);
+  step='lesson.name';
+  botSay(fieldTag(`Lesson ${modIdx+1}.${lesIdx+1} Name`) + `What is the name of Lesson ${modIdx+1}.${lesIdx+1}?`);
+}
+function askLessonObjective(){
+  step='lesson.objective';
+  const objs = currentModule().objectives;
+  if(objs && objs.length){
+    botSay(fieldTag('Lesson Objective') + 'Choose which module learning objective this lesson will support.');
+    showChoices(objs.map(o=>({label:o, value:o})));
+  } else {
+    botSay(fieldTag('Lesson Objective') + 'What is the learning objective for this lesson?');
+  }
+}
+function askLessonTopic(){
+  step='lesson.topics.entry';
+  setLevel(3);
+  const n = currentLesson().topics.length + 1;
+  const msg = n === 1
+    ? `What topics will be covered in this lesson? Each topic should support the lesson learning objective. Let's start with your first topic.`
+    : `Topic ${n}: What else will be covered in this lesson?`;
+  botSay(fieldTag('Topics') + msg);
+}
+function askLessonTopicContinue(){
+  step='lesson.topics.continue';
+  botSay(`Add another topic?`);
+  showChoices([{label:'+ Add another topic', value:'yes'},{label:'Move on to Activities', value:'no'}]);
+}
+function askLessonActivities(){
+  setLevel(4);
+  showListHint(true);
+  botSay(fieldTag('Activities') + 'What activities will help deliver this knowledge and these skills (e.g., reflection exercises, knowledge checks, videos, case studies)?');
+}
+function askLessonContinue(){
+  showListHint(false);
+  step='lesson.continue';
+  botSay(`That completes Lesson ${modIdx+1}.${lesIdx+1}. What would you like to do next?`);
+  showChoices([{label:'+ Add another lesson', value:'continue'},{label:'Move on to Module Assessment', value:'done'}]);
+}
+function askModuleAssessment(){
+  setLevel(5);
+  step='module.assessment';
+  botSay(fieldTag('Assessment') + `How will you assess the knowledge and skills participants gained in Module ${modIdx+1} (e.g., assessment questions, peer feedback)?`);
+}
+function askModuleContinue(){
+  step='module.continue';
+  botSay(`We've now gathered all the information for Module ${modIdx+1}. What would you like to do next?`);
+  showChoices([{label:'+ Add another module', value:'continue'},{label:'Move on to Course Wrap-Up', value:'done'}]);
+}
+
+/* ---- Wrap-up ---- */
+function beginWrapUp(){
+  setLevel(5);
+  step='capstone.choice';
+  botSay(`<strong>Course Wrap-Up</strong><br><br>` + fieldTag('Capstone') + `Will your course include a capstone that allows learners to apply everything they've learned?`);
+  showChoices([{label:'Yes', value:'yes'},{label:'No', value:'no'}]);
+}
+function askFinalAssessment(){
+  step='finalAssessment';
+  botSay(fieldTag('Final Assessment') + 'How will you assess the knowledge and skills participants gained across the entire course (e.g., knowledge assessments, practical assessments)?');
+}
+function finish(){
+  step='done';
+  botSay(`Your outline is complete. Take a moment to review it and select <strong>Edit</strong> to make any changes. When you're ready, click <strong>Download as Word</strong> above the document to save an editable copy that you can continue updating anytime.`);
+}
+
+/* ---------------- ANSWER HANDLER ---------------- */
+function handleAnswer(raw, displayText){
+  const text = (raw||'').trim();
+  if(!text) return;
+  addMsg('user', escapeHtml(displayText!==undefined ? displayText : text));
+
+  switch(step){
+    case 'welcome':
+      if(/^start$/i.test(text)){
+        data.createdAt = new Date().toLocaleDateString('en-US',{month:'long', day:'numeric', year:'numeric'});
+        step='author'; askAuthor();
+      }
+      else botSay('Type <strong>Start</strong> to begin.');
+      return;
+    case 'author': data.author=text; step='name'; askName(); return;
+    case 'name': data.name=text; step='purpose'; askPurpose(); return;
+    case 'purpose': data.purpose=text; step='audience'; askAudience(); return;
+    case 'audience': data.audience=text; step='duration'; askDuration(); return;
+    case 'duration': data.duration=text; step='delivery'; askDelivery(); return;
+    case 'delivery': data.delivery=text; step='prerequisites'; askPrereq(); return;
+    case 'prerequisites': data.prerequisites=text; askCourseObjective(); return;
+
+    case 'objectives.entry':
+      data.objectives.push(text);
+      if(data.objectives.length >= 8){ beginModules(); }
+      else { askCourseObjectiveContinue(); }
+      return;
+    case 'objectives.continue':
+      if(text==='yes'){ askCourseObjective(); } else { beginModules(); }
+      return;
+
+    case 'module.name': currentModule().name=text; step='module.purpose'; askModulePurpose(); return;
+    case 'module.purpose': currentModule().purpose=text; step='module.duration'; askModuleDuration(); return;
+    case 'module.duration': currentModule().duration=text; askModuleObjective(); return;
+
+    case 'module.objectives.entry':
+      currentModule().objectives.push(text);
+      if(currentModule().objectives.length >= 5){ newLesson(); }
+      else { askModuleObjectiveContinue(); }
+      return;
+    case 'module.objectives.continue':
+      if(text==='yes'){ askModuleObjective(); } else { newLesson(); }
+      return;
+
+    case 'lesson.name': currentLesson().name=text; askLessonObjective(); return;
+    case 'lesson.objective': currentLesson().objective=text; askLessonTopic(); return;
+    case 'lesson.topics.entry':
+      currentLesson().topics.push(text);
+      askLessonTopicContinue();
+      return;
+    case 'lesson.topics.continue':
+      if(text==='yes'){ askLessonTopic(); } else { step='lesson.activities'; askLessonActivities(); }
+      return;
+    case 'lesson.activities': currentLesson().activities=splitList(text); askLessonContinue(); return;
+
+    case 'lesson.continue':
+      if(text==='continue'){ newLesson(); } else { askModuleAssessment(); }
+      return;
+
+    case 'module.assessment': currentModule().assessment=text; askModuleContinue(); return;
+    case 'module.continue':
+      if(text==='continue'){ newModule(); } else { beginWrapUp(); }
+      return;
+
+    case 'capstone.choice':
+      if(text==='yes'){ step='capstone.description'; botSay('Write a brief description of your capstone.'); }
+      else { data.capstone=''; askFinalAssessment(); }
+      return;
+    case 'capstone.description': data.capstone=text; askFinalAssessment(); return;
+    case 'finalAssessment': data.finalAssessment=text; finish(); return;
+
+    case 'done':
+      botSay("The outline is complete — feel free to keep exploring the document on the right, or use the edit icons to make changes.");
+      return;
+  }
+}
+
+/* ---------------- UI: CHAT ---------------- */
+const chatLog = document.getElementById('chatLog');
+function addMsg(role, html){
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ' + role;
+  const bub = document.createElement('div');
+  bub.className = 'bubble';
+  bub.innerHTML = html;
+  wrap.appendChild(bub);
+  chatLog.appendChild(wrap);
+  chatLog.scrollTop = chatLog.scrollHeight;
+  renderDoc();
+}
+function escapeHtml(s){
+  return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+const inputBox = document.getElementById('inputBox');
+const sendBtn = document.getElementById('sendBtn');
+const listHint = document.getElementById('listHint');
+function showListHint(v){ listHint.style.display = v ? 'block' : 'none'; }
+
+function submit(){
+  const val = inputBox.value;
+  if(!val.trim() || inputBox.disabled) return;
+  inputBox.value='';
+  inputBox.style.height='auto';
+  handleAnswer(val);
+}
+sendBtn.addEventListener('click', submit);
+inputBox.addEventListener('keydown', e=>{
+  if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); submit(); }
+});
+inputBox.addEventListener('input', ()=>{
+  inputBox.style.height='auto';
+  inputBox.style.height = Math.min(inputBox.scrollHeight,110)+'px';
+});
+
+function showChoices(options){
+  const row = document.createElement('div');
+  row.className = 'choice-row';
+  options.forEach(opt=>{
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = opt.label;
+    btn.addEventListener('click', ()=>{
+      row.remove();
+      inputBox.disabled = false;
+      sendBtn.disabled = false;
+      inputBox.placeholder = 'Type your answer…';
+      inputBox.focus();
+      handleAnswer(opt.value, opt.label);
+    });
+    row.appendChild(btn);
+  });
+  chatLog.appendChild(row);
+  chatLog.scrollTop = chatLog.scrollHeight;
+  inputBox.disabled = true;
+  sendBtn.disabled = true;
+  inputBox.placeholder = 'Choose an option above…';
+}
+
+/* ---------------- UI: RAIL ---------------- */
+const railTrack = document.getElementById('railTrack');
+function buildRail(){
+  railTrack.innerHTML='';
+  LEVELS.forEach((lvl,i)=>{
+    const item = document.createElement('div');
+    item.className='rail-item';
+    item.innerHTML = `<div class="rail-dot" id="dot-${i}"></div><div class="rail-label">${lvl}</div>`;
+    railTrack.appendChild(item);
+    if(i<LEVELS.length-1){
+      const line = document.createElement('div');
+      line.className='rail-line';
+      railTrack.appendChild(line);
+    }
+  });
+}
+function setLevel(i){
+  activeLevel = i;
+  LEVELS.forEach((lvl,idx)=>{
+    const dot = document.getElementById('dot-'+idx);
+    if(!dot) return;
+    dot.classList.toggle('active', idx===i);
+    dot.classList.toggle('done', idx<i);
+  });
+}
+buildRail();
+
+/* ---------------- EDITING ---------------- */
+function pathGet(path){ return path.reduce((o,k)=> (o==null?o:o[k]), data); }
+function pathSet(path, value){
+  let obj = data;
+  for(let i=0;i<path.length-1;i++){ obj = obj[path[i]]; }
+  obj[path[path.length-1]] = value;
+}
+function editIconHtml(path, isList){
+  return `<button class="edit-icon" data-path='${JSON.stringify(path)}' data-list="${isList?1:0}" title="Edit">${EDIT_SVG}</button>`;
+}
+
+const docPanel = document.getElementById('docPanel');
+docPanel.addEventListener('click', e=>{
+  const btn = e.target.closest('.edit-icon');
+  if(!btn) return;
+  const path = JSON.parse(btn.getAttribute('data-path'));
+  const isList = btn.getAttribute('data-list') === '1';
+  const container = btn.closest('[data-editable]');
+  if(!container) return;
+  openEditor(container, path, isList);
+});
+
+function openEditor(container, path, isList){
+  const current = pathGet(path);
+  if(isList){
+    let items = Array.isArray(current) ? current.slice() : [];
+    const render = ()=>{
+      container.innerHTML = `
+        <div class="field-label">Editing</div>
+        <div class="edit-list" id="editListItems"></div>
+        <div class="edit-list-add">
+          <input type="text" class="edit-input" id="editListNew" placeholder="Add item…">
+          <button class="edit-mini-btn" id="editListAddBtn">Add</button>
+        </div>
+        <div class="edit-actions">
+          <button class="edit-save-btn" id="editSaveBtn">Save</button>
+          <button class="edit-cancel-btn" id="editCancelBtn">Cancel</button>
+        </div>`;
+      const listEl = container.querySelector('#editListItems');
+      items.forEach((it, idx)=>{
+        const row = document.createElement('div');
+        row.className='edit-list-row';
+        row.innerHTML = `<span>${escapeHtml(it)}</span><button class="edit-remove-btn" data-idx="${idx}">✕</button>`;
+        listEl.appendChild(row);
+      });
+      listEl.querySelectorAll('.edit-remove-btn').forEach(b=> b.addEventListener('click', ()=>{
+        items.splice(Number(b.getAttribute('data-idx')),1); render();
+      }));
+      container.querySelector('#editListAddBtn').addEventListener('click', ()=>{
+        const inp = container.querySelector('#editListNew');
+        if(inp.value.trim()){ items.push(inp.value.trim()); inp.value=''; render(); }
+      });
+      container.querySelector('#editListNew').addEventListener('keydown', ev=>{
+        if(ev.key==='Enter'){ ev.preventDefault(); container.querySelector('#editListAddBtn').click(); }
+      });
+      container.querySelector('#editSaveBtn').addEventListener('click', ()=>{
+        pathSet(path, items); renderDoc();
+      });
+      container.querySelector('#editCancelBtn').addEventListener('click', ()=> renderDoc());
+    };
+    render();
+  } else {
+    container.innerHTML = `
+      <div class="field-label">Editing</div>
+      <textarea class="edit-input edit-textarea" id="editTextArea">${escapeHtml(current||'')}</textarea>
+      <div class="edit-actions">
+        <button class="edit-save-btn" id="editSaveBtn">Save</button>
+        <button class="edit-cancel-btn" id="editCancelBtn">Cancel</button>
+      </div>`;
+    const ta = container.querySelector('#editTextArea');
+    ta.focus();
+    ta.selectionStart = ta.value.length;
+    container.querySelector('#editSaveBtn').addEventListener('click', ()=>{
+      pathSet(path, ta.value); renderDoc();
+    });
+    container.querySelector('#editCancelBtn').addEventListener('click', ()=> renderDoc());
+  }
+}
+
+/* ---------------- UI: DOCUMENT ---------------- */
+const emptyDoc = document.getElementById('emptyDoc');
+const downloadBtn = document.getElementById('downloadBtn');
+
+function fieldHtml(label, value, isList, path){
+  const filled = isList ? (value && value.length) : (value && value.trim());
+  let inner;
+  if(!filled){
+    inner = `<div class="field-value empty">—</div>`;
+  } else if(isList){
+    inner = `<ul class="tags">${value.map(v=>`<li>${escapeHtml(v)}</li>`).join('')}</ul>`;
+  } else {
+    inner = `<div class="field-value">${escapeHtml(value)}</div>`;
+  }
+  return `<div class="field" data-editable>
+    <div class="field-label-row"><div class="field-label">${label}</div>${editIconHtml(path, !!isList)}</div>
+    ${inner}
+  </div>`;
+}
+
+function renderDoc(){
+  const hasStarted = data.author || data.name || data.purpose || data.modules.length;
+  if(!hasStarted){
+    emptyDoc.style.display='flex';
+    downloadBtn.style.display='none';
+    return;
+  }
+  emptyDoc.style.display='none';
+
+  let html = `<div class="doc-topbar">
+      <div>
+        <div class="eyebrow">Learning Outline · Draft</div>
+        <div class="heading-row" data-editable>
+          <h2>${data.name ? escapeHtml(data.name) : 'Untitled Course'}</h2>
+          ${editIconHtml(['name'], false)}
+        </div>
+      </div>
+      <div class="rev">Revised ${new Date().toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'})}</div>
+    </div>`;
+
+  html += `<div class="card"><div class="card-head">Course Information</div><div class="card-body">
+    ${fieldHtml('Author', data.author, false, ['author'])}
+    ${fieldHtml('Purpose', data.purpose, false, ['purpose'])}
+    ${fieldHtml('Target Audience', data.audience, false, ['audience'])}
+    ${fieldHtml('Duration', data.duration, false, ['duration'])}
+    ${fieldHtml('Delivery Methods', data.delivery, false, ['delivery'])}
+    ${fieldHtml('Prerequisites', data.prerequisites, false, ['prerequisites'])}
+    ${fieldHtml('Course Learning Objectives', data.objectives, true, ['objectives'])}
+  </div></div>`;
+
+  data.modules.forEach((m, mi)=>{
+    html += `<div class="card"><div class="card-head">Module ${mi+1}</div><div class="card-body">
+      <div class="heading-row" data-editable>
+        <p class="module-name-head">${m.name ? escapeHtml(m.name) : '—'}</p>
+        ${editIconHtml(['modules', mi, 'name'], false)}
+      </div>
+      ${fieldHtml('Purpose', m.purpose, false, ['modules', mi, 'purpose'])}
+      ${fieldHtml('Duration', m.duration, false, ['modules', mi, 'duration'])}
+      ${fieldHtml('Module Learning Objectives', m.objectives, true, ['modules', mi, 'objectives'])}`;
+
+    m.lessons.forEach((l, li)=>{
+      html += `<div class="lesson-card">
+        <div class="heading-row" data-editable>
+          <div class="lesson-name">Lesson ${mi+1}.${li+1}: ${l.name ? escapeHtml(l.name) : '—'}</div>
+          ${editIconHtml(['modules', mi, 'lessons', li, 'name'], false)}
+        </div>
+        ${fieldHtml('Objective', l.objective, false, ['modules', mi, 'lessons', li, 'objective'])}
+        ${fieldHtml('Topics', l.topics, true, ['modules', mi, 'lessons', li, 'topics'])}
+        ${fieldHtml('Activities', l.activities, true, ['modules', mi, 'lessons', li, 'activities'])}
+      </div>`;
+    });
+
+    html += fieldHtml('Assessment', m.assessment, false, ['modules', mi, 'assessment']);
+    html += `</div></div>`;
+  });
+
+  const wrapStarted = ['capstone.choice','capstone.description','finalAssessment','done'].includes(step) || data.capstone || data.finalAssessment;
+  if(wrapStarted){
+    html += `<div class="card"><div class="card-head">Course Wrap-Up</div><div class="card-body">
+      ${fieldHtml('Capstone', data.capstone, false, ['capstone'])}
+      ${fieldHtml('Final Assessment', data.finalAssessment, false, ['finalAssessment'])}
+    </div></div>`;
+  }
+
+  html += `<div class="doc-footer">Outline created ${data.createdAt || '—'}</div>`;
+
+  docPanel.innerHTML = html;
+  docPanel.appendChild(emptyDoc);
+  downloadBtn.style.display = 'flex';
+}
+
+/* ---------------- WORD EXPORT ---------------- */
+function escW(s){ return (s||'').replace(/[&<>]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+function rowW(label, value){
+  const v = value && value.trim() ? escW(value) : '—';
+  return `<tr>
+    <td style="width:24%;background:#F3E2C9;border:1px solid #C9C4B4;padding:8px 10px;font-weight:bold;font-size:11pt;vertical-align:top;">${escW(label)}</td>
+    <td style="width:76%;border:1px solid #C9C4B4;padding:8px 10px;font-size:11pt;vertical-align:top;">${v}</td>
+  </tr>`;
+}
+function listRowW(label, arr){
+  const v = (arr && arr.length) ? ('<ul style="margin:0;padding-left:18px;">'+arr.map(a=>`<li>${escW(a)}</li>`).join('')+'</ul>') : '—';
+  return `<tr>
+    <td style="width:24%;background:#F3E2C9;border:1px solid #C9C4B4;padding:8px 10px;font-weight:bold;font-size:11pt;vertical-align:top;">${escW(label)}</td>
+    <td style="width:76%;border:1px solid #C9C4B4;padding:8px 10px;font-size:11pt;vertical-align:top;">${v}</td>
+  </tr>`;
+}
+
+function buildWordHtml(){
+  let body = `<h1 style="font-family:Georgia,serif;font-size:22pt;margin-bottom:2pt;">${escW(data.name)||'Untitled Course'}</h1>
+  <p style="font-family:Calibri,sans-serif;font-size:9pt;color:#666;margin-top:0;">Learning Outline &nbsp;·&nbsp; Created ${escW(data.createdAt)}</p>
+
+  <h2 style="font-family:Georgia,serif;font-size:14pt;margin-top:20pt;">Course Information</h2>
+  <table style="border-collapse:collapse;width:100%;font-family:Calibri,sans-serif;">
+    ${rowW('Author', data.author)}
+    ${rowW('Purpose', data.purpose)}
+    ${rowW('Target Audience', data.audience)}
+    ${rowW('Duration', data.duration)}
+    ${rowW('Delivery Methods', data.delivery)}
+    ${rowW('Prerequisites', data.prerequisites)}
+    ${listRowW('Course Learning Objectives', data.objectives)}
+  </table>`;
+
+  data.modules.forEach((m, mi)=>{
+    body += `<h2 style="font-family:Georgia,serif;font-size:14pt;margin-top:22pt;">Module ${mi+1}: ${escW(m.name)||'—'}</h2>
+    <table style="border-collapse:collapse;width:100%;font-family:Calibri,sans-serif;">
+      ${rowW('Purpose', m.purpose)}
+      ${rowW('Duration', m.duration)}
+      ${listRowW('Module Learning Objectives', m.objectives)}
+    </table>`;
+
+    m.lessons.forEach((l, li)=>{
+      body += `<h3 style="font-family:Georgia,serif;font-size:12pt;margin-top:14pt;">Lesson ${mi+1}.${li+1}: ${escW(l.name)||'—'}</h3>
+      <table style="border-collapse:collapse;width:100%;font-family:Calibri,sans-serif;">
+        ${rowW('Objective', l.objective)}
+        ${listRowW('Topics', l.topics)}
+        ${listRowW('Activities', l.activities)}
+      </table>`;
+    });
+
+    body += `<table style="border-collapse:collapse;width:100%;font-family:Calibri,sans-serif;margin-top:8pt;">
+      ${rowW('Assessment', m.assessment)}
+    </table>`;
+  });
+
+  if(data.capstone || data.finalAssessment){
+    body += `<h2 style="font-family:Georgia,serif;font-size:14pt;margin-top:22pt;">Course Wrap-Up</h2>
+    <table style="border-collapse:collapse;width:100%;font-family:Calibri,sans-serif;">
+      ${rowW('Capstone', data.capstone)}
+      ${rowW('Final Assessment', data.finalAssessment)}
+    </table>`;
+  }
+
+  body += `<p style="font-family:Calibri,sans-serif;font-size:9pt;color:#666;margin-top:24pt;border-top:1px solid #ccc;padding-top:8pt;">Outline created ${escW(data.createdAt)}</p>`;
+
+  return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+  <head><meta charset="utf-8"><title>${escW(data.name)||'Learning Outline'}</title>
+  <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->
+  </head><body>${body}</body></html>`;
+}
+
+function downloadWord(){
+  const html = buildWordHtml();
+  const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const safeName = (data.name || 'learning-outline').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+  a.href = url;
+  a.download = `${safeName || 'learning-outline'}.doc`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+downloadBtn.addEventListener('click', downloadWord);
+
+/* ---------------- INIT ---------------- */
+startSequence();
+inputBox.focus();
+</script>
+</body>
+</html>

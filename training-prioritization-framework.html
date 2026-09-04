@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Training Request Prioritization Framework</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F2F3F6;
+    --paper:#FFFFFF;
+    --ink:#161A22;
+    --ink-muted:#5B6472;
+    --line:#E1E4EA;
+    --structural:#33507A;
+    --structural-soft:#EAF0F8;
+    --gold:#B8891A;
+    --critical:#C64444;
+    --critical-bg:#FBEAEA;
+    --high:#C97A1F;
+    --high-bg:#FCF0E1;
+    --medium:#B99A16;
+    --medium-bg:#FBF6DE;
+    --low:#2E8F58;
+    --low-bg:#E7F5ED;
+    --neutral-bg:#F2F3F6;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:1080px;
+    margin:0 auto;
+    padding:40px 24px 80px;
+  }
+
+  /* Header */
+  header{
+    margin-bottom:28px;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--structural);
+    font-weight:600;
+    margin-bottom:10px;
+  }
+  h1{
+    font-size:28px;
+    font-weight:700;
+    margin:0 0 8px;
+    letter-spacing:-0.01em;
+  }
+  header p.sub{
+    color:var(--ink-muted);
+    font-size:15px;
+    margin:0;
+    max-width:640px;
+    line-height:1.5;
+  }
+
+  /* Tabs */
+  .tabs{
+    display:flex;
+    gap:4px;
+    margin:28px 0 22px;
+    border-bottom:1px solid var(--line);
+  }
+  .tab{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:14px;
+    font-weight:600;
+    color:var(--ink-muted);
+    background:none;
+    border:none;
+    padding:12px 4px;
+    margin-right:24px;
+    cursor:pointer;
+    position:relative;
+    top:1px;
+    border-bottom:2px solid transparent;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .tab .n{
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--structural);
+    margin-right:8px;
+    font-size:12px;
+  }
+  .tab.active{
+    color:var(--ink);
+    border-bottom-color:var(--structural);
+  }
+  .tab:hover:not(.active){ color:var(--ink); }
+  .tab:focus-visible{ outline:2px solid var(--structural); outline-offset:3px; }
+
+  /* Layout */
+  .panel{ display:none; }
+  .panel.active{ display:block; }
+  .grid{
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:20px;
+    align-items:start;
+  }
+  @media (max-width:800px){
+    .grid{ grid-template-columns:1fr; }
+  }
+
+  /* Form card */
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:24px;
+  }
+  .card + .card{ margin-top:16px; }
+  .card-title{
+    font-size:11px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    color:var(--ink-muted);
+    margin:0 0 18px;
+  }
+  .q{
+    margin-bottom:20px;
+  }
+  .q:last-child{ margin-bottom:0; }
+  .q label{
+    display:block;
+    font-size:14px;
+    font-weight:600;
+    color:var(--ink);
+    margin-bottom:8px;
+    line-height:1.4;
+  }
+  .q .factor-tag{
+    display:inline-block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    color:var(--structural);
+    background:var(--structural-soft);
+    border-radius:4px;
+    padding:2px 6px;
+    margin-bottom:6px;
+    letter-spacing:0.04em;
+  }
+  select{
+    width:100%;
+    appearance:none;
+    -webkit-appearance:none;
+    background:var(--paper) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%235B6472" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>') no-repeat right 14px center;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:11px 38px 11px 13px;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:14px;
+    color:var(--ink);
+    cursor:pointer;
+    transition:border-color .15s ease;
+  }
+  select:hover{ border-color:var(--structural); }
+  select:focus-visible{
+    outline:none;
+    border-color:var(--structural);
+    box-shadow:0 0 0 3px var(--structural-soft);
+  }
+  select:invalid, select.placeholder{ color:var(--ink-muted); }
+
+  /* Ledger / score panel */
+  .ledger{
+    position:sticky;
+    top:24px;
+  }
+  .ledger-title{
+    font-size:11px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    color:var(--ink-muted);
+    margin:0 0 16px;
+  }
+  .ledger-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding:9px 0;
+    border-bottom:1px dashed var(--line);
+    font-size:13.5px;
+  }
+  .ledger-row .name{ color:var(--ink); font-weight:500; }
+  .ledger-row .val{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600;
+    color:var(--ink-muted);
+    white-space:nowrap;
+    margin-left:12px;
+  }
+  .ledger-row .val.pending{ color:#B8BEC9; font-weight:500; }
+  .ledger-row.weighted .val{ color:var(--gold); }
+
+  .formula-line{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:var(--ink-muted);
+    background:var(--neutral-bg);
+    border-radius:6px;
+    padding:10px 12px;
+    margin-top:14px;
+    line-height:1.6;
+    word-break:break-word;
+  }
+  .formula-line b{ color:var(--ink); }
+  .formula-line .op{ color:var(--gold); font-weight:600; }
+
+  .score-display{
+    margin-top:20px;
+    padding:20px;
+    border-radius:8px;
+    text-align:center;
+    background:var(--neutral-bg);
+    transition:background-color .2s ease;
+  }
+  .score-display .num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:40px;
+    font-weight:700;
+    line-height:1;
+    color:var(--ink-muted);
+  }
+  .score-display .label{
+    margin-top:8px;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    color:var(--ink-muted);
+  }
+  .score-display.critical{ background:var(--critical-bg); }
+  .score-display.critical .num, .score-display.critical .label{ color:var(--critical); }
+  .score-display.high{ background:var(--high-bg); }
+  .score-display.high .num, .score-display.high .label{ color:var(--high); }
+  .score-display.medium{ background:var(--medium-bg); }
+  .score-display.medium .num, .score-display.medium .label{ color:var(--medium); }
+  .score-display.low{ background:var(--low-bg); }
+  .score-display.low .num, .score-display.low .label{ color:var(--low); }
+
+  /* Legend */
+  .legend{
+    margin-top:16px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+  .legend-item{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:12px;
+    color:var(--ink-muted);
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:7px 9px;
+  }
+  .legend-item .dot{
+    width:9px; height:9px; border-radius:50%; flex:none;
+  }
+  .dot.critical{ background:var(--critical); }
+  .dot.high{ background:var(--high); }
+  .dot.medium{ background:var(--medium); }
+  .dot.low{ background:var(--low); }
+  .legend-item .range{ font-family:'IBM Plex Mono', monospace; font-weight:600; color:var(--ink); }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Prioritization Framework</div>
+    <h1>Training Request Prioritization Framework</h1>
+    <p class="sub">Score incoming requests before committing capacity. Answer every question in a section to generate a weighted priority score and label.</p>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab active" role="tab" aria-selected="true" data-panel="training"><span class="n">01</span>Training Prioritization</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="strategic"><span class="n">02</span>Strategic Initiative Prioritization</button>
+  </div>
+
+  <!-- SECTION 1: TRAINING -->
+  <div class="panel active" id="panel-training">
+    <div class="grid">
+      <div class="card">
+        <p class="card-title">Request Questions</p>
+
+        <div class="q">
+          <span class="factor-tag">FREQUENCY</span>
+          <label for="t-frequency">How frequently will this task be performed on the job?</label>
+          <select id="t-frequency" data-section="training" data-factor="frequency">
+            <option value="" disabled selected>Select...</option>
+            <option value="3">Extremely Frequent</option>
+            <option value="2">Frequent</option>
+            <option value="1">Moderately Frequent</option>
+            <option value="0">Infrequent</option>
+          </select>
+        </div>
+
+        <div class="q">
+          <span class="factor-tag">LEARNING DIFFICULTY</span>
+          <label for="t-difficulty">How difficult are the tasks associated with this request to perform?</label>
+          <select id="t-difficulty" data-section="training" data-factor="difficulty">
+            <option value="" disabled selected>Select...</option>
+            <option value="3">Extremely Difficult</option>
+            <option value="2">Difficult</option>
+            <option value="1">Moderately Difficult</option>
+            <option value="0">Easy</option>
+          </select>
+        </div>
+
+        <div class="q">
+          <span class="factor-tag">IMPORTANCE</span>
+          <label for="t-importance">How important is this request to achieving the company's vision, goals, objectives, and business outcomes?</label>
+          <select id="t-importance" data-section="training" data-factor="importance">
+            <option value="" disabled selected>Select...</option>
+            <option value="3">Extremely Important</option>
+            <option value="2">Important</option>
+            <option value="1">Moderately Important</option>
+            <option value="0">Not Important</option>
+          </select>
+        </div>
+
+        <div class="q">
+          <span class="factor-tag">JOB EXPERIENCE</span>
+          <label for="t-experience">What level of experience do the target learners have with the skills or tasks associated with this request?</label>
+          <select id="t-experience" data-section="training" data-factor="experience">
+            <option value="" disabled selected>Select...</option>
+            <option value="3">Extremely High</option>
+            <option value="2">High</option>
+            <option value="1">Moderate</option>
+            <option value="0">Low</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ledger">
+        <div class="card">
+          <p class="ledger-title">Score Breakdown</p>
+          <div id="t-ledger-rows"></div>
+          <div class="formula-line" id="t-formula">Priority Score = Frequency + Learning Difficulty + Importance <span class="op">−</span> (3 <span class="op">×</span> Job Experience)</div>
+          <div class="score-display" id="t-score-display">
+            <div class="num" id="t-score-num">—</div>
+            <div class="label" id="t-score-label">Awaiting inputs</div>
+          </div>
+        </div>
+        <div class="card">
+          <p class="ledger-title">Score Legend</p>
+          <div class="legend">
+            <div class="legend-item"><span class="dot critical"></span><span><span class="range">8+</span> Critical</span></div>
+            <div class="legend-item"><span class="dot high"></span><span><span class="range">6–7</span> High</span></div>
+            <div class="legend-item"><span class="dot medium"></span><span><span class="range">3–5</span> Medium</span></div>
+            <div class="legend-item"><span class="dot low"></span><span><span class="range">≤2</span> Low</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: STRATEGIC -->
+  <div class="panel" id="panel-strategic">
+    <div class="grid">
+      <div class="card">
+        <p class="card-title">Request Questions</p>
+
+        <div class="q">
+          <span class="factor-tag">MRR</span>
+          <label for="s-mrr">What is the Monthly Recurring Revenue (MRR) associated with this request?</label>
+          <select id="s-mrr" data-section="strategic" data-factor="mrr">
+            <option value="" disabled selected>Select...</option>
+            <option value="3">$100K+</option>
+            <option value="2">$50K–$100K</option>
+            <option value="1">$10K–$50K</option>
+            <option value="0">Less than $10K</option>
+          </select>
+        </div>
+
+        <div class="q">
+          <span class="factor-tag">EMPLOYEES IMPACTED</span>
+          <label for="s-employees">How many employees will this request impact?</label>
+          <select id="s-employees" data-section="strategic" data-factor="employees">
+            <option value="" disabled selected>Select...</option>
+            <option value="3">100+</option>
+            <option value="2">50–100</option>
+            <option value="1">20–50</option>
+            <option value="0">Less than 20</option>
+          </select>
+        </div>
+
+        <div class="q">
+          <span class="factor-tag">DEADLINE</span>
+          <label for="s-deadline">When does this work need to be completed?</label>
+          <select id="s-deadline" data-section="strategic" data-factor="deadline">
+            <option value="" disabled selected>Select...</option>
+            <option value="3">Less than 60 days</option>
+            <option value="2">60–90 days</option>
+            <option value="1">90–180 days</option>
+            <option value="0">180+ days</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ledger">
+        <div class="card">
+          <p class="ledger-title">Score Breakdown</p>
+          <div id="s-ledger-rows"></div>
+          <div class="formula-line" id="s-formula">Priority Score = MRR <span class="op">+</span> Number of Employees <span class="op">+</span> Deadline</div>
+          <div class="score-display" id="s-score-display">
+            <div class="num" id="s-score-num">—</div>
+            <div class="label" id="s-score-label">Awaiting inputs</div>
+          </div>
+        </div>
+        <div class="card">
+          <p class="ledger-title">Score Legend</p>
+          <div class="legend">
+            <div class="legend-item"><span class="dot critical"></span><span><span class="range">8+</span> Critical</span></div>
+            <div class="legend-item"><span class="dot high"></span><span><span class="range">6–7</span> High</span></div>
+            <div class="legend-item"><span class="dot medium"></span><span><span class="range">3–5</span> Medium</span></div>
+            <div class="legend-item"><span class="dot low"></span><span><span class="range">≤2</span> Low</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Tab switching
+  const tabs = document.querySelectorAll('.tab');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+      tab.classList.add('active'); tab.setAttribute('aria-selected','true');
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+    });
+  });
+
+  function labelFor(score){
+    if(score >= 8) return {key:'critical', text:'Critical Priority'};
+    if(score >= 6) return {key:'high', text:'High Priority'};
+    if(score >= 3) return {key:'medium', text:'Medium Priority'};
+    return {key:'low', text:'Low Priority'};
+  }
+
+  function getVal(id){
+    const el = document.getElementById(id);
+    return el.value === '' ? null : parseInt(el.value, 10);
+  }
+  function getText(id){
+    const el = document.getElementById(id);
+    return el.selectedIndex > 0 ? el.options[el.selectedIndex].text : null;
+  }
+
+  function renderRow(container, name, text, val, weighted){
+    const row = document.createElement('div');
+    row.className = 'ledger-row' + (weighted ? ' weighted' : '');
+    const valStr = val === null ? '—' : (weighted ? ('3×' + val + ' = ' + (val*3)) : String(val));
+    row.innerHTML = `<span class="name">${name}${text ? ' — ' + text : ''}</span><span class="val ${val===null?'pending':''}">${valStr}</span>`;
+    container.appendChild(row);
+  }
+
+  function updateTraining(){
+    const freq = getVal('t-frequency'), diff = getVal('t-difficulty'),
+          imp = getVal('t-importance'), exp = getVal('t-experience');
+    const freqT = getText('t-frequency'), diffT = getText('t-difficulty'),
+          impT = getText('t-importance'), expT = getText('t-experience');
+
+    const rows = document.getElementById('t-ledger-rows');
+    rows.innerHTML = '';
+    renderRow(rows, 'Frequency', freqT, freq);
+    renderRow(rows, 'Learning Difficulty', diffT, diff);
+    renderRow(rows, 'Importance', impT, imp);
+    renderRow(rows, 'Job Experience (×3, subtracted)', expT, exp, true);
+
+    const numEl = document.getElementById('t-score-num');
+    const labelEl = document.getElementById('t-score-label');
+    const displayEl = document.getElementById('t-score-display');
+    displayEl.classList.remove('critical','high','medium','low');
+
+    if([freq, diff, imp, exp].some(v => v === null)){
+      numEl.textContent = '—';
+      labelEl.textContent = 'Awaiting inputs';
+      return;
+    }
+    const score = freq + diff + imp - (3 * exp);
+    const {key, text} = labelFor(score);
+    numEl.textContent = score;
+    labelEl.textContent = text;
+    displayEl.classList.add(key);
+  }
+
+  function updateStrategic(){
+    const mrr = getVal('s-mrr'), emp = getVal('s-employees'), dl = getVal('s-deadline');
+    const mrrT = getText('s-mrr'), empT = getText('s-employees'), dlT = getText('s-deadline');
+
+    const rows = document.getElementById('s-ledger-rows');
+    rows.innerHTML = '';
+    renderRow(rows, 'MRR', mrrT, mrr);
+    renderRow(rows, 'Number of Employees', empT, emp);
+    renderRow(rows, 'Deadline', dlT, dl);
+
+    const numEl = document.getElementById('s-score-num');
+    const labelEl = document.getElementById('s-score-label');
+    const displayEl = document.getElementById('s-score-display');
+    displayEl.classList.remove('critical','high','medium','low');
+
+    if([mrr, emp, dl].some(v => v === null)){
+      numEl.textContent = '—';
+      labelEl.textContent = 'Awaiting inputs';
+      return;
+    }
+    const score = mrr + emp + dl;
+    const {key, text} = labelFor(score);
+    numEl.textContent = score;
+    labelEl.textContent = text;
+    displayEl.classList.add(key);
+  }
+
+  document.querySelectorAll('select[data-section="training"]').forEach(el => el.addEventListener('change', updateTraining));
+  document.querySelectorAll('select[data-section="strategic"]').forEach(el => el.addEventListener('change', updateStrategic));
+
+  updateTraining();
+  updateStrategic();
+</script>
+</body>
+</html>

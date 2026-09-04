@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learning Development Cost Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12141c;
+    --bg-grid:rgba(255,255,255,0.035);
+    --surface:#191c28;
+    --surface-raised:#20243450;
+    --surface-raised-solid:#20243a;
+    --surface-input:#242940;
+    --border:#31385a;
+    --border-soft:#262c46;
+    --text-primary:#edeef5;
+    --text-secondary:#9aa1c0;
+    --text-muted:#666d8f;
+    --gold:#e3a83b;
+    --gold-dim:rgba(227,168,59,0.14);
+    --gold-text:#f0c264;
+    --mint:#4fd1a0;
+    --mint-dim:rgba(79,209,160,0.14);
+    --font-display:'Fraunces',serif;
+    --font-body:'Inter',sans-serif;
+    --font-mono:'IBM Plex Mono',monospace;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text-primary);
+    font-family:var(--font-body);
+    min-height:100vh;
+    background-image:
+      linear-gradient(var(--bg-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+    background-size:28px 28px;
+  }
+  .app{max-width:1180px;margin:0 auto;padding:40px 24px 100px;}
+
+  /* header */
+  .topbar{display:flex;flex-direction:column;gap:6px;margin-bottom:32px;}
+  .eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold-text);}
+  .title{font-family:var(--font-display);font-weight:500;font-size:32px;margin:0;color:var(--text-primary);}
+  .subtitle{color:var(--text-secondary);font-size:15px;max-width:560px;line-height:1.5;margin:4px 0 0;}
+
+  /* progress */
+  .progress{display:flex;gap:0;margin-top:26px;border:1px solid var(--border-soft);border-radius:var(--radius);overflow:hidden;background:var(--surface);}
+  .progress-item{flex:1;padding:11px 10px;text-align:center;font-family:var(--font-mono);font-size:11px;color:var(--text-muted);border-right:1px solid var(--border-soft);letter-spacing:0.02em;position:relative;transition:color .25s;}
+  .progress-item:last-child{border-right:none;}
+  .progress-item.done{color:var(--mint);cursor:pointer;}
+  .progress-item.done:hover{background:var(--mint-dim);}
+  .progress-item.active{color:var(--gold-text);background:var(--gold-dim);}
+  .progress-item .dot{display:block;font-size:14px;margin-bottom:3px;}
+
+  /* layout */
+  .layout{display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:start;margin-top:28px;}
+  @media (max-width:860px){ .layout{grid-template-columns:1fr;} }
+
+  /* card */
+  .card{background:var(--surface-raised-solid);border:1px solid var(--border);border-radius:16px;padding:36px;min-height:360px;display:flex;flex-direction:column;}
+  .card-eyebrow{font-family:var(--font-mono);font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;}
+  .card-title{font-family:var(--font-display);font-size:24px;font-weight:500;margin:0 0 8px;line-height:1.3;}
+  .card-help{color:var(--text-secondary);font-size:14.5px;line-height:1.55;margin:0 0 26px;max-width:520px;}
+
+  .field{margin-bottom:20px;}
+  .field label{display:block;font-size:13.5px;color:var(--text-secondary);margin-bottom:7px;}
+  .field .hint{font-size:12px;color:var(--text-muted);margin-top:5px;}
+  .input-wrap{position:relative;display:flex;align-items:center;}
+  .input-wrap .prefix{position:absolute;left:14px;color:var(--text-muted);font-family:var(--font-mono);font-size:15px;pointer-events:none;}
+  .input-wrap.has-prefix input{padding-left:30px;}
+  input[type=number]{
+    width:100%;
+    background:var(--surface-input);
+    border:1px solid var(--border);
+    color:var(--text-primary);
+    font-family:var(--font-mono);
+    font-size:16px;
+    padding:12px 14px;
+    border-radius:8px;
+    outline:none;
+    transition:border-color .15s, background .15s;
+  }
+  input[type=number]:focus{border-color:var(--gold);background:#262b42;}
+  input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{opacity:0.4;}
+  .field.invalid input{border-color:#d9605a;}
+  .field .error{display:none;color:#e08682;font-size:12px;margin-top:6px;}
+  .field.invalid .error{display:block;}
+
+  .fields-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 24px;}
+  @media (max-width:560px){ .fields-grid{grid-template-columns:1fr;} }
+  .field.full{grid-column:1 / -1;}
+  .field-note{
+    grid-column:1 / -1;
+    font-size:13px;line-height:1.5;color:var(--text-secondary);
+    background:var(--surface-input);border:1px solid var(--border-soft);
+    border-radius:8px;padding:10px 14px;margin-bottom:2px;
+  }
+
+  .live-preview{margin-top:auto;padding-top:20px;border-top:1px dashed var(--border);display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;}
+  .live-preview .lp-label{font-size:13px;color:var(--text-muted);}
+  .live-preview .lp-value{font-family:var(--font-mono);font-size:20px;color:var(--gold-text);font-weight:500;}
+  .live-preview .lp-sub{font-family:var(--font-mono);font-size:12px;color:var(--text-muted);}
+
+  /* gate (yes/no) */
+  .gate-question{font-family:var(--font-display);font-size:24px;font-weight:500;line-height:1.35;margin:0 0 30px;max-width:520px;}
+  .gate-buttons{display:flex;gap:16px;}
+  .gate-btn{
+    flex:1;max-width:220px;
+    background:var(--surface-input);
+    border:1px solid var(--border);
+    color:var(--text-primary);
+    font-family:var(--font-body);
+    font-size:15px;font-weight:500;
+    padding:22px 18px;
+    border-radius:12px;
+    cursor:pointer;
+    text-align:left;
+    transition:border-color .15s, background .15s, transform .1s;
+  }
+  .gate-btn:hover{border-color:var(--gold);background:#262b42;}
+  .gate-btn:active{transform:scale(0.98);}
+  .gate-btn .g-icon{display:block;font-family:var(--font-mono);font-size:20px;margin-bottom:8px;color:var(--gold-text);}
+  .gate-btn .g-sub{display:block;font-size:12.5px;color:var(--text-muted);margin-top:4px;font-weight:400;}
+
+  /* nav */
+  .nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:22px;}
+  .btn{
+    font-family:var(--font-body);font-size:14.5px;font-weight:500;
+    padding:12px 22px;border-radius:8px;cursor:pointer;border:1px solid var(--border);
+    background:transparent;color:var(--text-secondary);transition:border-color .15s, color .15s, background .15s;
+  }
+  .btn:hover{color:var(--text-primary);border-color:var(--text-secondary);}
+  .btn.primary{background:var(--gold);border-color:var(--gold);color:#241a05;font-weight:600;}
+  .btn.primary:hover{background:#edb654;color:#241a05;}
+  .btn:disabled{opacity:0.35;cursor:not-allowed;}
+  .btn.ghost-hidden{visibility:hidden;}
+
+  /* receipt */
+  .receipt{
+    background:var(--surface-raised-solid);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:26px 24px 22px;
+    position:sticky;top:24px;
+    clip-path:polygon(0 0,100% 0,100% calc(100% - 8px),97% 100%,94% calc(100% - 8px),91% 100%,88% calc(100% - 8px),85% 100%,82% calc(100% - 8px),79% 100%,76% calc(100% - 8px),73% 100%,70% calc(100% - 8px),67% 100%,64% calc(100% - 8px),61% 100%,58% calc(100% - 8px),55% 100%,52% calc(100% - 8px),49% 100%,46% calc(100% - 8px),43% 100%,40% calc(100% - 8px),37% 100%,34% calc(100% - 8px),31% 100%,28% calc(100% - 8px),25% 100%,22% calc(100% - 8px),19% 100%,16% calc(100% - 8px),13% 100%,10% calc(100% - 8px),7% 100%,4% calc(100% - 8px),1% 100%,0 calc(100% - 8px));
+    padding-bottom:34px;
+  }
+  .receipt-header{font-family:var(--font-mono);font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);border-bottom:1px dashed var(--border);padding-bottom:14px;margin-bottom:14px;display:flex;justify-content:space-between;}
+  .receipt-line{display:flex;justify-content:space-between;gap:10px;font-family:var(--font-mono);font-size:13px;padding:7px 0;color:var(--text-muted);transition:color .3s;}
+  .receipt-line.filled{color:var(--text-secondary);cursor:pointer;}
+  .receipt-line.filled:hover{color:var(--text-primary);}
+  .receipt-line.filled:hover .rl-amt{color:#f6cd7a;}
+  .receipt-line .rl-amt{color:var(--text-muted);}
+  .receipt-line.filled .rl-amt{color:var(--gold-text);font-weight:500;}
+  .receipt-line.active{color:var(--text-primary);}
+  .receipt-caption{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-top:2px;}
+  .scope-note{margin-top:16px;padding:12px 14px;background:var(--surface-input);border:1px solid var(--border-soft);border-radius:8px;font-size:13px;color:var(--text-secondary);line-height:1.5;}
+  .summary-row.clickable{cursor:pointer;}
+  .summary-row.clickable:hover{color:var(--text-primary);}
+  .summary-row.clickable:hover .sr-amt{color:var(--gold-text);}
+  .receipt-divider{border-top:1px dashed var(--border);margin:12px 0;}
+  .receipt-total-row{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--font-mono);}
+  .receipt-total-row .rt-label{font-size:12.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;}
+  .receipt-total-row .rt-amt{font-size:24px;color:var(--mint);font-weight:600;}
+
+  /* summary (final) */
+  .summary-grid{display:flex;flex-direction:column;gap:0;}
+  .summary-row{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border-soft);font-family:var(--font-mono);font-size:14.5px;}
+  .summary-row .sr-label{color:var(--text-secondary);font-family:var(--font-body);}
+  .summary-row .sr-amt{color:var(--text-primary);}
+  .summary-total{display:flex;justify-content:space-between;align-items:baseline;padding-top:22px;margin-top:6px;}
+  .summary-total .st-label{font-family:var(--font-display);font-size:20px;color:var(--text-primary);}
+  .summary-total .st-amt{font-family:var(--font-mono);font-size:36px;color:var(--mint);font-weight:600;}
+
+  .badge-checkmark{display:inline-block;width:16px;height:16px;border-radius:50%;background:var(--mint-dim);color:var(--mint);font-size:11px;line-height:16px;text-align:center;margin-right:6px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <span class="eyebrow">Cost Ledger &middot; Instructional Design</span>
+    <h1 class="title">Learning Development Cost Generator</h1>
+    <p class="subtitle">Answer a few questions about your project, and we'll calculate the costs as you go.</p>
+  </div>
+
+  <div class="progress" id="progress"></div>
+
+  <div class="layout">
+    <section>
+      <div class="card" id="card"></div>
+      <div class="nav-row">
+        <button class="btn" id="backBtn">Back</button>
+        <button class="btn primary" id="nextBtn">Continue</button>
+      </div>
+    </section>
+
+    <aside class="receipt" id="receipt">
+      <div class="receipt-header"><span>Running total</span><span id="receiptStamp">In progress</span></div>
+      <div class="receipt-caption">Design &amp; development only</div>
+      <div id="receiptLines" style="margin-top:10px;"></div>
+      <div class="receipt-divider"></div>
+      <div class="receipt-total-row">
+        <span class="rt-label">Total so far</span>
+        <span class="rt-amt" id="receiptTotal">$0.00</span>
+      </div>
+    </aside>
+  </div>
+
+</div>
+
+<script>
+const money = (n) => new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2}).format(n||0);
+const num = (n) => new Intl.NumberFormat('en-US',{maximumFractionDigits:2}).format(n||0);
+
+const sectionOrder = ['dd','sme','vendor','materials','admin','pilots','total'];
+const sectionLabels = {
+  dd:'Design & dev', sme:'SME support', vendor:'Vendor & fees',
+  materials:'Materials', admin:'Admin & support', pilots:'Pilots', total:'Total'
+};
+const receiptLabels = {
+  dd:'Design & development', sme:'SME support', vendor:'Vendor & consulting fees',
+  materials:'Cost of materials', admin:'Admin & support', pilots:'Validation & pilots'
+};
+
+let state = {
+  values: {},
+  costs: { dd:null, sme:null, vendor:null, materials:null, admin:null, pilotA:null, pilotB:null },
+  history: ['dd']
+};
+
+function currentStep(){ return state.history[state.history.length-1]; }
+function goTo(id){ state.history.push(id); render(); }
+function goBack(){ if(state.history.length>1){ state.history.pop(); render(); } }
+
+const sectionJumpTarget = {
+  dd:'dd', sme:'sme_gate', vendor:'vendor_gate',
+  materials:'materials_gate', admin:'admin_gate', pilots:'pilot_gate', total:'total'
+};
+function jumpToSection(sec){
+  const target = sectionJumpTarget[sec];
+  if(!target) return;
+  if(currentStep()===target) return;
+  goTo(target);
+}
+
+function getVal(step, key){
+  return (state.values[step] && state.values[step][key] !== undefined) ? state.values[step][key] : '';
+}
+function setVal(step, key, v){
+  if(!state.values[step]) state.values[step] = {};
+  state.values[step][key] = v;
+}
+
+function rate(salary, hrsWk, wksYr){
+  const s=parseFloat(salary), h=parseFloat(hrsWk), w=parseFloat(wksYr);
+  if(!s || !h || !w) return null;
+  return s/(h*w);
+}
+
+const STEPS = {
+  dd: {
+    section:'dd', type:'calc',
+    eyebrow:'Section 1 of 6',
+    title:'Design & Development Cost Analysis',
+    help:"Answer a few questions about your project, and we\u2019ll calculate the costs as you go. This section covers design and development costs only. Delivery costs will be captured separately.",
+    fields:[
+      {key:'salary', label:"Designer's annual salary", prefix:'$', placeholder:'40000', example:'40,000', full:true},
+      {key:'hours', label:'Hours spent designing & developing this solution', placeholder:'100', example:'100', hint:'Exclude SME time, admin support, vendor fees, materials, and pilots.', full:true},
+      {key:'hrsWk', label:'Hours the designer typically works per week', placeholder:'40', example:'40', note:'This isn\u2019t related to the design and development itself. We use this information to calculate an accurate hourly rate.'},
+      {key:'wksYr', label:'Weeks the designer typically works per year', placeholder:'50', example:'50'}
+    ],
+    preview(v){
+      const r = rate(v.salary, v.hrsWk, v.wksYr);
+      const cost = r!=null && v.hours ? r*parseFloat(v.hours) : null;
+      return { label:'Design & development cost', rateLabel: r!=null ? `≈ ${money(r)}/hr` : null, value: cost };
+    },
+    onSubmit(v){ const r=rate(v.salary,v.hrsWk,v.wksYr); state.costs.dd = r*parseFloat(v.hours); },
+    next:'sme_gate'
+  },
+
+  sme_gate: {
+    section:'sme', type:'gate',
+    eyebrow:'Section 2 of 6',
+    question:'Do you want to include the cost of subject matter expert (SME) support for this solution?',
+    yesLabel:'Yes, SMEs contributed', yesSub:"We'll ask about their time and rate",
+    noLabel:'No SME support', noSub:'Skip to vendor & consulting fees',
+    onNo(){ state.costs.sme = 0; },
+    yesNext:'sme_fields', noNext:'vendor_gate'
+  },
+  sme_fields: {
+    section:'sme', type:'calc',
+    eyebrow:'Section 2 of 6',
+    title:'SME support',
+    help:"Tell us how many SMEs helped and how much time they gave. We'll work out their hourly rate and total cost.",
+    fields:[
+      {key:'count', label:'How many SMEs contributed?', placeholder:'4', example:'4'},
+      {key:'hoursEach', label:'Average hours each SME contributed', placeholder:'1', example:'1'},
+      {key:'salary', label:'Average SME annual salary', prefix:'$', placeholder:'40000', example:'40,000', full:true},
+      {key:'hrsWk', label:'Hours SMEs typically work per week', placeholder:'40', example:'40', note:'This isn\u2019t related to the design and development itself. We use this information to calculate an accurate hourly rate.'},
+      {key:'wksYr', label:'Weeks SMEs typically work per year', placeholder:'50', example:'50'}
+    ],
+    preview(v){
+      const r = rate(v.salary, v.hrsWk, v.wksYr);
+      const cost = r!=null && v.count && v.hoursEach ? r*parseFloat(v.count)*parseFloat(v.hoursEach) : null;
+      return { label:'Total SME cost', rateLabel: r!=null ? `≈ ${money(r)}/hr` : null, value: cost };
+    },
+    onSubmit(v){ const r=rate(v.salary,v.hrsWk,v.wksYr); state.costs.sme = r*parseFloat(v.count)*parseFloat(v.hoursEach); },
+    next:'vendor_gate'
+  },
+
+  vendor_gate: {
+    section:'vendor', type:'gate',
+    eyebrow:'Section 3 of 6',
+    question:'Do you want to include the cost of vendor or consultant support for this solution?',
+    yesLabel:'Yes, there were fees', yesSub:"We'll ask for the total",
+    noLabel:'No vendor fees', noSub:'Skip to cost of materials',
+    onNo(){ state.costs.vendor = 0; },
+    yesNext:'vendor_fields', noNext:'materials_gate'
+  },
+  vendor_fields: {
+    section:'vendor', type:'calc',
+    eyebrow:'Section 3 of 6',
+    title:'Vendor & consulting fees',
+    help:'Enter the combined total of any vendor fees, consulting fees, and other related fees.',
+    fields:[ {key:'total', label:'Total vendor & consulting fees', prefix:'$', placeholder:'5000', example:'5,000'} ],
+    preview(v){ return { label:'Total vendor & consulting fees', rateLabel:null, value: v.total ? parseFloat(v.total) : null }; },
+    onSubmit(v){ state.costs.vendor = parseFloat(v.total); },
+    next:'materials_gate'
+  },
+
+  materials_gate: {
+    section:'materials', type:'gate',
+    eyebrow:'Section 4 of 6',
+    question:'Do you want to include the cost of materials that support this solution?',
+    yesLabel:'Yes, materials were purchased', yesSub:"We'll ask for the total",
+    noLabel:'No materials', noSub:'Skip to admin & support',
+    onNo(){ state.costs.materials = 0; },
+    yesNext:'materials_fields', noNext:'admin_gate'
+  },
+  materials_fields: {
+    section:'materials', type:'calc',
+    eyebrow:'Section 4 of 6',
+    title:'Cost of materials',
+    help:'Enter the total cost of materials purchased for this learning solution.',
+    fields:[ {key:'total', label:'Total materials cost', prefix:'$', placeholder:'1000', example:'1,000'} ],
+    preview(v){ return { label:'Total materials cost', rateLabel:null, value: v.total ? parseFloat(v.total) : null }; },
+    onSubmit(v){ state.costs.materials = parseFloat(v.total); },
+    next:'admin_gate'
+  },
+
+  admin_gate: {
+    section:'admin', type:'gate',
+    eyebrow:'Section 5 of 6',
+    question:'Do you want to include the cost of admin or support staff for this solution?',
+    yesLabel:'Yes, staff helped', yesSub:"We'll ask about their time and rate",
+    noLabel:'No admin support', noSub:'Skip to validation & pilots',
+    onNo(){ state.costs.admin = 0; },
+    yesNext:'admin_fields', noNext:'pilot_gate'
+  },
+  admin_fields: {
+    section:'admin', type:'calc',
+    eyebrow:'Section 5 of 6',
+    title:'Admin & support',
+    help:"Tell us about the admin or support staff time. We'll work out an hourly rate and total cost.",
+    fields:[
+      {key:'count', label:'How many admin/support staff contributed?', placeholder:'1', example:'1'},
+      {key:'hoursEach', label:'Average hours each staff member contributed', placeholder:'5', example:'5'},
+      {key:'salary', label:'Average annual salary', prefix:'$', placeholder:'40000', example:'40,000', full:true},
+      {key:'hrsWk', label:'Hours staff typically work per week', placeholder:'40', example:'40', note:'This isn\u2019t related to the design and development itself. We use this information to calculate an accurate hourly rate.'},
+      {key:'wksYr', label:'Weeks staff typically work per year', placeholder:'50', example:'50'}
+    ],
+    preview(v){
+      const r = rate(v.salary, v.hrsWk, v.wksYr);
+      const cost = r!=null && v.count && v.hoursEach ? r*parseFloat(v.count)*parseFloat(v.hoursEach) : null;
+      return { label:'Total admin & support cost', rateLabel: r!=null ? `≈ ${money(r)}/hr` : null, value: cost };
+    },
+    onSubmit(v){ const r=rate(v.salary,v.hrsWk,v.wksYr); state.costs.admin = r*parseFloat(v.count)*parseFloat(v.hoursEach); },
+    next:'pilot_gate'
+  },
+
+  pilot_gate: {
+    section:'pilots', type:'gate',
+    eyebrow:'Section 6 of 6',
+    question:'Do you want to include pilot costs for this solution?',
+    yesLabel:'Yes, there was a pilot', yesSub:"We'll ask for the details",
+    noLabel:'No pilot', noSub:'Skip to total cost',
+    onNo(){ state.costs.pilotA = 0; state.costs.pilotB = 0; },
+    yesNext:'pilotA_fields', noNext:'total'
+  },
+  pilotA_fields: {
+    section:'pilots', type:'calc',
+    eyebrow:'Section 6 of 6',
+    title:'Alpha pilot',
+    help:'Tell us about the first pilot. We\u2019ll work out participant/facilitator hourly rate and total cost.',
+    fields:[
+      {key:'duration', label:'Duration of the pilot, in hours', placeholder:'1', example:'1'},
+      {key:'count', label:'Number of participants and facilitators involved', placeholder:'4', example:'4'},
+      {key:'salary', label:'Average annual salary of participants/facilitators', prefix:'$', placeholder:'40000', example:'40,000', full:true},
+      {key:'hrsWk', label:'Number of hours the person works each week', placeholder:'40', example:'40', note:'This isn\u2019t related to the design and development itself. We use this information to calculate an accurate hourly rate.'},
+      {key:'wksYr', label:'Number of weeks the person typically works each year', placeholder:'50', example:'50'}
+    ],
+    preview(v){
+      const r = rate(v.salary, v.hrsWk, v.wksYr);
+      const cost = r!=null && v.duration && v.count ? r*parseFloat(v.duration)*parseFloat(v.count) : null;
+      return { label:'Total alpha pilot cost', rateLabel: r!=null ? `≈ ${money(r)}/hr` : null, value: cost };
+    },
+    onSubmit(v){ const r=rate(v.salary,v.hrsWk,v.wksYr); state.costs.pilotA = r*parseFloat(v.duration)*parseFloat(v.count); },
+    next:'pilotB_gate'
+  },
+  pilotB_gate: {
+    section:'pilots', type:'gate',
+    eyebrow:'Section 6 of 6',
+    question:'Was there a second pilot (beta)?',
+    yesLabel:'Yes, there was a second pilot', yesSub:"We'll ask for the details",
+    noLabel:'No second pilot', noSub:'Skip to total cost',
+    onNo(){ state.costs.pilotB = 0; },
+    yesNext:'pilotB_fields', noNext:'total'
+  },
+  pilotB_fields: {
+    section:'pilots', type:'calc',
+    eyebrow:'Section 6 of 6',
+    title:'Beta pilot',
+    help:'Tell us about the second pilot. We\u2019ll work out participant/facilitator hourly rate and total cost.',
+    fields:[
+      {key:'duration', label:'Duration of the pilot, in hours', placeholder:'1', example:'1'},
+      {key:'count', label:'Number of participants and facilitators involved', placeholder:'4', example:'4'},
+      {key:'salary', label:'Average annual salary of participants/facilitators', prefix:'$', placeholder:'40000', example:'40,000', full:true},
+      {key:'hrsWk', label:'Number of hours the person works each week', placeholder:'40', example:'40', note:'This isn\u2019t related to the design and development itself. We use this information to calculate an accurate hourly rate.'},
+      {key:'wksYr', label:'Number of weeks the person typically works each year', placeholder:'50', example:'50'}
+    ],
+    preview(v){
+      const r = rate(v.salary, v.hrsWk, v.wksYr);
+      const cost = r!=null && v.duration && v.count ? r*parseFloat(v.duration)*parseFloat(v.count) : null;
+      return { label:'Total beta pilot cost', rateLabel: r!=null ? `≈ ${money(r)}/hr` : null, value: cost };
+    },
+    onSubmit(v){ const r=rate(v.salary,v.hrsWk,v.wksYr); state.costs.pilotB = r*parseFloat(v.duration)*parseFloat(v.count); },
+    next:'total'
+  },
+
+  total: { section:'total', type:'summary' }
+};
+
+function grandTotal(){
+  const c = state.costs;
+  const vals = [c.dd,c.sme,c.vendor,c.materials,c.admin,c.pilotA,c.pilotB];
+  return vals.reduce((a,b)=> a + (b||0), 0);
+}
+function pilotsTotal(){ return (state.costs.pilotA||0) + (state.costs.pilotB||0); }
+function sectionResolved(sec){
+  if(sec==='dd') return state.costs.dd!=null;
+  if(sec==='sme') return state.costs.sme!=null;
+  if(sec==='vendor') return state.costs.vendor!=null;
+  if(sec==='materials') return state.costs.materials!=null;
+  if(sec==='admin') return state.costs.admin!=null;
+  if(sec==='pilots') return state.costs.pilotA!=null && state.costs.pilotB!=null;
+  if(sec==='total') return sectionOrder.slice(0,6).every(sectionResolved);
+  return false;
+}
+
+function renderProgress(){
+  const step = STEPS[currentStep()];
+  const curSection = step.section;
+  const el = document.getElementById('progress');
+  el.innerHTML = sectionOrder.map((sec,i)=>{
+    let cls = '';
+    if(sec===curSection) cls='active';
+    else if(sectionResolved(sec)) cls='done';
+    const mark = sec===curSection ? '\u25CF' : (sectionResolved(sec) ? '\u2713' : (i+1));
+    return `<div class="progress-item ${cls}" data-section="${sec}"><span class="dot">${mark}</span>${sectionLabels[sec]}</div>`;
+  }).join('');
+  el.querySelectorAll('.progress-item.done').forEach(node=>{
+    node.addEventListener('click', ()=> jumpToSection(node.getAttribute('data-section')));
+  });
+}
+
+function renderReceipt(){
+  const linesEl = document.getElementById('receiptLines');
+  const combined = { dd:state.costs.dd, sme:state.costs.sme, vendor:state.costs.vendor,
+    materials:state.costs.materials, admin:state.costs.admin,
+    pilots: (state.costs.pilotA!=null && state.costs.pilotB!=null) ? pilotsTotal() : null };
+  const curSection = STEPS[currentStep()].section;
+  linesEl.innerHTML = Object.keys(receiptLabels).map(k=>{
+    const val = combined[k];
+    const filled = val!=null;
+    const activeCls = (k===curSection && !filled) ? 'active' : '';
+    const amt = filled ? money(val) : '\u00b7\u00b7\u00b7\u00b7';
+    return `<div class="receipt-line ${filled?'filled':''} ${activeCls}" data-section="${k}"><span>${receiptLabels[k]}</span><span class="rl-amt">${amt}</span></div>`;
+  }).join('');
+  linesEl.querySelectorAll('.receipt-line.filled').forEach(node=>{
+    node.addEventListener('click', ()=> jumpToSection(node.getAttribute('data-section')));
+  });
+  const allDone = sectionOrder.slice(0,6).every(sectionResolved);
+  document.getElementById('receiptStamp').textContent = allDone ? 'Complete' : 'In progress';
+  document.getElementById('receiptTotal').textContent = money(grandTotal());
+}
+
+function fieldsAllValid(step, v){
+  return step.fields.every(f => v[f.key]!==undefined && v[f.key]!=='' && !isNaN(parseFloat(v[f.key])) && parseFloat(v[f.key])>=0);
+}
+
+function renderCard(){
+  const id = currentStep();
+  const step = STEPS[id];
+  const card = document.getElementById('card');
+  const nextBtn = document.getElementById('nextBtn');
+  const backBtn = document.getElementById('backBtn');
+  backBtn.style.visibility = state.history.length>1 ? 'visible' : 'hidden';
+  document.getElementById('receipt').style.display = '';
+  document.querySelector('.layout').style.gridTemplateColumns = '';
+
+  if(step.type==='gate'){
+    card.innerHTML = `
+      <div class="card-eyebrow">${step.eyebrow}</div>
+      <p class="gate-question">${step.question}</p>
+      <div class="gate-buttons">
+        <button class="gate-btn" id="gYes"><span class="g-icon">Yes</span>${step.yesLabel}<span class="g-sub">${step.yesSub}</span></button>
+        <button class="gate-btn" id="gNo"><span class="g-icon">No</span>${step.noLabel}<span class="g-sub">${step.noSub}</span></button>
+      </div>
+    `;
+    nextBtn.style.display = 'none';
+    document.getElementById('gYes').onclick = ()=>{ goTo(step.yesNext); };
+    document.getElementById('gNo').onclick = ()=>{ step.onNo(); goTo(step.noNext); };
+    renderProgress(); renderReceipt();
+    return;
+  }
+
+  if(step.type==='summary'){
+    const c = state.costs;
+    const rows = [
+      ['Design & development', c.dd],
+      ['SME support', c.sme],
+      ['Vendor & consulting fees', c.vendor],
+      ['Cost of materials', c.materials],
+      ['Admin & support', c.admin],
+      ['Pilot cost', pilotsTotal()]
+    ];
+    const rowSections = ['dd','sme','vendor','materials','admin','pilots'];
+    card.innerHTML = `
+      <div class="card-eyebrow">Complete</div>
+      <h2 class="card-title">Total design & development cost</h2>
+      <p class="card-help">Calculated automatically from your entries. Click any line to go back and make changes.</p>
+      <div class="summary-grid">
+        ${rows.map((r,i)=>`<div class="summary-row clickable" data-section="${rowSections[i]}"><span class="sr-label">${r[0]}</span><span class="sr-amt">${money(r[1])}</span></div>`).join('')}
+      </div>
+      <div class="summary-total">
+        <span class="st-label">Total design & development cost</span>
+        <span class="st-amt">${money(grandTotal())}</span>
+      </div>
+      <div class="scope-note">This total covers instructional design & development only. It doesn't yet include the cost of <em>delivering</em> the solution (facilitator time, LMS hosting, travel, printing, etc.). That can be added as a separate section.</div>
+    `;
+    nextBtn.style.display = 'none';
+    card.querySelectorAll('.summary-row.clickable').forEach(node=>{
+      node.addEventListener('click', ()=> jumpToSection(node.getAttribute('data-section')));
+    });
+    document.getElementById('receipt').style.display = 'none';
+    document.querySelector('.layout').style.gridTemplateColumns = '1fr';
+    renderProgress();
+    return;
+  }
+
+  // calc type
+  const v = state.values[id] || {};
+  card.innerHTML = `
+    <div class="card-eyebrow">${step.eyebrow}</div>
+    <h2 class="card-title">${step.title}</h2>
+    <p class="card-help">${step.help}</p>
+    <div class="fields-grid">
+      ${step.fields.map(f=>`
+        ${f.note?`<div class="field-note">${f.note}</div>`:''}
+        <div class="field ${f.full?'full':''}" data-key="${f.key}">
+          <label for="f-${f.key}">${f.label}</label>
+          <div class="input-wrap ${f.prefix?'has-prefix':''}">
+            ${f.prefix?`<span class="prefix">${f.prefix}</span>`:''}
+            <input type="number" min="0" step="any" id="f-${f.key}" placeholder="${f.placeholder||''}" value="${v[f.key]!==undefined?v[f.key]:''}">
+          </div>
+          ${f.hint?`<div class="hint">${f.hint}</div>`:''}
+          <div class="error">Enter a value of 0 or more.</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="live-preview">
+      <div>
+        <div class="lp-label" id="lpLabel">${step.preview(v).label}</div>
+        <div class="lp-sub" id="lpRate"></div>
+      </div>
+      <div class="lp-value" id="lpValue">&middot;&middot;&middot;&middot;</div>
+    </div>
+  `;
+  nextBtn.style.display = '';
+  nextBtn.textContent = 'Continue';
+
+  function updatePreview(){
+    const cur = {};
+    step.fields.forEach(f=>{ cur[f.key] = document.getElementById('f-'+f.key).value; });
+    state.values[id] = cur;
+    const p = step.preview(cur);
+    document.getElementById('lpValue').textContent = p.value!=null ? money(p.value) : '\u2014';
+    document.getElementById('lpRate').textContent = p.rateLabel || '';
+  }
+  step.fields.forEach(f=>{
+    document.getElementById('f-'+f.key).addEventListener('input', ()=>{
+      document.querySelector(`.field[data-key="${f.key}"]`).classList.remove('invalid');
+      updatePreview();
+    });
+  });
+  updatePreview();
+
+  nextBtn.onclick = ()=>{
+    const cur = state.values[id] || {};
+    let ok = true;
+    step.fields.forEach(f=>{
+      const val = cur[f.key];
+      const fieldEl = document.querySelector(`.field[data-key="${f.key}"]`);
+      if(val===undefined || val==='' || isNaN(parseFloat(val)) || parseFloat(val)<0){
+        fieldEl.classList.add('invalid'); ok=false;
+      } else {
+        fieldEl.classList.remove('invalid');
+      }
+    });
+    if(!ok) return;
+    step.onSubmit(cur);
+    goTo(step.next);
+  };
+
+  renderProgress(); renderReceipt();
+}
+
+document.getElementById('backBtn').onclick = goBack;
+function render(){ renderCard(); }
+render();
+</script>
+</body>
+</html>

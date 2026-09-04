@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cost-Benefit Analysis & ROI Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12141c;
+    --bg-grid:rgba(255,255,255,0.035);
+    --surface:#191c28;
+    --surface-raised-solid:#20243a;
+    --surface-input:#242940;
+    --border:#31385a;
+    --border-soft:#262c46;
+    --text-primary:#edeef5;
+    --text-secondary:#9aa1c0;
+    --text-muted:#666d8f;
+    --gold:#e3a83b;
+    --gold-dim:rgba(227,168,59,0.14);
+    --gold-text:#f0c264;
+    --mint:#4fd1a0;
+    --mint-dim:rgba(79,209,160,0.14);
+    --coral:#e08682;
+    --coral-dim:rgba(224,134,130,0.14);
+    --font-display:'Fraunces',serif;
+    --font-body:'Inter',sans-serif;
+    --font-mono:'IBM Plex Mono',monospace;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text-primary);
+    font-family:var(--font-body);
+    min-height:100vh;
+    background-image:
+      linear-gradient(var(--bg-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+    background-size:28px 28px;
+  }
+  .app{max-width:1180px;margin:0 auto;padding:40px 24px 100px;}
+
+  .topbar{display:flex;flex-direction:column;gap:6px;margin-bottom:32px;}
+  .eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold-text);}
+  .title{font-family:var(--font-display);font-weight:500;font-size:32px;margin:0;color:var(--text-primary);}
+  .subtitle{color:var(--text-secondary);font-size:15px;max-width:560px;line-height:1.5;margin:4px 0 0;}
+
+  .progress{display:flex;gap:0;margin-top:26px;border:1px solid var(--border-soft);border-radius:var(--radius);overflow:hidden;background:var(--surface);}
+  .progress-item{flex:1;padding:11px 8px;text-align:center;font-family:var(--font-mono);font-size:10.5px;color:var(--text-muted);border-right:1px solid var(--border-soft);letter-spacing:0.02em;position:relative;transition:color .25s;}
+  .progress-item:last-child{border-right:none;}
+  .progress-item.done{color:var(--mint);cursor:pointer;}
+  .progress-item.done:hover{background:var(--mint-dim);}
+  .progress-item.active{color:var(--gold-text);background:var(--gold-dim);}
+  .progress-item .dot{display:block;font-size:14px;margin-bottom:3px;}
+
+  .layout{display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:start;margin-top:28px;}
+  @media (max-width:860px){ .layout{grid-template-columns:1fr;} }
+
+  .card{background:var(--surface-raised-solid);border:1px solid var(--border);border-radius:16px;padding:36px;min-height:360px;display:flex;flex-direction:column;}
+  .card-eyebrow{font-family:var(--font-mono);font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;}
+  .card-title{font-family:var(--font-display);font-size:24px;font-weight:500;margin:0 0 8px;line-height:1.3;}
+  .card-help{color:var(--text-secondary);font-size:14.5px;line-height:1.55;margin:0 0 26px;max-width:560px;}
+
+  .field{margin-bottom:20px;}
+  .field label{display:block;font-size:13.5px;color:var(--text-secondary);margin-bottom:7px;}
+  .field .hint{font-size:12px;color:var(--text-muted);margin-top:5px;}
+  .input-wrap{position:relative;display:flex;align-items:center;}
+  .input-wrap .prefix{position:absolute;left:14px;color:var(--text-muted);font-family:var(--font-mono);font-size:15px;pointer-events:none;}
+  .input-wrap.has-prefix input{padding-left:30px;}
+  input[type=number],input[type=text],textarea{
+    width:100%;
+    background:var(--surface-input);
+    border:1px solid var(--border);
+    color:var(--text-primary);
+    font-family:var(--font-mono);
+    font-size:15.5px;
+    padding:12px 14px;
+    border-radius:8px;
+    outline:none;
+    transition:border-color .15s, background .15s;
+  }
+  input[type=text]{font-family:var(--font-body);}
+  textarea{font-family:var(--font-body);resize:vertical;min-height:64px;}
+  input:focus,textarea:focus{border-color:var(--gold);background:#262b42;}
+  input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{opacity:0.4;}
+  .field.invalid input,.field.invalid textarea{border-color:var(--coral);}
+  .field .error{display:none;color:var(--coral);font-size:12px;margin-top:6px;}
+  .field.invalid .error{display:block;}
+
+  .fields-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 24px;}
+  @media (max-width:560px){ .fields-grid{grid-template-columns:1fr;} }
+  .field.full{grid-column:1 / -1;}
+  .field-note{
+    grid-column:1 / -1;
+    font-size:13px;line-height:1.5;color:var(--text-secondary);
+    background:var(--surface-input);border:1px solid var(--border-soft);
+    border-radius:8px;padding:10px 14px;margin-bottom:2px;
+  }
+
+  .live-preview{margin-top:auto;padding-top:20px;border-top:1px dashed var(--border);display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;}
+  .live-preview .lp-label{font-size:13px;color:var(--text-muted);}
+  .live-preview .lp-value{font-family:var(--font-mono);font-size:20px;color:var(--gold-text);font-weight:500;}
+  .live-preview .lp-sub{font-family:var(--font-mono);font-size:12px;color:var(--text-muted);}
+
+  .gate-question{font-family:var(--font-display);font-size:24px;font-weight:500;line-height:1.35;margin:0 0 12px;max-width:540px;}
+  .gate-context{color:var(--text-secondary);font-size:14px;line-height:1.5;margin:0 0 26px;max-width:520px;}
+  .gate-buttons{display:flex;gap:16px;flex-wrap:wrap;}
+  .gate-btn{
+    flex:1;min-width:200px;max-width:260px;
+    background:var(--surface-input);
+    border:1px solid var(--border);
+    color:var(--text-primary);
+    font-family:var(--font-body);
+    font-size:15px;font-weight:500;
+    padding:22px 18px;
+    border-radius:12px;
+    cursor:pointer;
+    text-align:left;
+    transition:border-color .15s, background .15s, transform .1s;
+  }
+  .gate-btn:hover{border-color:var(--gold);background:#262b42;}
+  .gate-btn:active{transform:scale(0.98);}
+  .gate-btn .g-icon{display:block;font-family:var(--font-mono);font-size:14px;margin-bottom:8px;color:var(--gold-text);text-transform:uppercase;letter-spacing:0.06em;}
+  .gate-btn .g-sub{display:block;font-size:12.5px;color:var(--text-muted);margin-top:4px;font-weight:400;}
+
+  .method-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:8px;}
+  @media (max-width:720px){ .method-grid{grid-template-columns:1fr;} }
+  .method-card{background:var(--surface-input);border:1px solid var(--border);border-radius:14px;padding:24px;display:flex;flex-direction:column;transition:border-color .15s;}
+  .method-card h3{font-family:var(--font-display);font-size:19px;font-weight:500;margin:0 0 16px;color:var(--text-primary);}
+  .method-card .mc-label{font-family:var(--font-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.09em;color:var(--gold-text);margin-bottom:5px;}
+  .method-card .mc-text{font-size:13.5px;color:var(--text-secondary);line-height:1.55;margin:0 0 16px;}
+  .method-card .mc-examples{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+  .method-card .mc-chip{font-size:11.5px;font-family:var(--font-mono);background:var(--surface);border:1px solid var(--border-soft);border-radius:20px;padding:4px 10px;color:var(--text-secondary);}
+  .method-card .mc-select{margin-top:auto;background:transparent;border:1px solid var(--border);color:var(--text-primary);padding:13px;border-radius:8px;cursor:pointer;font-family:var(--font-body);font-size:14px;font-weight:600;transition:all .15s;}
+  .method-card .mc-select:hover{border-color:var(--gold);background:var(--gold-dim);color:var(--gold-text);}
+
+  .nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:22px;}
+  .btn{
+    font-family:var(--font-body);font-size:14.5px;font-weight:500;
+    padding:12px 22px;border-radius:8px;cursor:pointer;border:1px solid var(--border);
+    background:transparent;color:var(--text-secondary);transition:border-color .15s, color .15s, background .15s;
+  }
+  .btn:hover{color:var(--text-primary);border-color:var(--text-secondary);}
+  .btn.primary{background:var(--gold);border-color:var(--gold);color:#241a05;font-weight:600;}
+  .btn.primary:hover{background:#edb654;color:#241a05;}
+  .btn:disabled{opacity:0.35;cursor:not-allowed;}
+
+  .receipt{
+    background:var(--surface-raised-solid);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:26px 24px 34px;
+    position:sticky;top:24px;
+    clip-path:polygon(0 0,100% 0,100% calc(100% - 8px),97% 100%,94% calc(100% - 8px),91% 100%,88% calc(100% - 8px),85% 100%,82% calc(100% - 8px),79% 100%,76% calc(100% - 8px),73% 100%,70% calc(100% - 8px),67% 100%,64% calc(100% - 8px),61% 100%,58% calc(100% - 8px),55% 100%,52% calc(100% - 8px),49% 100%,46% calc(100% - 8px),43% 100%,40% calc(100% - 8px),37% 100%,34% calc(100% - 8px),31% 100%,28% calc(100% - 8px),25% 100%,22% calc(100% - 8px),19% 100%,16% calc(100% - 8px),13% 100%,10% calc(100% - 8px),7% 100%,4% calc(100% - 8px),1% 100%,0 calc(100% - 8px));
+  }
+  .receipt-header{font-family:var(--font-mono);font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);border-bottom:1px dashed var(--border);padding-bottom:14px;margin-bottom:14px;display:flex;justify-content:space-between;}
+  .receipt-caption{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin:-6px 0 12px;}
+  .receipt-line{display:flex;justify-content:space-between;gap:10px;font-family:var(--font-mono);font-size:13px;padding:7px 0;color:var(--text-muted);transition:color .3s;}
+  .receipt-line.filled{color:var(--text-secondary);cursor:pointer;}
+  .receipt-line.filled:hover{color:var(--text-primary);}
+  .receipt-line.filled:hover .rl-amt{color:#f6cd7a;}
+  .receipt-line .rl-amt{color:var(--text-muted);}
+  .receipt-line.filled .rl-amt{color:var(--gold-text);font-weight:500;}
+  .receipt-line.negative.filled .rl-amt{color:var(--coral);}
+  .receipt-line.active{color:var(--text-primary);}
+  .receipt-divider{border-top:1px dashed var(--border);margin:12px 0;}
+  .receipt-total-row{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--font-mono);}
+  .receipt-total-row .rt-label{font-size:12.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;}
+  .receipt-total-row .rt-amt{font-size:24px;font-weight:600;}
+  .receipt-total-row .rt-amt.pos{color:var(--mint);}
+  .receipt-total-row .rt-amt.neg{color:var(--coral);}
+
+  .recap-list{display:flex;flex-direction:column;gap:0;margin-bottom:8px;}
+  .recap-row{display:flex;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--border-soft);font-family:var(--font-mono);font-size:14px;}
+  .recap-row .rr-label{color:var(--text-secondary);font-family:var(--font-body);}
+  .recap-row .rr-amt{color:var(--text-primary);}
+  .recap-total{display:flex;justify-content:space-between;align-items:baseline;padding-top:20px;margin-top:4px;}
+  .recap-total .rc-label{font-family:var(--font-display);font-size:19px;color:var(--text-primary);}
+  .recap-total .rc-amt{font-family:var(--font-mono);font-size:28px;color:var(--gold-text);font-weight:600;}
+
+  .metric-block{padding:18px 0;border-bottom:1px solid var(--border-soft);}
+  .metric-block:last-of-type{border-bottom:none;}
+  .metric-desc{font-size:13px;color:var(--text-secondary);line-height:1.5;margin:0 0 6px;max-width:520px;}
+  .metric-row{display:flex;justify-content:space-between;align-items:baseline;}
+  .metric-label{font-family:var(--font-body);font-size:14.5px;color:var(--text-primary);font-weight:500;}
+  .metric-value{font-family:var(--font-mono);font-size:22px;font-weight:600;color:var(--gold-text);}
+  .metric-value.pos{color:var(--mint);}
+  .metric-value.neg{color:var(--coral);}
+
+  .summary-row.clickable{cursor:pointer;}
+  .summary-row.clickable:hover{color:var(--text-primary);}
+
+  .tasklist-row{border:1px solid var(--border-soft);border-radius:10px;padding:18px;margin-bottom:14px;position:relative;background:var(--surface-input);}
+  .tasklist-row .tl-remove{position:absolute;top:10px;right:10px;background:transparent;border:none;color:var(--text-muted);font-size:16px;cursor:pointer;padding:4px 8px;border-radius:6px;}
+  .tasklist-row .tl-remove:hover{color:var(--coral);background:var(--coral-dim);}
+  .tasklist-fields{display:grid;grid-template-columns:1fr;gap:14px;}
+  .tasklist-fields .tf-row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:560px){ .tasklist-fields .tf-row2{grid-template-columns:1fr;} }
+  .add-task-btn{
+    width:100%;padding:14px;border:1px dashed var(--border);border-radius:10px;background:transparent;
+    color:var(--text-secondary);font-family:var(--font-body);font-size:14px;cursor:pointer;margin-bottom:8px;
+    transition:border-color .15s,color .15s;
+  }
+  .add-task-btn:hover{border-color:var(--gold);color:var(--gold-text);}
+  .tasklist-preview{margin-top:8px;padding-top:18px;border-top:1px dashed var(--border);display:flex;justify-content:space-between;align-items:baseline;}
+
+  .period-select{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+  .period-btn{
+    padding:9px 16px;border-radius:20px;border:1px solid var(--border);background:var(--surface-input);
+    color:var(--text-secondary);font-family:var(--font-body);font-size:13px;cursor:pointer;transition:all .15s;
+  }
+  .period-btn:hover{border-color:var(--gold);}
+  .period-btn.selected{background:var(--gold-dim);border-color:var(--gold);color:var(--gold-text);}
+  .period-custom-input{margin-top:10px;}
+
+  .scope-note{margin-top:16px;padding:12px 14px;background:var(--surface-input);border:1px solid var(--border-soft);border-radius:8px;font-size:13px;color:var(--text-secondary);line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <span class="eyebrow">Cost Ledger &middot; Learning &amp; Development</span>
+    <h1 class="title">Cost-Benefit Analysis &amp; ROI Generator</h1>
+    <p class="subtitle">Answer a few questions about your learning solution, and we'll calculate the costs and benefits as you go.</p>
+  </div>
+
+  <div class="progress" id="progress"></div>
+
+  <div class="layout">
+    <section>
+      <div class="card" id="card"></div>
+      <div class="nav-row">
+        <button class="btn" id="backBtn">Back</button>
+        <button class="btn primary" id="nextBtn">Continue</button>
+      </div>
+    </section>
+
+    <aside class="receipt" id="receipt">
+      <div class="receipt-header"><span>Running total</span><span id="receiptStamp">In progress</span></div>
+      <div class="receipt-caption">Design, development, delivery &amp; benefits</div>
+      <div id="receiptLines"></div>
+      <div class="receipt-divider"></div>
+      <div class="receipt-total-row">
+        <span class="rt-label" id="receiptTotalLabel">Net position so far</span>
+        <span class="rt-amt" id="receiptTotal">$0.00</span>
+      </div>
+    </aside>
+  </div>
+
+</div>
+
+<script>
+const money = (n) => new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2}).format(n||0);
+const moneyRound = (n) => new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:0,maximumFractionDigits:0}).format(n||0);
+
+const sectionOrder = ['background','delivery','dd','totalcost','benefits','roi'];
+const sectionLabels = {
+  background:'Background', delivery:'Delivery', dd:'Design & dev',
+  totalcost:'Total cost', benefits:'Benefits', roi:'ROI'
+};
+const receiptLabels = { delivery:'Delivery cost', dd:'Design & development cost', totalcost:'Total cost', benefits:'Total benefits' };
+
+let state = {
+  values: {},
+  costs: { delivery:null, dd:null, totalBenefits:null },
+  calc: { hourlyRate:null, length:null, numParticipants:null },
+  delivery: { salaryCost:0, benefits:0, lostProd:0, travel:0, otherAmt:0, otherName:'' },
+  benefitMethod: null,
+  history: ['bg']
+};
+
+function currentStep(){ return state.history[state.history.length-1]; }
+function goTo(id){ state.history.push(id); render(); }
+function goBack(){ if(state.history.length>1){ state.history.pop(); render(); } }
+
+const sectionJumpTarget = {
+  background:'bg', delivery:'delivery_benefits_gate', dd:'dd',
+  totalcost:'total_cost_recap', benefits:'benefit_method_gate', roi:'roi_summary'
+};
+function jumpToSection(sec){
+  const target = sectionJumpTarget[sec];
+  if(!target) return;
+  if(currentStep()===target) return;
+  goTo(target);
+}
+
+function rate(salary, hrsWk, wksYr){
+  const s=parseFloat(salary), h=parseFloat(hrsWk), w=parseFloat(wksYr);
+  if(!s || !h || !w) return null;
+  return s/(h*w);
+}
+
+function baseSalaryCost(){
+  const v = state.values.bg || {};
+  const r = rate(v.salary, v.hrsWk, v.wksYr);
+  if(r==null || !v.length || !v.numParticipants) return 0;
+  return r * parseFloat(v.numParticipants) * parseFloat(v.length);
+}
+
+function totalCostSoFar(){
+  return (state.costs.delivery||0) + (state.costs.dd||0);
+}
+
+const STEPS = {
+  bg: {
+    section:'background', type:'calc',
+    eyebrow:'Section 1 of 5',
+    title:'Background data',
+    help:"Tell us about the learning solution and who's completing it. We'll work out an hourly rate to use throughout the rest of this analysis.",
+    fields:[
+      {key:'length', label:'How long does it take a participant to complete the learning?', hintUnit:'hours', placeholder:'1'},
+      {key:'numParticipants', label:'How many participants are targeted to complete the learning?', placeholder:'20'},
+      {key:'salary', label:"Average annual salary of the participants (include the facilitator's salary in the average, if one is required)", prefix:'$', placeholder:'40000', full:true},
+      {key:'hrsWk', label:'Hours participants typically work per week', placeholder:'40', note:'This isn\u2019t related to the learning itself. We use this information to calculate an accurate hourly rate.'},
+      {key:'wksYr', label:'Weeks participants typically work per year', placeholder:'50'}
+    ],
+    preview(v){
+      const r = rate(v.salary, v.hrsWk, v.wksYr);
+      return { label:'Participant hourly rate', display: r!=null ? `${money(r)}/hr` : '\u00b7\u00b7\u00b7\u00b7' };
+    },
+    onSubmit(v){
+      const r = rate(v.salary, v.hrsWk, v.wksYr);
+      state.calc.hourlyRate = r;
+      state.calc.length = parseFloat(v.length);
+      state.calc.numParticipants = parseFloat(v.numParticipants);
+    },
+    next:'delivery_benefits_gate'
+  },
+
+  delivery_benefits_gate: {
+    section:'delivery', type:'gate',
+    eyebrow:'Section 2 of 5 \u00b7 Delivery cost',
+    question:'Do you want to include employee benefit costs?',
+    context:'Employee benefits are estimated at 33% of salary costs and calculated automatically.',
+    yesLabel:'Yes, include benefits', yesSub:'Adds 33% of salary costs',
+    noLabel:'No', noSub:'Skip employee benefit costs',
+    onYes(){ state.delivery.benefits = 0.33 * baseSalaryCost(); },
+    onNo(){ state.delivery.benefits = 0; },
+    yesNext:'delivery_lostprod_gate', noNext:'delivery_lostprod_gate'
+  },
+  delivery_lostprod_gate: {
+    section:'delivery', type:'gate',
+    eyebrow:'Section 2 of 5 \u00b7 Delivery cost',
+    question:'Do you want to include the cost of lost productivity while participants complete the learning?',
+    context:'Lost productivity is estimated at 150% of salary costs and calculated automatically.',
+    yesLabel:'Yes, include it', yesSub:'Adds 150% of salary costs',
+    noLabel:'No', noSub:'Skip lost productivity costs',
+    onYes(){ state.delivery.lostProd = 1.5 * baseSalaryCost(); },
+    onNo(){ state.delivery.lostProd = 0; },
+    yesNext:'delivery_travel_gate', noNext:'delivery_travel_gate'
+  },
+  delivery_travel_gate: {
+    section:'delivery', type:'gate',
+    eyebrow:'Section 2 of 5 \u00b7 Delivery cost',
+    question:'Do you want to include travel expenses?',
+    yesLabel:'Yes, there was travel', yesSub:"We'll ask for the total",
+    noLabel:'No travel expenses', noSub:'Skip to other expenses',
+    onNo(){ state.delivery.travel = 0; },
+    yesNext:'delivery_travel_fields', noNext:'delivery_other_gate'
+  },
+  delivery_travel_fields: {
+    section:'delivery', type:'calc',
+    eyebrow:'Section 2 of 5 \u00b7 Delivery cost',
+    title:'Travel expenses',
+    help:'Enter the total travel cost for this learning solution.',
+    fields:[ {key:'total', label:'Total travel expenses', prefix:'$', placeholder:'0', full:true} ],
+    preview(v){ return { label:'Total travel expenses', display: v.total ? money(parseFloat(v.total)) : '\u00b7\u00b7\u00b7\u00b7' }; },
+    onSubmit(v){ state.delivery.travel = parseFloat(v.total); },
+    next:'delivery_other_gate'
+  },
+  delivery_other_gate: {
+    section:'delivery', type:'gate',
+    eyebrow:'Section 2 of 5 \u00b7 Delivery cost',
+    question:'Are there any other expenses you would like to include?',
+    yesLabel:'Yes, there are others', yesSub:"We'll ask for the details",
+    noLabel:'No other expenses', noSub:'Review delivery cost total',
+    onNo(){ state.delivery.otherAmt = 0; state.delivery.otherName=''; },
+    yesNext:'delivery_other_fields', noNext:'delivery_recap'
+  },
+  delivery_other_fields: {
+    section:'delivery', type:'calc',
+    eyebrow:'Section 2 of 5 \u00b7 Delivery cost',
+    title:'Other expenses',
+    help:'Tell us what the expense is and its total cost.',
+    fields:[
+      {key:'name', label:'Expense name', type:'text', placeholder:'e.g., Printed workbooks', full:true},
+      {key:'cost', label:'Total cost', prefix:'$', placeholder:'0', full:true}
+    ],
+    preview(v){ return { label:'Other expenses', display: v.cost ? money(parseFloat(v.cost)) : '\u00b7\u00b7\u00b7\u00b7' }; },
+    onSubmit(v){ state.delivery.otherAmt = parseFloat(v.cost); state.delivery.otherName = v.name||''; },
+    next:'delivery_recap'
+  },
+
+  delivery_recap: {
+    section:'delivery', type:'recap',
+    eyebrow:'Section 2 of 5 \u00b7 Delivery cost',
+    title:'Delivery cost',
+    help:"Here's how the total delivery cost breaks down, calculated automatically from your answers.",
+    rows(){
+      const d = state.delivery;
+      const rows = [
+        ['Salary of employees to be trained', d.salaryCost],
+        ['Employee benefit costs', d.benefits],
+        ['Lost production / replacement cost', d.lostProd],
+        ['Travel expenses', d.travel],
+        [d.otherName ? `Other expenses (${d.otherName})` : 'Other expenses', d.otherAmt]
+      ];
+      return rows;
+    },
+    totalLabel:'Total delivery cost',
+    onEnter(){ state.delivery.salaryCost = baseSalaryCost(); },
+    total(){ const d=state.delivery; return d.salaryCost+d.benefits+d.lostProd+d.travel+d.otherAmt; },
+    onSubmit(){ state.costs.delivery = STEPS.delivery_recap.total(); },
+    next:'dd'
+  },
+
+  dd: {
+    section:'dd', type:'calc',
+    eyebrow:'Section 3 of 5',
+    title:'Design & development cost',
+    help:"Enter what it cost to design and develop this learning solution. If you need help calculating this, the Learning Development Cost Generator can walk you through it.",
+    fields:[
+      {key:'cost', label:'Design & development cost', prefix:'$', placeholder:'13000', full:true}
+    ],
+    preview(v){ return { label:'Design & development cost', display: v.cost ? money(parseFloat(v.cost)) : '\u00b7\u00b7\u00b7\u00b7' }; },
+    onSubmit(v){ state.costs.dd = parseFloat(v.cost); },
+    next:'total_cost_recap'
+  },
+
+  total_cost_recap: {
+    section:'totalcost', type:'recap',
+    eyebrow:'Section 3 of 5',
+    title:'Total cost of design, development & delivery',
+    help:"This is the full investment required for this learning solution so far.",
+    rows(){
+      return [
+        ['Delivery cost', state.costs.delivery],
+        ['Design & development cost', state.costs.dd]
+      ];
+    },
+    totalLabel:'Total cost',
+    total(){ return totalCostSoFar(); },
+    onSubmit(){},
+    next:'benefit_method_gate'
+  },
+
+  benefit_method_gate: {
+    section:'benefits', type:'method_select',
+    eyebrow:'Section 4 of 5 \u00b7 Benefits',
+    question:'How would you like to calculate the benefits of this learning solution?',
+    options:[
+      {
+        key:'participant', label:'Benefits by participant',
+        bestFor:'Learning where the financial impact can be attributed to each participant who applies what they learned.',
+        examples:['Time saved','Productivity gains','Error reductions','Sales performance','Onboarding'],
+        useWhen:'You can estimate the financial benefit generated by one participant and determine how many participants successfully applied the learning.',
+        onSelect(){ state.benefitMethod = 'participant'; },
+        next:'task_list'
+      },
+      {
+        key:'overall', label:'Overall benefits',
+        bestFor:'Learning where the business impact is measured at the team, department, program, or organizational level and cannot reasonably be attributed to individual participants.',
+        examples:['Turnover reduction','Revenue growth','Customer outcomes','Compliance','Large-scale change','Leadership development'],
+        useWhen:'You know the total financial impact associated with the learning solution, but it would be difficult or misleading to assign that benefit to individual participants.',
+        onSelect(){ state.benefitMethod = 'overall'; },
+        next:'overall_fields'
+      }
+    ]
+  },
+
+  task_list: {
+    section:'benefits', type:'tasklist',
+    eyebrow:'Section 4 of 5 \u00b7 Benefits by participant',
+    title:'What tasks were taught?',
+    help:'Add each task taught through the learning, the measurable business benefit it produced, and its estimated dollar value per participant. Add as many tasks as apply. We\u2019ll add up the values.',
+    next:'bp_fields'
+  },
+  bp_fields: {
+    section:'benefits', type:'calc',
+    eyebrow:'Section 4 of 5 \u00b7 Benefits by participant',
+    title:'Participants',
+    help:'Tell us how many participants were involved, and over what period these benefits are measured.',
+    fields:[
+      {key:'completed', label:'How many participants completed the learning?', placeholder:'50'},
+      {key:'applied', label:'How many participants successfully applied what they learned?', placeholder:'40'},
+      {key:'period', label:'Over what period were or will these benefits be measured?', type:'period', full:true}
+    ],
+    preview(v){
+      const perParticipant = (state.values.task_list && state.values.task_list.tasks || []).reduce((s,t)=> s + (parseFloat(t.value)||0), 0);
+      const applied = parseFloat(v.applied);
+      const total = (applied && perParticipant) ? perParticipant*applied : null;
+      return { label:'Total benefits of training', display: total!=null ? money(total) : '\u00b7\u00b7\u00b7\u00b7' };
+    },
+    onSubmit(v){
+      const tasks = (state.values.task_list && state.values.task_list.tasks) || [];
+      const perParticipant = tasks.reduce((s,t)=> s + (parseFloat(t.value)||0), 0);
+      const savedPerParticipant = tasks.filter(t=>t.valueType==='saved').reduce((s,t)=> s + (parseFloat(t.value)||0), 0);
+      const generatedPerParticipant = tasks.filter(t=>t.valueType==='generated').reduce((s,t)=> s + (parseFloat(t.value)||0), 0);
+      const applied = parseFloat(v.applied);
+      state.benefitPerParticipant = perParticipant;
+      state.costs.totalBenefits = perParticipant * applied;
+      state.benefitBreakdown = { saved: savedPerParticipant*applied, generated: generatedPerParticipant*applied };
+      state.benefitPeriod = v.period==='custom' ? (v.periodCustom||'Custom') : v.period;
+    },
+    next:'roi_summary'
+  },
+
+  overall_fields: {
+    section:'benefits', type:'calc',
+    eyebrow:'Section 4 of 5 \u00b7 Overall benefits',
+    title:'Overall benefits',
+    help:'Tell us about the measurable business benefit this learning solution produced across the organization.',
+    fields:[
+      {key:'tasks', label:'What task(s) were taught through the learning?', type:'textarea', full:true},
+      {key:'benefit', label:'What measurable business benefit resulted from the learning solution?', type:'textarea', full:true},
+      {key:'valueType', label:'This value is\u2026', type:'valuetype', full:true},
+      {key:'value', label:'What is the total estimated dollar value of the benefit?', prefix:'$', placeholder:'18000', full:true},
+      {key:'period', label:'Over what period were or will these benefits be measured?', type:'period', full:true}
+    ],
+    preview(v){ return { label:'Total benefits of training', display: v.value ? money(parseFloat(v.value)) : '\u00b7\u00b7\u00b7\u00b7' }; },
+    onSubmit(v){
+      const total = parseFloat(v.value);
+      state.costs.totalBenefits = total;
+      state.benefitBreakdown = {
+        saved: v.valueType==='generated' ? 0 : total,
+        generated: v.valueType==='generated' ? total : 0
+      };
+      state.benefitPeriod = v.period==='custom' ? (v.periodCustom||'Custom') : v.period;
+    },
+    next:'roi_summary'
+  },
+
+  roi_summary: { section:'roi', type:'summary' }
+};
+
+function sectionResolved(sec){
+  if(sec==='background') return state.calc.hourlyRate!=null;
+  if(sec==='delivery') return state.costs.delivery!=null;
+  if(sec==='dd') return state.costs.dd!=null;
+  if(sec==='totalcost') return sectionResolved('delivery') && sectionResolved('dd');
+  if(sec==='benefits') return state.costs.totalBenefits!=null;
+  if(sec==='roi') return sectionResolved('totalcost') && sectionResolved('benefits');
+  return false;
+}
+
+function renderProgress(){
+  const step = STEPS[currentStep()];
+  const curSection = step.section;
+  const el = document.getElementById('progress');
+  el.innerHTML = sectionOrder.map((sec,i)=>{
+    let cls = '';
+    if(sec===curSection) cls='active';
+    else if(sectionResolved(sec)) cls='done';
+    const mark = sec===curSection ? '\u25CF' : (sectionResolved(sec) ? '\u2713' : (i+1));
+    return `<div class="progress-item ${cls}" data-section="${sec}"><span class="dot">${mark}</span>${sectionLabels[sec]}</div>`;
+  }).join('');
+  el.querySelectorAll('.progress-item.done').forEach(node=>{
+    node.addEventListener('click', ()=> jumpToSection(node.getAttribute('data-section')));
+  });
+}
+
+function renderReceipt(){
+  const linesEl = document.getElementById('receiptLines');
+  const totalCostVal = sectionResolved('totalcost') ? totalCostSoFar() : null;
+  const combined = {
+    delivery: state.costs.delivery,
+    dd: state.costs.dd,
+    totalcost: totalCostVal,
+    benefits: state.costs.totalBenefits
+  };
+  const curSection = STEPS[currentStep()].section;
+  linesEl.innerHTML = Object.keys(receiptLabels).map(k=>{
+    const val = combined[k];
+    const filled = val!=null;
+    const activeCls = (k===curSection && !filled) ? 'active' : '';
+    const amt = filled ? money(val) : '\u00b7\u00b7\u00b7\u00b7';
+    return `<div class="receipt-line ${filled?'filled':''} ${activeCls}" data-section="${k}"><span>${receiptLabels[k]}</span><span class="rl-amt">${amt}</span></div>`;
+  }).join('');
+  linesEl.querySelectorAll('.receipt-line.filled').forEach(node=>{
+    node.addEventListener('click', ()=> jumpToSection(node.getAttribute('data-section')));
+  });
+  const allDone = sectionResolved('roi');
+  document.getElementById('receiptStamp').textContent = allDone ? 'Complete' : 'In progress';
+  const runningCost = totalCostVal!=null ? totalCostVal : ((state.costs.delivery||0)+(state.costs.dd||0));
+  const runningBenefit = state.costs.totalBenefits||0;
+  const net = runningBenefit - runningCost;
+  const totalEl = document.getElementById('receiptTotal');
+  totalEl.textContent = money(net);
+  totalEl.className = 'rt-amt ' + (net>=0 ? 'pos' : 'neg');
+  document.getElementById('receiptTotalLabel').textContent = allDone ? 'Net benefit' : 'Net position so far';
+}
+
+function fieldsAllValid(step, v){
+  return step.fields.every(f=>{
+    if(f.type==='text' || f.type==='textarea'){
+      return v[f.key]!==undefined && v[f.key].trim()!=='';
+    }
+    if(f.type==='period'){
+      if(!v.period) return false;
+      if(v.period==='custom') return v.periodCustom && v.periodCustom.trim()!=='';
+      return true;
+    }
+    if(f.type==='valuetype'){
+      return !!v[f.key];
+    }
+    return v[f.key]!==undefined && v[f.key]!=='' && !isNaN(parseFloat(v[f.key])) && parseFloat(v[f.key])>=0;
+  });
+}
+
+const PERIODS = [ ['3','3 months'], ['6','6 months'], ['12','12 months'], ['custom','Custom'] ];
+const VALUE_TYPES = [ ['saved','Dollars saved'], ['generated','Dollars generated'] ];
+
+function renderValueTypeField(f, v){
+  const cur = v[f.key] || 'saved';
+  return `
+    <div class="field full" data-key="${f.key}">
+      <label>${f.label}</label>
+      <div class="period-select" data-valuetype-select="${f.key}">
+        ${VALUE_TYPES.map(p=>`<button type="button" class="period-btn vt-btn ${cur===p[0]?'selected':''}" data-key="${f.key}" data-value="${p[0]}">${p[1]}</button>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderPeriodField(f, v){
+  const cur = v.period || '';
+  return `
+    <div class="field full" data-key="${f.key}">
+      <label>${f.label}</label>
+      <div class="period-select" id="periodSelect">
+        ${PERIODS.map(p=>`<button type="button" class="period-btn ${cur===p[0]?'selected':''}" data-period="${p[0]}">${p[1]}</button>`).join('')}
+      </div>
+      ${cur==='custom' ? `<div class="period-custom-input"><input type="text" id="f-periodCustom" placeholder="e.g., 18 months" value="${v.periodCustom||''}"></div>` : ''}
+      <div class="error">Select a time period.</div>
+    </div>
+  `;
+}
+
+function renderFieldHTML(f, v){
+  if(f.type==='period') return renderPeriodField(f, v);
+  if(f.type==='valuetype'){ if(v[f.key]===undefined) v[f.key]='saved'; return renderValueTypeField(f, v); }
+  const val = v[f.key]!==undefined ? v[f.key] : '';
+  let inputHTML;
+  if(f.type==='text'){
+    inputHTML = `<input type="text" id="f-${f.key}" placeholder="${f.placeholder||''}" value="${val}">`;
+  } else if(f.type==='textarea'){
+    inputHTML = `<textarea id="f-${f.key}" placeholder="${f.placeholder||''}">${val}</textarea>`;
+  } else {
+    inputHTML = `
+      <div class="input-wrap ${f.prefix?'has-prefix':''}">
+        ${f.prefix?`<span class="prefix">${f.prefix}</span>`:''}
+        <input type="number" min="0" step="any" id="f-${f.key}" placeholder="${f.placeholder||''}" value="${val}">
+      </div>`;
+  }
+  return `
+    ${f.note?`<div class="field-note">${f.note}</div>`:''}
+    <div class="field ${f.full?'full':''}" data-key="${f.key}">
+      <label for="f-${f.key}">${f.label}${f.hintUnit?` <span style="color:var(--text-muted)">(${f.hintUnit})</span>`:''}</label>
+      ${inputHTML}
+      ${f.hint?`<div class="hint">${f.hint}</div>`:''}
+      <div class="error">Enter a value of 0 or more.</div>
+    </div>
+  `;
+}
+
+function wirePeriodButtons(id){
+  const container = document.getElementById('periodSelect');
+  if(!container) return;
+  container.querySelectorAll('.period-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const cur = state.values[id] || {};
+      cur.period = btn.getAttribute('data-period');
+      state.values[id] = cur;
+      renderCard();
+    });
+  });
+}
+
+function wireValueTypeButtons(id){
+  document.querySelectorAll('.vt-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const cur = state.values[id] || {};
+      cur[btn.getAttribute('data-key')] = btn.getAttribute('data-value');
+      state.values[id] = cur;
+      renderCard();
+    });
+  });
+}
+
+let taskIdCounter = 1;
+function renderCard(){
+  const id = currentStep();
+  const step = STEPS[id];
+  const card = document.getElementById('card');
+  const nextBtn = document.getElementById('nextBtn');
+  const backBtn = document.getElementById('backBtn');
+  backBtn.style.visibility = state.history.length>1 ? 'visible' : 'hidden';
+  document.getElementById('receipt').style.display = '';
+  document.querySelector('.layout').style.gridTemplateColumns = '';
+  nextBtn.style.display = '';
+  nextBtn.textContent = 'Continue';
+
+  if(step.type==='method_select'){
+    card.innerHTML = `
+      <div class="card-eyebrow">${step.eyebrow}</div>
+      <p class="gate-question">${step.question}</p>
+      <div class="method-grid">
+        ${step.options.map(opt=>`
+          <div class="method-card" data-key="${opt.key}">
+            <h3>${opt.label}</h3>
+            <div class="mc-label">Best for</div>
+            <p class="mc-text">${opt.bestFor}</p>
+            <div class="mc-examples">${opt.examples.map(ex=>`<span class="mc-chip">${ex}</span>`).join('')}</div>
+            <div class="mc-label">Use this method when</div>
+            <p class="mc-text">${opt.useWhen}</p>
+            <button type="button" class="mc-select" data-key="${opt.key}">Choose this method</button>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    nextBtn.style.display = 'none';
+    card.querySelectorAll('.mc-select').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const opt = step.options.find(o=> o.key === btn.getAttribute('data-key'));
+        opt.onSelect();
+        goTo(opt.next);
+      });
+    });
+    renderProgress(); renderReceipt();
+    return;
+  }
+
+  if(step.type==='gate'){
+    card.innerHTML = `
+      <div class="card-eyebrow">${step.eyebrow}</div>
+      <p class="gate-question">${step.question}</p>
+      ${step.context?`<p class="gate-context">${step.context}</p>`:''}
+      <div class="gate-buttons">
+        <button class="gate-btn" id="gYes"><span class="g-icon">${step.yesLabel}</span>${step.yesSub}</button>
+        <button class="gate-btn" id="gNo"><span class="g-icon">${step.noLabel}</span>${step.noSub}</button>
+      </div>
+    `;
+    nextBtn.style.display = 'none';
+    document.getElementById('gYes').onclick = ()=>{ if(step.onYes) step.onYes(); goTo(step.yesNext); };
+    document.getElementById('gNo').onclick = ()=>{ if(step.onNo) step.onNo(); goTo(step.noNext); };
+    renderProgress(); renderReceipt();
+    return;
+  }
+
+  if(step.type==='recap'){
+    if(step.onEnter) step.onEnter();
+    const rows = step.rows();
+    const total = step.total();
+    card.innerHTML = `
+      <div class="card-eyebrow">${step.eyebrow}</div>
+      <h2 class="card-title">${step.title}</h2>
+      <p class="card-help">${step.help}</p>
+      <div class="recap-list">
+        ${rows.map(r=>`<div class="recap-row"><span class="rr-label">${r[0]}</span><span class="rr-amt">${money(r[1])}</span></div>`).join('')}
+      </div>
+      <div class="recap-total">
+        <span class="rc-label">${step.totalLabel}</span>
+        <span class="rc-amt">${money(total)}</span>
+      </div>
+    `;
+    nextBtn.onclick = ()=>{ step.onSubmit(); goTo(step.next); };
+    renderProgress(); renderReceipt();
+    return;
+  }
+
+  if(step.type==='tasklist'){
+    if(!state.values.task_list) state.values.task_list = { tasks:[{id:taskIdCounter++, name:'', benefit:'', value:'', valueType:'saved'}] };
+    const tasks = state.values.task_list.tasks;
+    const sum = tasks.reduce((s,t)=> s + (parseFloat(t.value)||0), 0);
+    card.innerHTML = `
+      <div class="card-eyebrow">${step.eyebrow}</div>
+      <h2 class="card-title">${step.title}</h2>
+      <p class="card-help">${step.help}</p>
+      <div id="taskRows">
+        ${tasks.map((t,i)=>`
+          <div class="tasklist-row" data-id="${t.id}">
+            ${tasks.length>1?`<button type="button" class="tl-remove" data-remove="${t.id}">\u2715</button>`:''}
+            <div class="tasklist-fields">
+              <div class="field" style="margin-bottom:0;">
+                <label>Task taught</label>
+                <input type="text" class="tl-name" data-id="${t.id}" placeholder="e.g., Handling refund requests" value="${t.name}">
+              </div>
+              <div class="field" style="margin-bottom:0;">
+                <label>Measurable business benefit <span style="color:var(--text-muted)">(optional)</span></label>
+                <input type="text" class="tl-benefit" data-id="${t.id}" placeholder="e.g., Fewer escalations" value="${t.benefit}">
+              </div>
+              <div class="tf-row2">
+                <div class="field" style="margin-bottom:0;">
+                  <label>This value is&hellip;</label>
+                  <div class="period-select">
+                    <button type="button" class="period-btn tl-type-btn ${t.valueType==='saved'?'selected':''}" data-id="${t.id}" data-type="saved">Dollars saved</button>
+                    <button type="button" class="period-btn tl-type-btn ${t.valueType==='generated'?'selected':''}" data-id="${t.id}" data-type="generated">Dollars generated</button>
+                  </div>
+                </div>
+                <div class="field" style="margin-bottom:0;">
+                  <label>Dollar value per participant</label>
+                  <div class="input-wrap has-prefix"><span class="prefix">$</span>
+                    <input type="number" min="0" step="any" class="tl-value" data-id="${t.id}" placeholder="450" value="${t.value}">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <button type="button" class="add-task-btn" id="addTaskBtn">+ Add another task</button>
+      <div class="tasklist-preview">
+        <span class="lp-label" style="font-size:13px;color:var(--text-muted);">Benefit per participant</span>
+        <span class="lp-value" style="font-family:var(--font-mono);font-size:20px;color:var(--gold-text);font-weight:500;">${money(sum)}</span>
+      </div>
+    `;
+
+    function syncFromDOM(){
+      document.querySelectorAll('.tl-name').forEach(inp=>{
+        const t = tasks.find(x=>x.id==inp.getAttribute('data-id')); if(t) t.name = inp.value;
+      });
+      document.querySelectorAll('.tl-benefit').forEach(inp=>{
+        const t = tasks.find(x=>x.id==inp.getAttribute('data-id')); if(t) t.benefit = inp.value;
+      });
+      document.querySelectorAll('.tl-value').forEach(inp=>{
+        const t = tasks.find(x=>x.id==inp.getAttribute('data-id')); if(t) t.value = inp.value;
+      });
+    }
+    card.querySelectorAll('.tl-type-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        syncFromDOM();
+        const t = tasks.find(x=> String(x.id)===btn.getAttribute('data-id'));
+        if(t) t.valueType = btn.getAttribute('data-type');
+        renderCard();
+      });
+    });
+    card.querySelectorAll('.tl-name,.tl-benefit,.tl-value').forEach(inp=>{
+      inp.addEventListener('input', ()=>{
+        syncFromDOM();
+        const s = tasks.reduce((s,t)=> s + (parseFloat(t.value)||0), 0);
+        card.querySelector('.tasklist-preview .lp-value').textContent = money(s);
+      });
+    });
+    card.querySelectorAll('[data-remove]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        syncFromDOM();
+        const rid = btn.getAttribute('data-remove');
+        state.values.task_list.tasks = tasks.filter(t=> String(t.id)!==rid);
+        renderCard();
+      });
+    });
+    document.getElementById('addTaskBtn').onclick = ()=>{
+      syncFromDOM();
+      tasks.push({id:taskIdCounter++, name:'', benefit:'', value:'', valueType:'saved'});
+      renderCard();
+    };
+
+    nextBtn.onclick = ()=>{
+      syncFromDOM();
+      let ok = true;
+      tasks.forEach(t=>{
+        const row = card.querySelector(`.tasklist-row[data-id="${t.id}"]`);
+        const nameOk = t.name && t.name.trim()!=='';
+        const valOk = t.value!=='' && !isNaN(parseFloat(t.value)) && parseFloat(t.value)>=0;
+        if(!nameOk || !valOk){ ok=false; row.style.borderColor = 'var(--coral)'; }
+        else{ row.style.borderColor = 'var(--border-soft)'; }
+      });
+      if(!ok) return;
+      goTo(step.next);
+    };
+    renderProgress(); renderReceipt();
+    return;
+  }
+
+  if(step.type==='summary'){
+    const totalCost = totalCostSoFar();
+    const totalBenefits = state.costs.totalBenefits;
+    const net = totalBenefits - totalCost;
+    const cbRatio = totalCost>0 ? (totalBenefits/totalCost) : 0;
+    const roi = totalCost>0 ? (net/totalCost*100) : 0;
+    card.innerHTML = `
+      <div class="card-eyebrow">Complete</div>
+      <h2 class="card-title">Cost-benefit analysis &amp; ROI</h2>
+      <p class="card-help">Calculated automatically from your entries. Click any line to go back and make changes.</p>
+
+      <div class="metric-block">
+        <p class="metric-desc">The financial benefit remaining after subtracting the total cost of the learning solution.</p>
+        <div class="metric-row"><span class="metric-label">Net benefits</span><span class="metric-value ${net>=0?'pos':'neg'}">${money(net)}</span></div>
+      </div>
+      <div class="metric-block">
+        <p class="metric-desc">The total investment required to design, develop, and deliver the learning solution.</p>
+        <div class="metric-row"><span class="metric-label">Total costs</span><span class="metric-value">${money(totalCost)}</span></div>
+      </div>
+      <div class="metric-block">
+        <p class="metric-desc">The amount of financial benefit generated for every $1 invested.</p>
+        <div class="metric-row"><span class="metric-label">Cost-benefit ratio</span><span class="metric-value">${cbRatio.toFixed(2)} : 1</span></div>
+      </div>
+      <div class="metric-block">
+        <p class="metric-desc">The percentage return generated after accounting for the total investment.</p>
+        <div class="metric-row"><span class="metric-label">ROI</span><span class="metric-value ${roi>=0?'pos':'neg'}">${roi.toFixed(2)}%</span></div>
+      </div>
+
+      <div class="scope-note">Total benefits: ${money(totalBenefits)} &middot; Total costs: ${money(totalCost)} (delivery ${money(state.costs.delivery)} + design &amp; development ${money(state.costs.dd)})${state.benefitBreakdown ? ` &middot; Of the total benefits, ${money(state.benefitBreakdown.saved)} is from dollars saved and ${money(state.benefitBreakdown.generated)} is from dollars generated.` : ''}</div>
+      ${state.benefitBreakdown ? '<div class="scope-note" style="margin-top:8px;">Both types count equally toward total benefits and ROI. This breakdown is shown for reporting only.</div>' : ''}
+    `;
+    nextBtn.style.display = 'none';
+    document.getElementById('receipt').style.display = 'none';
+    document.querySelector('.layout').style.gridTemplateColumns = '1fr';
+    renderProgress();
+    return;
+  }
+
+  // calc type
+  const v = state.values[id] || {};
+  card.innerHTML = `
+    <div class="card-eyebrow">${step.eyebrow}</div>
+    <h2 class="card-title">${step.title}</h2>
+    <p class="card-help">${step.help}</p>
+    <div class="fields-grid">
+      ${step.fields.map(f=> renderFieldHTML(f, v)).join('')}
+    </div>
+    <div class="live-preview">
+      <div>
+        <div class="lp-label" id="lpLabel">${step.preview(v).label}</div>
+      </div>
+      <div class="lp-value" id="lpValue">${step.preview(v).display}</div>
+    </div>
+  `;
+
+  wirePeriodButtons(id);
+  wireValueTypeButtons(id);
+  const periodCustomInput = document.getElementById('f-periodCustom');
+  if(periodCustomInput){
+    periodCustomInput.addEventListener('input', ()=>{
+      const cur = state.values[id] || {};
+      cur.periodCustom = periodCustomInput.value;
+      state.values[id] = cur;
+    });
+  }
+
+  function updatePreview(){
+    const cur = state.values[id] || {};
+    step.fields.forEach(f=>{
+      if(f.type==='period' || f.type==='valuetype') return;
+      const el = document.getElementById('f-'+f.key);
+      if(el) cur[f.key] = el.value;
+    });
+    state.values[id] = cur;
+    const p = step.preview(cur);
+    document.getElementById('lpValue').textContent = p.display;
+  }
+  step.fields.forEach(f=>{
+    if(f.type==='period' || f.type==='valuetype') return;
+    const el = document.getElementById('f-'+f.key);
+    if(el){
+      el.addEventListener('input', ()=>{
+        document.querySelector(`.field[data-key="${f.key}"]`).classList.remove('invalid');
+        updatePreview();
+      });
+    }
+  });
+  updatePreview();
+
+  nextBtn.onclick = ()=>{
+    const cur = state.values[id] || {};
+    let ok = true;
+    step.fields.forEach(f=>{
+      const fieldEl = document.querySelector(`.field[data-key="${f.key}"]`);
+      let valid;
+      if(f.type==='text' || f.type==='textarea'){
+        valid = cur[f.key]!==undefined && cur[f.key].trim()!=='';
+      } else if(f.type==='period'){
+        valid = cur.period && (cur.period!=='custom' || (cur.periodCustom && cur.periodCustom.trim()!==''));
+      } else if(f.type==='valuetype'){
+        valid = !!cur[f.key];
+      } else {
+        valid = cur[f.key]!==undefined && cur[f.key]!=='' && !isNaN(parseFloat(cur[f.key])) && parseFloat(cur[f.key])>=0;
+      }
+      if(!valid){ fieldEl.classList.add('invalid'); ok=false; }
+      else{ fieldEl.classList.remove('invalid'); }
+    });
+    if(!ok) return;
+    step.onSubmit(cur);
+    goTo(step.next);
+  };
+
+  renderProgress(); renderReceipt();
+}
+
+document.getElementById('backBtn').onclick = goBack;
+function render(){ renderCard(); }
+render();
+</script>
+</body>
+</html>

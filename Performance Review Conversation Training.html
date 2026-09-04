@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Performance Review Conversation Training</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #F7F2E9;
+    --paper-raised: #FFFDF8;
+    --ink: #22261F;
+    --ink-soft: #5B5A4F;
+    --ink-faint: #9B9788;
+    --line: #E2DAC7;
+    --accent: #C4881F;
+    --accent-deep: #8A5D14;
+    --accent-pale: #F1DFB3;
+    --accent-wash: #FBF2DD;
+    --evergreen: #33453A;
+    --evergreen-pale: #E7ECE5;
+    --radius: 4px;
+    --serif: "Fraunces", Georgia, serif;
+    --sans: "Inter", -apple-system, sans-serif;
+    --mono: "IBM Plex Mono", monospace;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap{ max-width: 760px; margin: 0 auto; padding: 40px 24px 60px; }
+
+  /* ---------- masthead ---------- */
+  .masthead{
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 22px;
+    margin-bottom: 30px;
+    display:flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .eyebrow{
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--accent-deep);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .masthead h1{
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .progress-chip{
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-align: right;
+  }
+  .progress-track{
+    width: 130px;
+    height: 4px;
+    background: var(--line);
+    border-radius: 2px;
+    margin-top: 6px;
+    overflow: hidden;
+  }
+  .progress-fill{
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* ---------- chat transcript ---------- */
+  #messages{ margin-bottom: 18px; }
+  .msg{ margin-bottom: 26px; animation: rise 0.35s ease; }
+  @keyframes rise{ from{ opacity:0; transform: translateY(6px); } to{ opacity:1; transform: translateY(0); } }
+
+  .msg-label{
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 7px;
+  }
+  .msg.user{ text-align: right; }
+  .msg.user .msg-label{ color: var(--ink-faint); }
+  .msg.user .msg-bubble{
+    display:inline-block;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 10px 16px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    max-width: 78%;
+    text-align: left;
+  }
+  .msg.assistant .msg-label{ color: var(--accent-deep); }
+  .msg.assistant .msg-bubble{
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+  }
+  .msg.assistant .msg-bubble p{ font-size: 14.5px; color: var(--ink-soft); margin: 0 0 12px; }
+  .msg.assistant .msg-bubble p:last-child{ margin-bottom: 0; }
+
+  .typing-dots{
+    display:inline-flex;
+    gap: 4px;
+    padding: 4px 0;
+  }
+  .typing-dots span{
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--ink-faint);
+    animation: bounce 1.1s infinite ease-in-out;
+  }
+  .typing-dots span:nth-child(2){ animation-delay: 0.15s; }
+  .typing-dots span:nth-child(3){ animation-delay: 0.3s; }
+  @keyframes bounce{ 0%,80%,100%{ transform: translateY(0); opacity:0.5; } 40%{ transform: translateY(-4px); opacity:1; } }
+
+  /* ---------- input row ---------- */
+  .input-row{
+    display:flex;
+    gap: 8px;
+    border: 1px solid var(--line);
+    background: var(--paper-raised);
+    border-radius: var(--radius);
+    padding: 6px 6px 6px 16px;
+    align-items: center;
+  }
+  .input-row input{
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: var(--sans);
+    font-size: 14.5px;
+    color: var(--ink);
+    padding: 10px 0;
+    outline: none;
+  }
+  .input-row input::placeholder{ color: var(--ink-faint); }
+  .send-btn{
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 11px 18px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .send-btn:hover{ background: var(--evergreen); }
+  .input-hint{
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-top: 9px;
+  }
+  .input-hint b{ color: var(--accent-deep); font-weight: 600; }
+  #inputArea.hidden{ display:none; }
+
+  .end-note{
+    text-align:center;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--line);
+  }
+
+  /* ---------- overview content (inside assistant bubble) ---------- */
+  .ov-list{ list-style:none; margin: 14px 0; padding: 0; }
+  .ov-list li{
+    font-size: 14px;
+    padding-left: 22px;
+    position: relative;
+    margin-bottom: 9px;
+    color: var(--ink);
+  }
+  .ov-list li::before{
+    content: "✓";
+    position: absolute; left: 0; top: 0;
+    color: var(--accent-deep);
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .note{
+    background: var(--evergreen-pale);
+    border-left: 3px solid var(--evergreen);
+    padding: 12px 16px;
+    font-size: 13.5px;
+    color: #2B382E;
+    font-style: italic;
+    margin: 14px 0 16px;
+  }
+  .prompt-line{
+    font-size: 14px;
+    color: var(--ink);
+    margin-top: 4px;
+  }
+  .prompt-line b{ color: var(--accent-deep); font-family: var(--mono); font-size: 13px; }
+
+  /* ---------- steps ---------- */
+  .steps-intro{ font-size: 14px; color: var(--ink-soft); margin: 0 0 16px; }
+  .step-card{
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #FFFFFF;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .step-head{
+    display:flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+  .step-head:hover{ background: #FCF8EF; }
+  .step-card.reviewed .step-head{ background: var(--accent-wash); }
+
+  .step-num{
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent-deep);
+    border: 1px solid var(--accent-pale);
+    background: #fff;
+    width: 28px; height: 28px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius: 50%;
+    flex: none;
+    font-weight: 600;
+    transition: all 0.25s;
+  }
+  .step-card.reviewed .step-num{
+    background: var(--accent-deep);
+    color: #fff;
+    border-color: var(--accent-deep);
+  }
+  .step-title{ font-family: var(--serif); font-size: 16.5px; font-weight: 500; flex: 1; }
+  .step-status{
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--ink-faint);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    flex: none;
+  }
+  .step-card.reviewed .step-status{ color: var(--accent-deep); }
+  .chevron{ flex: none; color: var(--ink-faint); transition: transform 0.25s; font-size: 12px; }
+  .step-card.open .chevron{ transform: rotate(180deg); }
+
+  .step-body{ max-height: 0; overflow: hidden; transition: max-height 0.35s cubic-bezier(.4,0,.2,1); }
+  .step-body-inner{ padding: 4px 20px 22px 20px; border-top: 1px solid var(--line); padding-top: 16px; margin: 0 16px; }
+  .step-body-inner h4{
+    font-family: var(--sans); font-size: 12.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em; color: var(--evergreen); margin: 16px 0 8px;
+  }
+  .step-body-inner h4:first-child{ margin-top: 0; }
+  .step-body-inner p{ font-size: 14px; color: var(--ink); margin: 0 0 10px; }
+  .step-body-inner ul{ margin: 0 0 10px; padding-left: 20px; }
+  .step-body-inner ul li{ font-size: 13.5px; margin-bottom: 6px; color: var(--ink); }
+  .step-body-inner ul li::marker{ color: var(--accent-deep); }
+
+  .reaction-grid{ display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 10px 0 6px; }
+  .reaction-card{ background: #FBF8F1; border: 1px solid var(--line); border-top: 2px solid var(--accent); padding: 10px 12px; border-radius: var(--radius); }
+  .reaction-card b{ display:block; font-size: 11.5px; color: var(--evergreen); margin-bottom: 6px; }
+  .reaction-card ul{ padding-left: 14px; margin: 0; }
+  .reaction-card li{ font-size: 12px; margin-bottom: 4px; }
+  @media (max-width: 560px){ .reaction-grid{ grid-template-columns: 1fr; } }
+
+  .resource{ background: var(--evergreen-pale); border-left: 3px solid var(--evergreen); padding: 12px 16px; margin-top: 14px; font-size: 13.5px; }
+  .resource a{ color: var(--evergreen); font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <div>
+      <div class="eyebrow">Manager Enablement · Learning Module</div>
+      <h1>Performance Review Conversation Training</h1>
+    </div>
+    <div class="progress-chip">
+      <span id="progressLabel">0 of 5 steps reviewed</span>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+  </div>
+
+  <div id="messages"></div>
+
+  <div id="inputArea">
+    <div class="input-row">
+      <input type="text" id="chatInput" placeholder="Type a message…" autocomplete="off">
+      <button class="send-btn" onclick="handleSend()">Send</button>
+    </div>
+    <div class="input-hint" id="inputHint">Try typing: <b>Performance Review Conversation Training</b></div>
+  </div>
+
+  <div class="end-note">PROTOTYPE — interactive artifact preview</div>
+</div>
+
+<script>
+const PLANNING_GUIDE_URL = "https://docs.google.com/document/d/1u7dUUpPPsVed1Jn-rW1lgaFUc2h3ZOExsTnnxUI07gY/copy";
+
+const STEP_DATA = [
+  {
+    title: "Prepare for the Performance Review",
+    html: `
+      <h4>Prepare your team member before the performance review</h4>
+      <p>Before the review, share the purpose, agenda, and intended outcomes so your team member knows what to expect. Clarify what they should bring and what information will be referenced. Let them know you will discuss goals, performance targets, and key success drivers. When appropriate, encourage them to connect accomplishments to relevant data.</p>
+      <p>To support preparation, offer 2–3 guiding questions, such as:</p>
+      <ul>
+        <li>What do you consider your most important contributions and accomplishments?</li>
+        <li>What competencies (knowledge, skills, abilities) were most influential in achieving those outcomes?</li>
+        <li>What impact has your work had on your team or the company?</li>
+        <li>What obstacles are standing in your way?</li>
+        <li>What feedback have you received from peers or customers?</li>
+        <li>In what areas could you improve?</li>
+        <li>What development goals would you like to set?</li>
+      </ul>
+
+      <h4>Gather team member data and examples</h4>
+      <p>Review all relevant information related to performance, including:</p>
+      <ul>
+        <li>Previous performance conversations</li>
+        <li>Performance targets</li>
+        <li>Data and updates shared throughout the year</li>
+        <li>Project plans and deliverables</li>
+        <li>Feedback from peers or other managers</li>
+        <li>Recognition received</li>
+        <li>High-priority goals and responsibilities previously discussed</li>
+        <li>Specific examples of effective performance and areas needing improvement</li>
+        <li>Quantifiable data such as quality, quantity, cost, and time</li>
+      </ul>
+      <p>Ensure every statement is supported by evidence rather than personal opinion.</p>
+
+      <h4>Prepare your mindset</h4>
+      <p>An evaluation mindset can make performance discussions feel like a trial. Shift from judge to coach. A coaching mindset encourages partnership, invites contribution, and keeps the focus on growth, development, and shared goals.</p>
+
+      <h4>Prepare your message</h4>
+      <p>Clarify what matters most before the conversation:</p>
+      <ul>
+        <li>Identify 2–3 key points you want your team member to remember during the next review cycle.</li>
+        <li>Highlight the most significant responsibilities you want to focus on</li>
+        <li>Identify 2–3 competencies and areas for improvement and growth</li>
+        <li>Use specific examples to demonstrate strengths and highlight areas for improvement.</li>
+        <li>Anticipate potential areas of disagreement and plan how to respond</li>
+      </ul>
+
+      <h4>Prepare for potential reactions</h4>
+      <p>Anticipate potential responses and plan your approach accordingly. Examples of possible reactions include:</p>
+      <div class="reaction-grid">
+        <div class="reaction-card"><b>When outlining purpose and outcomes, they may:</b><ul><li>Ask about a merit increase</li><li>Seek promotion opportunities</li><li>Request additional responsibilities</li></ul></div>
+        <div class="reaction-card"><b>When inviting their perspective, they may:</b><ul><li>Arrive unprepared</li><li>Arrive overly prepared with extensive documentation</li><li>Focus on behaviors rather than results</li><li>Hesitate to discuss their performance</li></ul></div>
+        <div class="reaction-card"><b>When you share feedback, they may:</b><ul><li>Become argumentative</li><li>Interrupt or talk over you</li><li>Shift blame for shortcomings</li><li>Become defensive</li><li>Disengage from the conversation</li></ul></div>
+      </div>
+      <div class="resource">📎 The Performance Review Conversation Planning Guide will help you plan and prepare for this step of the process: <a href="${PLANNING_GUIDE_URL}" target="_blank" rel="noopener">Planning Guide</a></div>
+    `
+  },
+  {
+    title: "Set Clear Expectations",
+    html: `
+      <p>Setting clear expectations at the beginning of the review helps your team member understand the purpose, structure, and intended outcomes of the conversation. This clarity reduces uncertainty and supports a focused, productive discussion.</p>
+      <p>Start by reviewing the purpose of the discussion and outlining the intended outcomes to establish shared understanding and set the tone. Next, walk through the agenda so your team member knows how the conversation will flow. If a self-assessment was completed, plan to begin there, followed by your perspective and a discussion of next steps.</p>
+      <p>Finally, establish clear transition points so each topic receives appropriate attention.</p>
+      <h4>Example agenda</h4>
+      <ul>
+        <li>Purpose and outcomes</li>
+        <li>Self-assessment</li>
+        <li>Feedback</li>
+        <li>Next steps</li>
+      </ul>
+    `
+  },
+  {
+    title: "Invite and Welcome Input",
+    html: `
+      <p>This step focuses on creating a two-way conversation. Your role is to actively listen, remain non-defensive, take notes, and ask open-ended questions that encourage reflection.</p>
+      <p>Begin by inviting your team member to walk through their accomplishments. If they arrive unprepared, consider rescheduling so the conversation can be meaningful and productive.</p>
+      <p>Discuss goals to better understand their aspirations. If goals are documented, review progress together and explore any new goals they want to pursue.</p>
+      <p>Examples of open-ended questions to ask after your team member shares their accomplishments:</p>
+      <div class="reaction-grid">
+        <div class="reaction-card"><b>Accomplishments and strengths</b><ul><li>How did you accomplish your goals?</li><li>Which strengths helped you most in achieving results?</li></ul></div>
+        <div class="reaction-card"><b>Challenges and lessons learned</b><ul><li>What roadblocks did you face, and how did you address them?</li><li>What factors kept you from reaching your goal?</li><li>Looking back, what would you do differently?</li><li>What did you learn from the experience?</li></ul></div>
+        <div class="reaction-card"><b>Future growth and support</b><ul><li>What support or resources would help you be more successful moving forward?</li></ul></div>
+      </div>
+    `
+  },
+  {
+    title: "Share Your Views (Key Points)",
+    html: `
+      <p>This step is about clearly sharing your perspective by focusing on the key points you want your team member to remember after the performance review. Connect feedback directly to those points rather than reviewing every detail.</p>
+      <h4>Focus On Key Points</h4>
+      <ul>
+        <li><b>Start with common ground:</b> Highlight areas where you agree with their self-evaluation to build trust and create momentum.</li>
+        <li><b>Use data as your foundation:</b> Base discussions about areas for improvement on data that directly reflects the team member's goals, specific performance examples, or feedback from customers or colleagues.</li>
+        <li><b>Maintain a collaborative dialogue:</b> Share key points clearly and invite discussion through open-ended questions.</li>
+        <li><b>Handle disconnects constructively:</b> When perspectives differ, focus on facts, link issues to goals, avoid lecturing, and remain open to new information.</li>
+        <li><b>Model company values:</b> Reinforce organizational values through your language, tone, and approach throughout the conversation.</li>
+      </ul>
+      <h4>Resolve Disconnects</h4>
+      <ul>
+        <li><b>Stay Focused:</b> Limit discussion to disconnects that directly support your core points.</li>
+        <li><b>Use Objective Evidence:</b> Rely on data, concrete performance examples, or direct feedback from customers or colleagues.</li>
+        <li><b>Align to Shared Goals:</b> Link disconnects to the individual's goals and the organization's goals, not personal preferences.</li>
+        <li><b>Avoid Personal Framing:</b> Do not lecture or frame feedback around how you would have handled the situation.</li>
+        <li><b>Remain Open-Minded:</b> Be willing to revisit and revise your perspective as new information emerges.</li>
+      </ul>
+    `
+  },
+  {
+    title: "Agree on Next Steps",
+    html: `
+      <p>As you close the review, recap growth opportunities and align on clear, actionable next steps. These may include:</p>
+      <ul>
+        <li>Training or development opportunities</li>
+        <li>New or expanded assignments or projects</li>
+        <li>Short- or long-term goals</li>
+        <li>Additional ways you can provide support</li>
+      </ul>
+      <p>Ensure your team member leaves with a clear understanding of your key points and what happens next. Ask them to summarize the agreed-upon points and next steps to confirm alignment.</p>
+      <p>Acknowledge their contributions by highlighting the value they bring to the team, department, and company. Express confidence in their performance and reinforce your ongoing support.</p>
+      <p>Finally, remember that performance reviews do not end with this conversation. Schedule regular check-ins to monitor progress and adjust as needed. The annual review should reflect those ongoing discussions, and consistent follow-up helps build a high-performance culture.</p>
+    `
+  }
+];
+
+const OVERVIEW_STEPS = [
+  ["Prepare for the performance review", "Thoughtful preparation by both you and your team member sets the stage for a productive and collaborative review. Make time to plan."],
+  ["Set clear expectations", "Outline the purpose, agenda, and intended outcomes at the beginning of the performance review to put your team member at ease and keep the conversation focused."],
+  ["Invite and welcome input", "Make the review a two-way conversation by encouraging your team member to share first, starting with accomplishments and perspectives."],
+  ["Share your views (key points)", "Present your perspective by focusing on the key points you want your team member to remember, using clear and purposeful language."],
+  ["Agree on next steps", "Wrap up by reviewing growth opportunities and aligning on specific next steps to move forward."]
+];
+
+let stage = 'start'; // start -> overview -> steps
+const reviewed = new Set();
+const messages = document.getElementById('messages');
+const inputEl = document.getElementById('chatInput');
+const inputArea = document.getElementById('inputArea');
+const inputHint = document.getElementById('inputHint');
+
+inputEl.addEventListener('keydown', e => { if(e.key === 'Enter') handleSend(); });
+
+function addUserMessage(text){
+  const div = document.createElement('div');
+  div.className = 'msg user';
+  div.innerHTML = `<div class="msg-label">You</div><div class="msg-bubble"></div>`;
+  div.querySelector('.msg-bubble').textContent = text;
+  messages.appendChild(div);
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+function addTypingIndicator(){
+  const div = document.createElement('div');
+  div.className = 'msg assistant';
+  div.id = 'typingIndicator';
+  div.innerHTML = `<div class="msg-label">Assistant</div><div class="msg-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+  messages.appendChild(div);
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+function removeTypingIndicator(){
+  const el = document.getElementById('typingIndicator');
+  if(el) el.remove();
+}
+
+function addAssistantMessage(innerHtml){
+  const div = document.createElement('div');
+  div.className = 'msg assistant';
+  div.innerHTML = `<div class="msg-label">Assistant</div><div class="msg-bubble">${innerHtml}</div>`;
+  messages.appendChild(div);
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+function handleSend(){
+  const text = inputEl.value.trim();
+  if(!text) return;
+  addUserMessage(text);
+  inputEl.value = '';
+  addTypingIndicator();
+
+  setTimeout(() => {
+    removeTypingIndicator();
+    const lower = text.toLowerCase();
+
+    if(stage === 'start'){
+      if(lower.includes('performance review') && lower.includes('training')){
+        showTrainingOverview();
+        stage = 'overview';
+        inputHint.innerHTML = 'Try typing: <b>Ready</b>';
+      } else {
+        addAssistantMessage(`<p>I can help with that. To begin, type: <b style="font-family:var(--mono); color:var(--accent-deep);">Performance Review Conversation Training</b></p>`);
+      }
+    } else if(stage === 'overview'){
+      if(lower === 'ready'){
+        showHighLevelOverview();
+        stage = 'steps';
+        inputArea.classList.add('hidden');
+        setTimeout(() => {
+          addTypingIndicator();
+          setTimeout(() => {
+            removeTypingIndicator();
+            showStepList();
+          }, 650);
+        }, 400);
+      } else {
+        addAssistantMessage(`<p>Whenever you're ready to continue, type <b style="font-family:var(--mono); color:var(--accent-deep);">Ready</b>.</p>`);
+      }
+    }
+  }, 650);
+}
+
+function showTrainingOverview(){
+  addAssistantMessage(`
+    <p>Performance reviews are one of the most powerful tools a manager can use, yet they're often underutilized. They have become more focused on filling out forms and checking boxes than having meaningful conversations.</p>
+    <p>When this happens, managers and team members miss opportunities to strengthen relationships and explore development opportunities. On the other hand, if done correctly, performance reviews can engage and motivate team members to maximize and align their efforts.</p>
+    <p>This module will equip you with the skills and tools to conduct collaborative performance reviews that can enhance learning, productivity, and collaboration throughout the year.</p>
+    <p>At the end of this Module, you will be able to:</p>
+    <ul class="ov-list">
+      <li>Prepare for focused, collaborative reviews</li>
+      <li>Share clear, targeted feedback</li>
+      <li>Address and resolve performance issues</li>
+      <li>Follow the key steps of an effective review</li>
+      <li>Boost motivation, learning, and collaboration throughout the year</li>
+    </ul>
+    <div class="note">Note: This process focuses solely on preparing for the performance review conversation and does not address performance ratings. For guidance on performance ratings, please consult your HRBP.</div>
+    <div class="prompt-line">When you're ready, we'll begin and walk through the training content step by step. Type <b>Ready</b> when you'd like to start.</div>
+  `);
+}
+
+function showHighLevelOverview(){
+  const overviewHtml = OVERVIEW_STEPS.map(([title, desc]) => `
+    <p style="margin-bottom:4px;"><b style="color:var(--ink);">${title}</b></p>
+    <p style="margin-bottom:14px;">${desc}</p>
+  `).join('');
+
+  addAssistantMessage(`
+    <p style="font-family:var(--serif); font-size:16px; color:var(--ink); font-weight:500; margin-bottom:12px;">High-Level Overview: Performance Review Process</p>
+    ${overviewHtml}
+  `);
+}
+
+function showStepList(){
+  const stepsHtml = STEP_DATA.map((s, i) => `
+    <div class="step-card" id="card-${i}">
+      <div class="step-head" onclick="toggleStep(${i})">
+        <div class="step-num">${i+1}</div>
+        <div class="step-title">${s.title}</div>
+        <div class="step-status" id="status-${i}">Not reviewed</div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="step-body" id="body-${i}">
+        <div class="step-body-inner">${s.html}</div>
+      </div>
+    </div>
+  `).join('');
+
+  addAssistantMessage(`
+    <p class="steps-intro">Click on a step below to learn more.</p>
+    <div id="stepList">${stepsHtml}</div>
+  `);
+}
+
+function toggleStep(i){
+  const card = document.getElementById(`card-${i}`);
+  const body = document.getElementById(`body-${i}`);
+  const isOpen = card.classList.contains('open');
+
+  if(isOpen){
+    body.style.maxHeight = null;
+    card.classList.remove('open');
+  } else {
+    card.classList.add('open');
+    body.style.maxHeight = body.scrollHeight + 'px';
+    if(!reviewed.has(i)){
+      reviewed.add(i);
+      card.classList.add('reviewed');
+      document.getElementById(`status-${i}`).textContent = 'Reviewed ✓';
+      updateProgress();
+    }
+  }
+}
+
+function updateProgress(){
+  const n = reviewed.size;
+  document.getElementById('progressLabel').textContent = `${n} of 5 steps reviewed`;
+  document.getElementById('progressFill').style.width = (n/5*100) + '%';
+}
+</script>
+</body>
+</html>
