@@ -1,0 +1,396 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #EEF1F4;
+    --surface: #FFFFFF;
+    --surface-alt: #E4E9EF;
+    --ink: #1B2430;
+    --ink-soft: #5B6675;
+    --ink-faint: #8B96A3;
+    --line: #D6DCE3;
+    --accent: #176480;
+    --accent-hover: #124F65;
+    --accent-soft: #E4EFEC;
+    --error: #B3432B;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+    --font-body: 'Inter', sans-serif;
+  }
+  * { box-sizing: border-box; }
+
+  #ig-root {
+    background: var(--bg);
+    min-height: 100vh;
+    font-family: var(--font-body);
+    color: var(--ink);
+    padding: 48px 20px 60px;
+    display: flex;
+    justify-content: center;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(27,36,48,0.06), 0 16px 40px rgba(27,36,48,0.08);
+  }
+  .ig-wrap { width: 100%; max-width: 760px; }
+
+  .ig-banner {
+    background: var(--accent); color: #FFFFFF; font-family: var(--font-mono);
+    font-weight: 700; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+    text-align: center; padding: 10px 16px; border-radius: 6px; margin-bottom: 24px;
+  }
+  .ig-eyebrow {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em; color: var(--ink);
+    text-transform: uppercase; display: flex; align-items: center; gap: 8px;
+  }
+  .ig-eyebrow::before { content: '+'; font-size: 14px; }
+  .ig-title { font-family: var(--font-display); font-weight: 700; font-size: 32px; margin: 6px 0 4px; color: var(--ink); }
+  .ig-sub { font-size: 14px; color: var(--ink-soft); line-height: 1.5; max-width: 560px; }
+
+  .ig-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    padding: 28px; margin-top: 24px; position: relative;
+  }
+
+  .ig-field-label { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-faint); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; display: block; }
+  .ig-input {
+    width: 100%; background: var(--surface-alt); border: 1px solid var(--line); border-radius: 6px;
+    color: var(--ink); font-family: var(--font-display); font-size: 18px; padding: 12px 14px;
+  }
+  .ig-input:focus { outline: none; border-color: var(--accent); }
+
+  .ig-role-list { font-size: 12.5px; color: var(--ink-soft); margin-top: 10px; line-height: 1.7; }
+  .ig-role-list b { color: var(--ink); }
+  .ig-role-chip {
+    display: inline-block; background: var(--surface-alt); border: 1px solid var(--line); color: var(--ink-soft);
+    font-family: var(--font-mono); font-size: 11.5px; padding: 4px 10px; border-radius: 4px; margin: 4px 6px 0 0;
+    cursor: pointer;
+  }
+  .ig-role-chip:hover { border-color: var(--accent); color: var(--ink); background: var(--accent-soft); }
+
+  .ig-btn {
+    font-family: var(--font-mono); font-size: 12.5px; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 12px 22px; border-radius: 6px; cursor: pointer; border: 1px solid var(--line);
+    background: var(--surface); color: var(--ink-soft); margin-top: 16px;
+  }
+  .ig-btn:hover { border-color: var(--accent); color: var(--ink); }
+  .ig-btn-primary { background: var(--accent); border-color: var(--accent); color: #FFFFFF; font-weight: 600; }
+  .ig-btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #FFFFFF; }
+
+  .ig-error { color: var(--error); font-family: var(--font-mono); font-size: 13px; margin-top: 14px; }
+
+  .ig-guide-title { font-family: var(--font-display); font-size: 28px; font-weight: 700; margin: 32px 0 2px; color: var(--ink); }
+  .ig-guide-meta { font-family: var(--font-mono); font-size: 12px; color: var(--ink-soft); margin-bottom: 20px; }
+
+  .ig-comp-block { border: 1px solid var(--line); border-radius: 10px; padding: 22px; margin-bottom: 18px; background: var(--surface); }
+  .ig-comp-name { font-family: var(--font-display); font-size: 21px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+  .ig-comp-inrole { font-size: 13px; font-style: italic; color: var(--ink); margin-bottom: 16px; line-height: 1.5; }
+  .ig-comp-inrole b { font-style: normal; }
+
+  .ig-section-label { font-family: var(--font-mono); font-size: 11px; color: var(--ink); letter-spacing: 0.08em; text-transform: uppercase; margin: 16px 0 8px; }
+  .ig-check-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13.5px; color: var(--ink); padding: 4px 0; line-height: 1.5; }
+  .ig-check-item .box { width: 13px; height: 13px; border: 1.5px solid var(--ink-soft); border-radius: 3px; flex-shrink: 0; margin-top: 2px; }
+  .ig-followup b { color: var(--ink); }
+
+  .ig-notes-box { border: 1px solid var(--line); border-radius: 8px; padding: 12px; margin-top: 10px; min-height: 130px; background: var(--surface-alt); }
+  .ig-notes-label { font-size: 11.5px; font-weight: 600; color: var(--ink-soft); margin-bottom: 4px; }
+  .ig-notes-placeholder { font-size: 12px; color: var(--ink-faint); font-style: italic; }
+
+  .ig-np-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 14px; }
+  .ig-np-col-label { font-size: 11.5px; font-weight: 700; margin-bottom: 6px; }
+  .ig-np-col-label.neg { color: var(--error); }
+  .ig-np-col-label.pos { color: var(--accent); }
+
+  .ig-rating-row { display: flex; gap: 14px; margin-top: 16px; flex-wrap: wrap; }
+  .ig-rating-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--ink-soft); }
+  .ig-rating-item .box { width: 12px; height: 12px; border: 1.5px solid var(--ink-soft); border-radius: 3px; }
+
+  .ig-actions { display: flex; gap: 10px; margin-top: 8px; margin-bottom: 30px; }
+
+  @media print {
+    #ig-root { border: none; box-shadow: none; background: white; color: black; padding: 0; }
+    .ig-banner, .ig-card, .ig-actions, .no-print { display: none !important; }
+    .ig-guide-title, .ig-comp-name { color: black; }
+    .ig-comp-block {
+      background: white; border: 1px solid #999; break-inside: avoid;
+      padding: 14px 16px; margin-bottom: 0;
+    }
+    .ig-comp-name { font-size: 18px; margin-bottom: 2px; }
+    .ig-comp-inrole { color: #333; font-size: 11px; margin-bottom: 8px; line-height: 1.3; }
+    .ig-check-item, .ig-guide-meta, .ig-rating-item { color: black; }
+    .ig-check-item { font-size: 11px; padding: 2px 0; line-height: 1.3; gap: 6px; }
+    .ig-check-item .box { width: 10px; height: 10px; margin-top: 1px; }
+    .ig-section-label { color: #333; font-size: 9.5px; margin: 8px 0 4px; }
+    .ig-notes-box { min-height: 2.5in; border-color: #999; padding: 6px; margin-top: 4px; }
+    .ig-notes-label { color: #333; font-size: 10px; margin-bottom: 2px; }
+    .ig-notes-placeholder { display: none; }
+    .ig-np-grid { gap: 14px; margin-top: 6px; }
+    .ig-np-col-label { font-size: 10px; margin-bottom: 3px; }
+    .ig-rating-row { gap: 10px; margin-top: 6px; }
+    .ig-rating-item { font-size: 10px; gap: 3px; }
+    .ig-rating-item .box { width: 10px; height: 10px; }
+    .ig-guide-title { font-size: 20px; margin: 0 0 2px; }
+    .ig-guide-meta { font-size: 10px; margin-bottom: 10px; }
+    .ig-guide-title, .ig-guide-meta { display: none; }
+    .ig-comp-block { break-after: page; page-break-after: always; }
+    .ig-comp-block:last-of-type { break-after: auto; page-break-after: auto; }
+  }
+
+  .ig-cover-page { min-height: 90vh; display: flex; flex-direction: column; justify-content: center; padding: 20px 0; }
+  .ig-cover-eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.2em; color: var(--ink); text-transform: uppercase; margin-bottom: 10px; }
+  .ig-cover-role { font-family: var(--font-display); font-weight: 700; font-size: 42px; line-height: 1.15; margin-bottom: 8px; color: var(--ink); }
+  .ig-cover-meta { font-family: var(--font-mono); font-size: 13px; color: var(--ink-soft); margin-bottom: 48px; }
+  .ig-cover-field { margin-bottom: 26px; max-width: 420px; }
+  .ig-cover-field-label { font-family: var(--font-mono); font-size: 11px; color: var(--ink-faint); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+  .ig-cover-input {
+    width: 100%; background: transparent; border: none; border-bottom: 1.5px solid var(--line);
+    color: var(--ink); font-family: var(--font-body); font-size: 17px; padding: 6px 2px; border-radius: 0;
+  }
+  .ig-cover-input:focus { outline: none; border-bottom-color: var(--accent); }
+
+  .ig-overview-page { padding: 12px 0 30px; }
+  .ig-overview-title { font-family: var(--font-display); font-size: 24px; font-weight: 700; margin-bottom: 14px; color: var(--ink); }
+  .ig-overview-text { font-size: 14px; color: var(--ink-soft); line-height: 1.6; max-width: 560px; margin-bottom: 28px; }
+  .ig-comp-list-title { font-family: var(--font-mono); font-size: 12px; color: var(--ink); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+  .ig-comp-list { list-style: none; padding: 0; margin: 0; }
+  .ig-comp-list li {
+    font-family: var(--font-body); padding: 12px 0;
+    border-bottom: 1px solid var(--line); display: flex; align-items: flex-start; gap: 10px;
+  }
+  .ig-comp-list li .num { font-family: var(--font-mono); font-size: 12px; color: var(--ink); margin-top: 3px; flex-shrink: 0; }
+  .ig-comp-list li .comp-name { font-family: var(--font-display); font-size: 16px; color: var(--ink); margin-bottom: 2px; }
+  .ig-comp-list li .comp-why { font-size: 12.5px; color: var(--ink-soft); line-height: 1.4; }
+
+  .ig-page-break { page-break-after: always; break-after: page; }
+
+  @media print {
+    .ig-cover-page { min-height: 9in; justify-content: center; }
+    .ig-cover-role, .ig-cover-eyebrow, .ig-cover-meta { color: black; }
+    .ig-cover-field-label { color: #333; }
+    .ig-cover-input { color: black; border-bottom-color: #333; }
+    .ig-overview-title, .ig-overview-text, .ig-comp-list-title { color: black; }
+    .ig-comp-list li { border-bottom-color: #999; }
+    .ig-comp-list li .num { color: #333; }
+    .ig-comp-list li .comp-name { color: black; }
+    .ig-comp-list li .comp-why { color: #333; }
+  }
+
+  @media (max-width: 480px) {
+    .ig-title { font-size: 24px; }
+    .ig-np-grid { grid-template-columns: 1fr; }
+    .ig-cover-role { font-size: 30px; }
+  }
+</style>
+
+<div id="ig-root">
+  <div class="ig-wrap" id="ig-app"></div>
+</div>
+
+<script>
+const COMPETENCY_DATA = {"Adaptability": {"questions": ["Tell me about a time your priorities changed suddenly. How did you adjust?", "Describe a time you had to change your approach mid-project due to new circumstances.", "Tell me about a time you adapted well to an unexpected change.", "Describe a time you struggled to adapt to a change. What did you learn?", "Tell me about a time you had to remain effective despite a lot of change happening around you."], "followups": ["Approach: What steps did you take?", "Rationale: Why did you choose that approach?", "Result: What was the outcome?", "Reflection: What did you learn from the experience?", "Transfer: How have you applied that lesson since?"], "negative": ["Struggles to adjust when priorities change suddenly.", "Sticks rigidly to the original approach despite new circumstances.", "Struggles to adapt to unexpected change.", "Doesn't learn from difficulty adapting.", "Effectiveness declines amid ongoing change."], "positive": ["Adjusts priorities quickly and effectively when circumstances change.", "Changes approach smoothly when new circumstances arise.", "Adapts well to unexpected change.", "Learns from situations where adapting was difficult.", "Remains effective amid ongoing change."], "rating": ["1 Undeveloped", "2 Developing", "3 Proficient", "4 Advanced", "5 Exceptional", "6 No Evidence"]}, "Builds Relationships": {"questions": ["Tell me about a relationship you built that created long-term value for your work.", "Describe a time you sustained a relationship through a difficult period.", "Tell me about a time a relationship you built expanded your influence or access to resources.", "Describe how you go about building trust with someone new.", "Tell me about a time a strong relationship helped you get something done that would have otherwise been difficult."], "followups": ["Approach: What steps did you take?", "Rationale: Why did you choose that approach?", "Result: What was the outcome?", "Reflection: What did you learn from the experience?", "Transfer: How have you applied that lesson since?"], "negative": ["Builds relationships that don't sustain lasting value.", "Lets relationships lapse during difficult periods.", "Doesn't expand influence through relationship building.", "Struggles to build trust with new people.", "Doesn't leverage relationships to get things done."], "positive": ["Builds relationships that create lasting value.", "Sustains relationships through difficult periods.", "Expands influence and access through genuine relationships.", "Builds trust deliberately and consistently with new people.", "Leverages strong relationships to accomplish shared goals."], "rating": ["1 Undeveloped", "2 Developing", "3 Proficient", "4 Advanced", "5 Exceptional", "6 No Evidence"]}, "Business Insight": {"questions": ["Tell me about a time you used your understanding of the business to make a better decision.", "Describe a time you identified an industry trend that affected your organization or team.", "Tell me about a time you had to explain how your work connected to broader business goals.", "Describe a decision you made that balanced business priorities with practical constraints.", "Tell me about a time your business understanding helped you spot a risk or opportunity others missed."], "followups": ["Approach: What steps did you take?", "Rationale: Why did you choose that approach?", "Result: What was the outcome?", "Reflection: What did you learn from the experience?", "Transfer: How have you applied that lesson since?"], "negative": ["Makes decisions without considering business context.", "Misses or ignores relevant industry trends.", "Doesn't connect own work to broader business goals.", "Struggles to balance business priorities with practical constraints.", "Misses risks or opportunities apparent to others."], "positive": ["Applies business understanding to make informed decisions.", "Identifies industry trends and their implications early.", "Connects individual work to broader business goals.", "Balances business priorities with practical constraints effectively.", "Spots risks or opportunities others overlook."], "rating": ["1 Undeveloped", "2 Developing", "3 Proficient", "4 Advanced", "5 Exceptional", "6 No Evidence"]}, "Champion the Customer": {"questions": ["Tell me about a time you nearly lost a customer and worked to turn the relationship around.", "Tell me about a time you went above and beyond for a difficult or challenging customer.", "Describe a time you had to resolve a problem for an internal or external customer.", "Tell me about a time you changed your approach based on customer feedback.", "Describe a time you gathered new information directly from a customer. What did you do with it?"], "followups": ["Approach: What steps did you take?", "Rationale: Why did you choose that approach?", "Result: What was the outcome?", "Reflection: What did you learn from the experience?", "Transfer: How have you applied that lesson since?"], "negative": ["Doesn't dedicate enough effort to building customer relationships.", "Uncomfortable handling customers.", "Focuses on own activities instead of customer needs.", "Doesn't consider customer feedback important.", "Thinks they already know what the customer needs."], "positive": ["Establishes and maintains effective customer relationships.", "Handles customers effectively, even in difficult situations.", "Does whatever is necessary to understand and resolve customer needs.", "Develops improvements based on customer feedback.", "Builds and delivers solutions that meet or exceed customer expectations."], "rating": ["1 Undeveloped", "2 Developing", "3 Proficient", "4 Advanced", "5 Exceptional", "6 No Evidence"]}, "Collaborates": {"questions": ["Tell me about a time you worked successfully with people from a different team or function to achieve a shared goal.", "Describe a time you built a strong working relationship with someone where little to no relationship existed before.", "Tell me about a time you noticed someone wasn't getting credit they deserved. What did you do?", "Describe a time you had to work with multiple groups or people who had different interests or priorities.", "Tell me about a time a project only succeeded because of how well you collaborated with others."], "followups": ["Approach: What steps did you take?", "Rationale: Why did you choose that approach?", "Result: What was the outcome?", "Reflection: What did you learn from the experience?", "Transfer: How have you applied that lesson since?"], "negative": ["Works in a silo, missing opportunities to partner across teams.", "Doesn't invest in building new working relationships.", "Doesn't give credit where it's due.", "Puts own interests ahead of others'.", "Prefers to work alone rather than with others."], "positive": ["Partners effectively across teams to achieve shared objectives.", "Proactively builds trust and relationships with new people.", "Gives credit to others for their contributions.", "Considers others' interests and finds common ground.", "Recognizes and reinforces how collaboration drove success."], "rating": ["1 Undeveloped", "2 Developing", "3 Proficient", "4 Advanced", "5 Exceptional", "6 No Evidence"]}, "Communicates Effectively": {"questions": ["Tell me about a time you had to explain something important to someone outside your industry or function. How did you adapt your message?", "Describe a presentation or important communication you delivered that had a significant impact. What made it effective?", "Tell me about a time a discussion lost focus and you helped bring it back on track.", "Tell me about a time someone else's perspective in a meeting changed your view. How did you respond?", "Describe a time you had to convey a complex message clearly and concisely."], "followups": ["Approach: What steps did you take?", "Rationale: Why did you choose that approach?", "Result: What was the outcome?", "Reflection: What did you learn from the experience?", "Transfer: How have you applied that lesson since?"], "negative": ["Doesn't adjust approach to suit the audience.", "Is unclear in written and verbal communication.", "Doesn't share information others need to stay aligned.", "Doesn't listen well to others' viewpoints.", "Is not concise when communicating."], "positive": ["Adapts language and approach to the audience's level of understanding.", "Communicates with clarity and impact across formats.", "Redirects discussions to keep them clear and productive.", "Listens attentively and is open to changing their view.", "Conveys thorough information concisely."], "rating": ["1 Undeveloped", "2 Developing", "3 Proficient", "4 Advanced", "5 Exceptional", "6 No Evidence"]}, "Continuous Improvement": {"questions": ["Tell me about a time you identified an opportunity to improve a process.", "Describe a time you applied a best practice that improved quality or efficiency.", "Tell me about an improvement you drove that had a measurable impact.", "Describe a time you challenged the status quo to make something better.", "Tell me about a time an improvement effort didn't work as planned. What did you learn?"], "followups": ["Approach: What steps did you take?", "Rationale: Why did you choose that approach?", "Result: What was the outcome?", "Reflection: What did you learn from the experience?", "Transfer: How have you applied that lesson since?"], "negative": ["Doesn't look for opportunities to improve.", "Sticks with familiar practices even when better ones exist.", "Improvement efforts rarely produce measurable impact.", "Accepts the status quo without question.", "Doesn't learn from unsuccessful improvement attempts."], "positive": ["Proactively identifies opportunities for improvement.", "Applies best practices to improve quality or efficiency.", "Drives improvements with measurable impact.", "Challenges the status quo constructively.", "Learns from improvement efforts that fall short."], "rating": ["1 Undeveloped", "2 Developing", "3 Proficient", "4 Advanced", "5 Exceptional", "6 No Evidence"]}, "Digital Fluency": {"questions": ["Tell me about a time you quickly learned and applied a new technology to improve your work.", "Describe a time you were one of the first on your team to try a new digital tool or platform. What prompted you to adopt it?", "Tell me about the most significant technology-related challenge you've had to solve. How did you approach it?", "Describe a time you used technology to solve a problem or create an opportunity that others hadn't considered.", "Tell me about a time a digital tool, platform, or process didn't work as expected. How did you respond?"], "followups": ["Approach: What steps did you take?", "Rationale: Why did you choose that approach?", "Result: What was the outcome?", "Reflection: What did you learn from the experience?", "Transfer: How have you applied that lesson since?"], "negative": ["Slow to learn or apply new technologies.", "Waits for others to adopt new tools before trying them.", "Struggles to work through technology-related challenges.", "Doesn't see or pursue opportunities that technology could enable.", "Becomes frustrated or disengaged when technology issues arise."], "positive": ["Quickly learns and applies new technologies to improve outcomes.", "Proactively adopts new tools ahead of others.", "Works through technical challenges methodically and effectively.", "Applies technology creatively to unlock new opportunities.", "Responds calmly and effectively when technology doesn't work as expected."], "rating": ["1 Undeveloped", "2 Developing", "3 Proficient", "4 Advanced", "5 Exceptional", "6 No Evidence"]}, "Drives Results": {"questions": ["Tell me about a time you delivered results despite significant obstacles.", "Describe a time you maintained focus on a goal over a long period.", "Tell me about a commitment you delivered on despite it being difficult.", "Describe a time you held yourself or others to a high standard even under pressure.", "Tell me about a result you're especially proud of achieving."], "followups": ["Approach: What steps did you take?", "Rationale: Why did you choose that approach?", "Result: What was the outcome?", "Reflection: What did you learn from the experience?", "Transfer: How have you applied that lesson since?"], "negative": ["Lets obstacles derail progress toward results.", "Loses focus on goals over time.", "Falls short on commitments when things get difficult.", "Lowers standards under pressure.", "Lacks urgency or persistence in pursuing outcomes."], "positive": ["Delivers meaningful results despite obstacles.", "Maintains focus on goals over time.", "Follows through on commitments even when difficult.", "Sustains high standards under pressure.", "Achieves outcomes with urgency and persistence."], "rating": ["1 Undeveloped", "2 Developing", "3 Proficient", "4 Advanced", "5 Exceptional", "6 No Evidence"]}, "Ensures Accountability": {"questions": ["Tell me about a time you made a mistake while working with others. How did you take ownership and make it right?", "Describe a time you set clear goals for yourself or your team and defined how success would be measured.", "Tell me about a time your responsibilities or goals shifted significantly midway through a project. How did you stay accountable to the new expectations?", "Describe a time you noticed a commitment was at risk of not being met. What did you do?", "Tell me about a time a member of your team made a mistake. How did you hold them accountable while supporting them?"], "followups": ["Approach: What steps did you take?", "Rationale: Why did you choose that approach?", "Result: What was the outcome?", "Reflection: What did you learn from the experience?", "Transfer: How have you applied that lesson since?"], "negative": ["Deflects responsibility or blames others for mistakes.", "Sets vague goals without clear measures of success.", "Loses focus or drops commitments when priorities shift.", "Fails to track progress or flag issues until it's too late.", "Avoids addressing others' mistakes or gives vague, unhelpful feedback."], "positive": ["Takes personal responsibility for decisions, actions, and mistakes.", "Sets clear goals and defines measurable standards for success.", "Adapts to shifting responsibilities while staying committed to outcomes.", "Proactively monitors progress and raises concerns before commitments slip.", "Gives direct, constructive feedback that helps others improve."], "rating": ["1 Undeveloped", "2 Developing", "3 Proficient", "4 Advanced", "5 Exceptional", "6 No Evidence"]}, "Influences Others": {"questions": ["Tell me about a time you persuaded someone to support an idea they were initially against.", "Describe a negotiation you led that resulted in a good outcome for both sides.", "Tell me about a time you built a compelling case that won support for an initiative.", "Describe a time you had to align your idea with someone else's priorities to gain their support.", "Tell me about a time your attempt to influence someone didn't work. What did you learn?"], "followups": ["Approach: What steps did you take?", "Rationale: Why did you choose that approach?", "Result: What was the outcome?", "Reflection: What did you learn from the experience?", "Transfer: How have you applied that lesson since?"], "negative": ["Struggles to persuade others who are initially resistant.", "Negotiates poorly, leaving one side dissatisfied.", "Builds weak or unconvincing cases for initiatives.", "Doesn't consider others' interests when seeking support.", "Doesn't learn from failed attempts to influence others."], "positive": ["Persuades others to support ideas they initially resisted.", "Negotiates effectively toward mutually beneficial outcomes.", "Builds compelling, well-reasoned cases for initiatives.", "Aligns ideas with others' interests to gain support.", "Learns from unsuccessful attempts to influence others."], "rating": ["1 Undeveloped", "2 Developing", "3 Proficient", "4 Advanced", "5 Exceptional", "6 No Evidence"]}, "Judgment & Decision Making": {"questions": ["Describe a project-related decision you made that led to a strong outcome. Walk me through how you made it.", "Tell me about a time you had to make a quick decision under time pressure that turned out well.", "Describe a time you had to gather information quickly to make a well-informed recommendation.", "Give me an example of a time you had to judge whether to make a decision yourself or escalate it to someone else.", "Describe a time you received feedback on a decision you made. How did you respond?"], "followups": ["Approach: What steps did you take?", "Rationale: Why did you choose that approach?", "Result: What was the outcome?", "Reflection: What did you learn from the experience?", "Transfer: How have you applied that lesson since?"], "negative": ["Makes decisions without needed analysis.", "Lacks confidence to make timely, independent decisions.", "Not orderly in thinking when gathering information.", "Relies too much on self when others' input is needed.", "Lets feelings play too significant a role over data or feedback."], "positive": ["Considers criteria and trade-offs to make effective decisions.", "Makes timely decisions, even under pressure.", "Objectively gathers and analyzes information quickly.", "Knows when to decide independently or gather others' input.", "Uses feedback to strengthen future decisions."], "rating": ["1 Undeveloped", "2 Developing", "3 Proficient", "4 Advanced", "5 Exceptional", "6 No Evidence"]}, "Navigates Conflict": {"questions": ["Tell me about a time you addressed a disagreement between two people or teams.", "Describe a conflict you had with a colleague and how you resolved it.", "Tell me about a time you found common ground between two very different perspectives.", "Describe a time a conflict you resolved actually strengthened a relationship.", "Tell me about a time you avoided or mishandled a conflict. What did you learn?"], "followups": ["Approach: What steps did you take?", "Rationale: Why did you choose that approach?", "Result: What was the outcome?", "Reflection: What did you learn from the experience?", "Transfer: How have you applied that lesson since?"], "negative": ["Avoids addressing disagreements.", "Lets conflicts with colleagues fester unresolved.", "Struggles to find common ground between differing views.", "Resolves conflict in ways that damage relationships.", "Doesn't reflect on or learn from poorly handled conflict."], "positive": ["Addresses disagreements constructively rather than avoiding them.", "Resolves conflicts with colleagues professionally.", "Finds common ground between differing perspectives.", "Resolves conflict in ways that strengthen relationships.", "Reflects on and learns from conflicts handled poorly."], "rating": ["1 Undeveloped", "2 Developing", "3 Proficient", "4 Advanced", "5 Exceptional", "6 No Evidence"]}, "Resilience": {"questions": ["Tell me about a time you faced a significant setback at work. How did you respond?", "Describe a high-pressure situation where you had to stay composed.", "Tell me about a time you helped a teammate stay focused during a difficult period.", "Describe how you recovered from a failure and got back on track.", "Tell me about the most challenging period of adversity you've faced professionally."], "followups": ["Approach: What steps did you take?", "Rationale: Why did you choose that approach?", "Result: What was the outcome?", "Reflection: What did you learn from the experience?", "Transfer: How have you applied that lesson since?"], "negative": ["Struggles to recover from setbacks.", "Loses composure or effectiveness under pressure.", "Doesn't support others through difficult periods.", "Dwells on failure rather than learning and moving forward.", "Effectiveness declines significantly during prolonged adversity."], "positive": ["Recovers quickly and constructively from setbacks.", "Maintains composure and sound judgment under pressure.", "Helps others stay focused and productive during difficulty.", "Learns from failure and applies it to bounce back stronger.", "Sustains effectiveness through prolonged adversity."], "rating": ["1 Undeveloped", "2 Developing", "3 Proficient", "4 Advanced", "5 Exceptional", "6 No Evidence"]}, "Solves Complex Problems": {"questions": ["Tell me about a time you used a structured process to work through a complex problem.", "Describe a time your first solution to a problem didn't work. How did you rethink your approach?", "Tell me about a time you had to quickly identify the root cause of a complex problem under time pressure.", "Describe a time you gathered information from multiple sources or perspectives to fully understand a problem before solving it.", "Tell me about a time you faced conflicting or incomplete data. How did you decide how to proceed?"], "followups": ["Approach: What steps did you take?", "Rationale: Why did you choose that approach?", "Result: What was the outcome?", "Reflection: What did you learn from the experience?", "Transfer: How have you applied that lesson since?"], "negative": ["Doesn't apply systematic problem-solving methods.", "Sticks with a failing approach rather than rethinking it.", "Doesn't take time to define the essence of the problem.", "Draws on limited sources of information.", "Allows intuition to override the facts."], "positive": ["Applies a systematic, repeatable approach to solving problems.", "Reevaluates and adapts when an initial solution fails.", "Quickly identifies the root cause and essence of a problem.", "Explores multiple sources and perspectives before concluding.", "Evaluates conflicting information objectively before deciding."], "rating": ["1 Undeveloped", "2 Developing", "3 Proficient", "4 Advanced", "5 Exceptional", "6 No Evidence"]}, "Stakeholder Alignment": {"questions": ["Tell me about a time you had to align stakeholders with competing interests around a shared goal.", "Describe a time you built trust with a stakeholder who was initially skeptical of you or your work.", "Tell me about a time you incorporated a stakeholder's perspective and it changed your approach.", "Describe a situation where stakeholder priorities conflicted. How did you resolve it?", "Tell me about a time you kept a key stakeholder informed and engaged throughout a project."], "followups": ["Approach: What steps did you take?", "Rationale: Why did you choose that approach?", "Result: What was the outcome?", "Reflection: What did you learn from the experience?", "Transfer: How have you applied that lesson since?"], "negative": ["Struggles to align stakeholders with differing interests.", "Fails to build trust with skeptical stakeholders.", "Gathers stakeholder input but doesn't genuinely use it.", "Avoids or mishandles conflicting stakeholder priorities.", "Leaves stakeholders uninformed or disengaged."], "positive": ["Aligns stakeholders with competing interests around shared goals.", "Builds trust with skeptical or difficult stakeholders.", "Genuinely incorporates stakeholder input into decisions.", "Resolves conflicting stakeholder priorities effectively.", "Proactively keeps stakeholders informed and engaged."], "rating": ["1 Undeveloped", "2 Developing", "3 Proficient", "4 Advanced", "5 Exceptional", "6 No Evidence"]}, "Strategic Mindset": {"questions": ["Tell me about a time you saw the big picture when others were focused on details.", "Describe a time you anticipated a future opportunity or challenge before it was obvious.", "Tell me about a decision you made that balanced short-term needs with long-term strategy.", "Describe how you've aligned your team's priorities with a broader strategic goal.", "Tell me about a time your strategic thinking changed the direction of a project or initiative."], "followups": ["Approach: What steps did you take?", "Rationale: Why did you choose that approach?", "Result: What was the outcome?", "Reflection: What did you learn from the experience?", "Transfer: How have you applied that lesson since?"], "negative": ["Gets lost in details, missing the big picture.", "Fails to anticipate future opportunities or challenges.", "Focuses on short-term needs at the expense of long-term strategy.", "Doesn't align team priorities with broader goals.", "Rarely influences direction through strategic thinking."], "positive": ["Sees the big picture beyond immediate details.", "Anticipates future opportunities or challenges early.", "Balances short-term needs with long-term strategy.", "Aligns team priorities with broader strategic goals.", "Shapes direction through strategic thinking."], "rating": ["1 Undeveloped", "2 Developing", "3 Proficient", "4 Advanced", "5 Exceptional", "6 No Evidence"]}, "Systems Thinking": {"questions": ["Tell me about a time you identified how a change in one area would affect another part of the organization.", "Describe a decision where you had to consider interdependencies across people, process, and technology.", "Tell me about a time you solved a problem by looking at the whole system rather than just the immediate issue.", "Describe a time you missed an interdependency and it caused a problem. What did you learn?", "Tell me about a time your systems-level thinking improved how the organization operates."], "followups": ["Approach: What steps did you take?", "Rationale: Why did you choose that approach?", "Result: What was the outcome?", "Reflection: What did you learn from the experience?", "Transfer: How have you applied that lesson since?"], "negative": ["Overlooks how changes in one area affect others.", "Considers issues in isolation, ignoring interdependencies.", "Solves surface-level symptoms rather than root systemic causes.", "Doesn't learn from missed interdependencies.", "Rarely applies systems-level thinking to improve performance."], "positive": ["Recognizes how changes in one area ripple across others.", "Considers interdependencies across people, process, and technology.", "Solves problems by addressing the whole system, not just symptoms.", "Learns from missed interdependencies.", "Improves organizational performance through systems-level thinking."], "rating": ["1 Undeveloped", "2 Developing", "3 Proficient", "4 Advanced", "5 Exceptional", "6 No Evidence"]}};
+const ROLE_DATA = {"Software Engineer": {"meta": "Engineering \u00b7 Software Engineering \u00b7 P3", "competencies": [["Solves Complex Problems", "Diagnosing why a production defect is happening, tracing it to root cause across systems, and designing a durable fix.", "Core to diagnosing bugs, optimizing queries, and tracing issues to root cause across systems."], ["Systems Thinking", "Recognizing that a change in one service will affect others downstream before it ships.", "Needed to understand how changes in one part of the system affect others, especially in system design and data modeling."], ["Judgment & Decision Making", "Choosing between a quick fix and a proper refactor under a deadline.", "Engineers constantly weigh trade-offs, like a quick fix versus a proper refactor, under time pressure."], ["Communicates Effectively", "Explaining a technical trade-off to a non-technical product manager, or writing a design doc a teammate can follow without asking questions.", "Code reviews, design docs, and cross-team handoffs depend on clear technical communication."], ["Collaborates", "Working with QA, design, and product throughout a sprint, and giving/receiving code review feedback constructively.", "Software engineering is built around team-based delivery, not solo work."], ["Ensures Accountability", "Owning a feature through to production, and flagging early if a sprint commitment is at risk.", "Ownership of a feature through to production, including testing and secure coding, is a core expectation."], ["Drives Results", "Pushing a feature across the finish line even when it hits friction late in the sprint.", "Sprint-based delivery cadence requires consistently pushing work to completion."], ["Adaptability", "Re-prioritizing when a production incident interrupts planned sprint work.", "Priorities and requirements shift often, especially when incidents or new information arise."]]}, "Product Manager": {"meta": "Product \u00b7 Product Management \u00b7 P3", "competencies": [["Strategic Mindset", "Deciding which features actually move the roadmap forward versus which are just loud requests.", "Central to shaping product vision and deciding what belongs on the roadmap."], ["Stakeholder Alignment", "Getting engineering, design, and sales leadership aligned on a launch plan when their priorities conflict.", "PMs constantly reconcile competing priorities across engineering, design, and leadership."], ["Champion the Customer", "Pushing back on a stakeholder's pet feature because customer research doesn't support it.", "Customer research and voice-of-customer work are core parts of the role."], ["Communicates Effectively", "Writing a product brief that both engineers and executives can act on without a follow-up meeting.", "Requirements, PRDs, and cross-functional briefs must be clear enough to act on without follow-up."], ["Judgment & Decision Making", "Deciding to cut scope two weeks before a launch to protect quality.", "Prioritization and trade-off decisions happen constantly, often under incomplete information."], ["Drives Results", "Keeping a cross-functional launch on track when one dependency slips.", "Launches and releases require pushing cross-functional work to completion."], ["Collaborates", "Working daily with design and engineering rather than just handing off requirements.", "The role is inherently cross-functional, working daily with engineering and design."], ["Business Insight", "Understanding how a feature decision affects revenue, retention, or cost, not just user delight.", "Product decisions need to be grounded in how they affect revenue, retention, and cost."]]}, "Account Executive": {"meta": "Sales \u00b7 Account Executive \u00b7 P3", "competencies": [["Drives Results", "Consistently pushing deals through the pipeline rather than letting them stall in \"following up.\"", "Sales performance is measured directly by pipeline movement and closed deals."], ["Champion the Customer", "Recommending a smaller deal because it's the right fit, instead of overselling for a bigger commission.", "Understanding a prospect's actual needs, not just pitching features, drives credibility and close rates."], ["Communicates Effectively", "Tailoring the same pitch differently for a technical buyer versus a financial decision-maker.", "Pitches and demos must be tailored differently for technical versus financial buyers."], ["Influences Others", "Building a business case that gets a skeptical economic buyer to champion the deal internally.", "Closing deals often requires building a business case that convinces internal champions."], ["Resilience", "Staying effective after losing a deal that was expected to close.", "Prospecting and deal loss are a routine, recurring part of the sales cycle."], ["Builds Relationships", "Maintaining a relationship with a champion long after a deal closes, not just during the sales cycle.", "Long-term account health depends on relationships that outlast a single deal."], ["Navigates Conflict", "Handling a tense renewal negotiation without damaging the relationship.", "Negotiation and objection handling are core, recurring parts of closing and renewing deals."], ["Ensures Accountability", "Keeping your CRM and forecast accurate rather than sandbagging or inflating numbers, so leadership can trust the pipeline.", "Accurate forecasting and CRM discipline are essential to a trustworthy pipeline."]]}, "Customer Success Manager": {"meta": "Customer Success & Support \u00b7 Customer Success \u00b7 P3", "competencies": [["Champion the Customer", "Advocating internally for a product fix that a customer needs, even when it's not on the roadmap.", "Advocating for the customer's needs, even internally, is central to the role."], ["Communicates Effectively", "Delivering a hard message about a delayed fix without losing the customer's trust.", "Delivering hard news or complex updates without damaging trust is a core skill."], ["Builds Relationships", "Turning a single technical contact into a multi-threaded relationship across the account.", "Multi-threading relationships across an account protects against churn."], ["Collaborates", "Looping in product or support at the right moment instead of over-promising alone.", "CSMs coordinate constantly with product, support, and sales on the customer's behalf."], ["Solves Complex Problems", "Diagnosing whether a recurring customer complaint is a training gap or an actual product issue.", "Diagnosing whether a recurring issue is a training gap or a real product problem requires genuine problem-solving."], ["Drives Results", "Driving a low-adoption account toward renewal instead of just monitoring the health score.", "Retention and expansion outcomes are the core measure of success in this role."], ["Stakeholder Alignment", "Balancing what the customer wants against what's realistic on the product roadmap.", "Balancing what the customer wants against what's realistic requires aligning multiple stakeholders."], ["Business Insight", "Building the business case for an expansion or upsell in terms the account's leadership actually cares about, not just usage stats.", "Building the case for an expansion or renewal requires framing value in business terms."]]}, "Data Analyst": {"meta": "Data & Analytics \u00b7 Business Intelligence \u00b7 P3", "competencies": [["Solves Complex Problems", "Tracing an unexpected metric drop back to a data pipeline issue rather than assuming it's real.", "Diagnosing whether a metric change is a real signal or a data issue is core analytical work."], ["Communicates Effectively", "Presenting a dashboard finding to executives in plain language, not just chart jargon.", "Findings are only useful if they can be explained clearly to a non-technical audience."], ["Judgment & Decision Making", "Deciding when a result is statistically meaningful versus noise worth ignoring.", "Analysts constantly judge whether a result is meaningful or just noise."], ["Business Insight", "Framing an analysis around the business question that actually matters to the requester.", "Good analysis is framed around the business question that actually matters to the requester."], ["Systems Thinking", "Understanding how a change in one dashboard's data source affects three others downstream.", "Data models and pipelines are interconnected; a change in one place affects others downstream."], ["Collaborates", "Working with engineering to fix a data quality issue at the source, not just patching the report.", "Fixing a data quality issue at the source requires working closely with engineering."], ["Digital Fluency", "Choosing the right tool for a given analysis instead of defaulting to what's familiar.", "The role depends on choosing and using the right tool for a given analysis."], ["Ensures Accountability", "Catching a data quality issue before a stakeholder builds a decision on a flawed number, and standing behind the governance of your reports.", "Data governance and validation protect against decisions being made on bad numbers."]]}};
+
+
+(function () {
+  const app = document.getElementById("ig-app");
+  let selectedRole = null;
+
+  function render() {
+    if (!selectedRole) return renderPicker();
+    return renderGuide(selectedRole);
+  }
+
+  function renderPicker() {
+    const roleNames = Object.keys(ROLE_DATA);
+    app.innerHTML = `
+      <div class="ig-banner no-print">Type a role below to generate its interview guide instantly</div>
+      <div class="ig-eyebrow">Interview Guide Generator</div>
+      <div class="ig-title">Get a role-ready interview guide</div>
+      <div class="ig-sub">Type one of the supported role titles below to instantly generate a behavioral interview guide &mdash; questions, follow-ups, and rating scales included.</div>
+      <div class="ig-card">
+        <label class="ig-field-label">Role title</label>
+        <input class="ig-input" id="ig-role-input" list="ig-role-datalist" placeholder="Start typing a role name..." autocomplete="off" />
+        <datalist id="ig-role-datalist">
+          ${roleNames.map(r => `<option value="${r}"></option>`).join("")}
+        </datalist>
+        <div class="ig-role-list">
+          <b>Supported roles:</b><br>
+          ${roleNames.map(r => `<span class="ig-role-chip" data-role="${r}">${r}</span>`).join("")}
+        </div>
+        <div>
+          <button class="ig-btn ig-btn-primary" id="ig-generate-btn">Generate Guide &rarr;</button>
+        </div>
+        <div id="ig-error-slot"></div>
+      </div>
+    `;
+
+    function tryGenerate() {
+      const val = document.getElementById("ig-role-input").value.trim();
+      const match = roleNames.find(r => r.toLowerCase() === val.toLowerCase());
+      const errSlot = document.getElementById("ig-error-slot");
+      if (match) {
+        selectedRole = match;
+        render();
+      } else {
+        errSlot.innerHTML = `<div class="ig-error">"${escapeHtml(val)}" isn't in the supported role list yet. Try one of the roles listed above.</div>`;
+      }
+    }
+
+    document.getElementById("ig-generate-btn").onclick = tryGenerate;
+    document.getElementById("ig-role-input").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") tryGenerate();
+    });
+    document.querySelectorAll(".ig-role-chip").forEach(chip => {
+      chip.onclick = () => {
+        document.getElementById("ig-role-input").value = chip.dataset.role;
+      };
+    });
+  }
+
+  function renderGuide(roleName) {
+    const role = ROLE_DATA[roleName];
+    app.innerHTML = `
+      <div class="ig-banner no-print">Ready &mdash; scroll down for the full guide, or print it directly</div>
+      <div class="ig-eyebrow no-print">Interview Guide Generator</div>
+      <div class="ig-actions no-print">
+        <button class="ig-btn" id="ig-back-btn">&larr; Choose a different role</button>
+        <button class="ig-btn ig-btn-primary" id="ig-print-btn">Print / Save as PDF</button>
+      </div>
+
+      <div class="ig-cover-page ig-page-break">
+        <div class="ig-cover-eyebrow">Behavioral Interview Guide</div>
+        <div class="ig-cover-role">${escapeHtml(roleName)}</div>
+        <div class="ig-cover-meta">${escapeHtml(role.meta)}</div>
+        <div class="ig-cover-field">
+          <div class="ig-cover-field-label">Interviewer</div>
+          <input class="ig-cover-input" type="text" placeholder="Enter name">
+        </div>
+        <div class="ig-cover-field">
+          <div class="ig-cover-field-label">Interview Date</div>
+          <input class="ig-cover-input" type="text" placeholder="Enter date">
+        </div>
+      </div>
+
+      <div class="ig-overview-page ig-page-break">
+        <div class="ig-overview-title">Guide Overview</div>
+        <div class="ig-overview-text">This guide provides structured behavioral interview questions for evaluating a candidate against the core competencies for this role. Each competency includes a set of interview questions, follow-up prompts to probe deeper, positive and negative behavioral indicators, and a rating scale to support consistent, objective evaluation.</div>
+        <div class="ig-comp-list-title">Competencies Covered</div>
+        <ul class="ig-comp-list">
+          ${role.competencies.map(([name, inRole, why], i) => `<li><span class="num">0${i + 1}</span><div><div class="comp-name">${escapeHtml(name)}</div><div class="comp-why">${escapeHtml(why)}</div></div></li>`).join("")}
+        </ul>
+      </div>
+
+      <div class="ig-guide-title">Interview Guide &mdash; ${escapeHtml(roleName)}</div>
+      <div class="ig-guide-meta">${escapeHtml(role.meta)}</div>
+      ${role.competencies.map(([name, inRole]) => renderCompetencyBlock(name, inRole)).join("")}
+      <div class="ig-actions no-print">
+        <button class="ig-btn" id="ig-back-btn-2">&larr; Choose a different role</button>
+        <button class="ig-btn ig-btn-primary" id="ig-print-btn-2">Print / Save as PDF</button>
+      </div>
+    `;
+    document.getElementById("ig-back-btn").onclick = () => { selectedRole = null; render(); };
+    document.getElementById("ig-back-btn-2").onclick = () => { selectedRole = null; render(); };
+    document.getElementById("ig-print-btn").onclick = openPrintWindow;
+    document.getElementById("ig-print-btn-2").onclick = openPrintWindow;
+  }
+
+  function openPrintWindow() {
+    const printableEl = document.querySelector(".ig-cover-page");
+    if (!printableEl) return;
+    // Collect everything from the cover page through the end of the guide (skip banners/buttons).
+    const container = document.createElement("div");
+    let node = printableEl;
+    while (node) {
+      container.appendChild(node.cloneNode(true));
+      node = node.nextElementSibling;
+    }
+    // cloneNode() does NOT carry over live-typed values for <input> fields (only their
+    // original default attribute), so replace each cover-page input with static text
+    // reflecting what was actually typed before handing this off to the print window.
+    const liveInputs = document.querySelectorAll(".ig-cover-input");
+    const clonedInputs = container.querySelectorAll(".ig-cover-input");
+    clonedInputs.forEach((el, i) => {
+      const liveVal = liveInputs[i] ? liveInputs[i].value.trim() : "";
+      const replacement = document.createElement("div");
+      replacement.className = "ig-cover-input-print";
+      replacement.textContent = liveVal || "\u00A0";
+      el.replaceWith(replacement);
+    });
+
+    const styleContent = document.querySelector("style") ? document.querySelector("style").textContent : "";
+    const printWin = window.open("", "_blank");
+    if (!printWin) {
+      alert("Your browser blocked the print window. Please allow pop-ups for this page and try again, or use your browser's own Print (Ctrl+P / Cmd+P) command.");
+      return;
+    }
+    printWin.document.open();
+    printWin.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Interview Guide</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+      <style>${styleContent}
+        body { margin: 0; background: white; }
+        #ig-root { border: none; box-shadow: none; padding: 20px; background: white; }
+        .ig-cover-input-print { border-bottom: 1.5px solid var(--blue-line-dim); padding: 6px 2px; font-size: 17px; min-height: 1.4em; }
+      </style>
+      </head><body><div id="ig-root"><div class="ig-wrap">${container.innerHTML}</div></div></body></html>`);
+    printWin.document.close();
+    printWin.focus();
+    setTimeout(() => {
+      printWin.print();
+    }, 400);
+  }
+
+  function renderCompetencyBlock(name, inRole) {
+    const d = COMPETENCY_DATA[name];
+    if (!d) return `<div class="ig-comp-block">Missing data for ${escapeHtml(name)}</div>`;
+    return `
+      <div class="ig-comp-block">
+        <div class="ig-comp-name">${escapeHtml(name)}</div>
+        <div class="ig-comp-inrole"><b>In this role:</b> ${escapeHtml(inRole)}</div>
+
+        <div class="ig-section-label">Interview Questions</div>
+        ${d.questions.map(q => `<div class="ig-check-item"><div class="box"></div><div>${escapeHtml(q)}</div></div>`).join("")}
+
+        <div class="ig-section-label">Follow-Up Questions</div>
+        ${d.followups.map(f => renderFollowup(f)).join("")}
+
+        <div class="ig-notes-box">
+          <div class="ig-notes-label">Interview Notes</div>
+          <div class="ig-notes-placeholder">This space is intentionally left blank for handwritten notes when printed.</div>
+        </div>
+
+        <div class="ig-np-grid">
+          <div>
+            <div class="ig-np-col-label neg">NEGATIVE</div>
+            ${d.negative.map(n => `<div class="ig-check-item"><div class="box"></div><div>${escapeHtml(n)}</div></div>`).join("")}
+          </div>
+          <div>
+            <div class="ig-np-col-label pos">POSITIVE</div>
+            ${d.positive.map(p => `<div class="ig-check-item"><div class="box"></div><div>${escapeHtml(p)}</div></div>`).join("")}
+          </div>
+        </div>
+
+        <div class="ig-section-label">Rating</div>
+        <div class="ig-rating-row">
+          ${d.rating.map(r => `<div class="ig-rating-item"><div class="box"></div>${escapeHtml(r)}</div>`).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderFollowup(text) {
+    const idx = text.indexOf(":");
+    if (idx === -1) return `<div class="ig-check-item"><div class="box"></div><div>${escapeHtml(text)}</div></div>`;
+    const label = text.slice(0, idx + 1);
+    const rest = text.slice(idx + 1);
+    return `<div class="ig-check-item ig-followup"><div class="box"></div><div><b>${escapeHtml(label)}</b>${escapeHtml(rest)}</div></div>`;
+  }
+
+  function escapeHtml(str) {
+    if (!str) return "";
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  render();
+})();
+</script>
