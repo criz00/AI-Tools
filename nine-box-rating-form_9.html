@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>9-box rating form</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F4EF; --ink:#1E2420; --ink-soft:#666D63; --line:#DAD7CC;
+  --flag:#A83F2C; --flag-bg:#F5E4E0;
+  --good:#3F6B4A; --good-bg:#E4EBE3;
+  --surface:#FFFFFF;
+  --c-yellow:#FDF3C7; --c-green:#A9D18E; --c-brightgreen:#00E600; --c-orange:#F6B26B; --c-pink:#F4B6C2;
+  --axis:#8A8A85; --dot:#2455B0;
+  font-family:'IBM Plex Sans',sans-serif; color:var(--ink);
+}
+*{box-sizing:border-box;}
+.disp{font-family:'Fraunces',serif;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+button{font-family:inherit;cursor:pointer;}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;}
+.seg button{border:none;background:var(--surface);padding:7px 13px;font-size:13px;color:var(--ink-soft);border-right:1px solid var(--line);}
+.seg button:last-child{border-right:none;}
+.seg button.active{background:var(--ink);color:var(--paper);}
+textarea{width:100%;font-family:inherit;font-size:13px;border:1px solid var(--line);border-radius:6px;padding:8px 10px;resize:vertical;background:var(--surface);color:var(--ink);}
+input[type=text]{width:100%;font-family:inherit;font-size:14px;border:none;border-bottom:1px solid var(--line);padding:6px 2px;background:transparent;color:var(--ink);}
+input[type=text]:focus,textarea:focus{outline:none;border-color:var(--ink-soft);}
+label.lab{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:6px;}
+@media (max-width: 680px){
+  body{padding:14px;}
+  .def-grid{grid-template-columns:1fr;}
+  .pot-axis{display:none;}
+}
+</style>
+</head>
+<body style="background:var(--paper);margin:0;padding:22px;">
+
+<div style="max-width:820px;margin:0 auto;">
+
+  <div style="margin-bottom:16px;">
+    <div class="disp" style="font-size:20px;font-weight:600;">9-box rating form</div>
+    <div style="font-size:12px;color:var(--ink-soft);">Prep a draft placement, with evidence, before calibration.</div>
+  </div>
+
+  <div style="background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:18px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+      <div><label class="lab">Employee</label><input id="emp-name" type="text" placeholder="e.g. Priya Nandan"></div>
+      <div><label class="lab">Role</label><input type="text" placeholder="e.g. Senior backend engineer"></div>
+    </div>
+
+    <label class="lab">Performance — this review period</label>
+    <div class="seg" id="perf-seg" style="margin-bottom:10px;">
+      <button data-v="0">Below</button><button data-v="1" class="active">Meeting</button><button data-v="2">Exceeding</button>
+    </div>
+    <textarea id="perf-ev" rows="2" placeholder="What did they actually do? Cite specifics."></textarea>
+    <div id="perf-hint" style="font-size:11px;color:var(--ink-soft);margin-top:4px;"></div>
+
+    <div style="height:14px;"></div>
+
+    <label class="lab">Potential — readiness for bigger scope</label>
+    <div class="seg" id="pot-seg" style="margin-bottom:10px;">
+      <button data-v="0">Limited</button><button data-v="1">Emerging</button><button data-v="2" class="active">High</button>
+    </div>
+    <textarea id="pot-ev" rows="2" placeholder="What signals readiness or ceiling?"></textarea>
+    <div id="pot-hint" style="font-size:11px;color:var(--ink-soft);margin-top:4px;"></div>
+
+    <div style="height:16px;"></div>
+    <div id="ai-panel"></div>
+  </div>
+
+  <div style="background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;margin-bottom:18px;">
+    <label class="lab">Draft placement</label>
+    <div style="display:flex;gap:12px;align-items:stretch;">
+      <div style="display:flex;align-items:stretch;gap:6px;" class="pot-axis">
+        <div class="mono" style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:13px;font-weight:500;color:var(--ink);letter-spacing:.03em;display:flex;align-items:center;justify-content:center;">Potential</div>
+        <div style="display:flex;flex-direction:column;align-items:center;width:34px;">
+          <div style="width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:14px solid var(--axis);"></div>
+          <div style="flex:1;width:20px;background:var(--axis);display:flex;flex-direction:column-reverse;border-radius:2px;">
+            <div style="flex:1;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;transform:rotate(180deg);color:#fff;font-size:11px;font-weight:500;">Low</div>
+            <div style="flex:1;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;transform:rotate(180deg);color:#fff;font-size:11px;font-weight:500;">Moderate</div>
+            <div style="flex:1;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;transform:rotate(180deg);color:#fff;font-size:11px;font-weight:500;">High</div>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;">
+        <div id="mini-grid" style="position:relative;width:100%;aspect-ratio:1.35;border:1px solid var(--line);"></div>
+        <div style="display:flex;gap:0;margin-top:10px;">
+          <div style="flex:1;background:var(--axis);color:#fff;text-align:center;font-size:11px;font-weight:500;padding:6px 0;border-radius:2px 0 0 2px;">Low</div>
+          <div style="flex:1;background:var(--axis);color:#fff;text-align:center;font-size:11px;font-weight:500;padding:6px 0;">Moderate</div>
+          <div style="flex:1;background:var(--axis);color:#fff;text-align:center;font-size:11px;font-weight:500;padding:6px 0;position:relative;">High</div>
+          <div style="width:0;height:0;border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:14px solid var(--axis);align-self:center;"></div>
+        </div>
+        <div class="mono" style="text-align:center;font-size:11px;color:var(--ink-soft);letter-spacing:.05em;margin-top:6px;">Performance</div>
+      </div>
+    </div>
+    <div style="margin-top:16px;border-top:1px solid var(--line);padding-top:12px;">
+      <label class="lab">What each box means</label>
+      <div id="definitions" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;" class="def-grid"></div>
+    </div>
+  </div>
+
+  <div style="background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;">
+    <label class="lab">Calibration summary <span style="color:var(--ink-soft);text-transform:none;">— generated</span></label>
+    <div id="summary-text" class="disp" style="font-size:14px;line-height:1.55;font-style:italic;"></div>
+  </div>
+
+</div>
+
+<script>
+const potWord=["Low","Moderate","High"], perfWordAxis=["Low","Moderate","High"];
+const cellTitle = (p,q) => `${potWord[q]} Potential / ${perfWordAxis[p]} Performance`;
+const cellDef = (p,q)=>[
+ ["Does not consistently meet expectations in the current role and demonstrates limited evidence of capacity for broader or more complex responsibilities. Requires performance improvement and evaluation of role fit.",
+  "Reliably meets the core expectations of the current role but demonstrates limited potential for substantially broader or more complex responsibilities. Development may focus on strengthening effectiveness and expertise within the current scope.",
+  "Consistently delivers strong results in the current role but demonstrates limited capacity or aspiration for substantially broader or more complex responsibilities. May continue to provide significant value through expertise and strong performance in their current scope."],
+ ["Currently performs below expectations while demonstrating some capacity for future growth. Requires focused development and sustained performance improvement before taking on additional responsibilities.",
+  "Reliably meets expectations and demonstrates some capacity for additional responsibility. May progress into broader or more complex work with continued development and demonstrated growth.",
+  "Consistently delivers strong results and demonstrates some capacity to take on additional scope or responsibility, though potential for significantly broader or more complex roles may currently be limited."],
+ ["Demonstrates potential for broader or more complex responsibilities, but current performance is below expectations. Performance gaps should be understood and addressed before advancement is considered.",
+  "Demonstrates strong potential for broader or more complex responsibilities but is not yet consistently performing at a high level in the current role. May benefit from additional experience, development, or support.",
+  "Consistently delivers strong results and demonstrates the capability and capacity to take on significantly broader, more complex, or higher-level responsibilities."]
+][q][p];
+function colorFor(p,q){
+  const map={
+    '2,0':'var(--c-yellow)','2,1':'var(--c-green)','2,2':'var(--c-brightgreen)',
+    '1,0':'var(--c-orange)','1,1':'var(--c-yellow)','1,2':'var(--c-green)',
+    '0,0':'var(--c-pink)','0,1':'var(--c-orange)','0,2':'var(--c-yellow)'
+  };
+  return map[q+','+p];
+}
+const initials = name => name.trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2);
+const perfHints=[
+  "e.g. missed deadlines, a specific gap in ownership, or context from a documented support conversation",
+  "e.g. concrete deliverables completed on time and to expectation",
+  "e.g. a specific metric, a project owned end-to-end, or measurable impact beyond expectations"
+];
+const potHints=[
+  "e.g. consistent output within current scope, without signals of interest in broader responsibility",
+  "e.g. early signs of initiative beyond the core role, not yet fully proven",
+  "e.g. owning a stretch project, leading beyond their role, mentoring others, or architecting something new"
+];
+function updateHints(){
+  document.getElementById('perf-hint').textContent = perfHints[perf];
+  document.getElementById('pot-hint').textContent = potHints[pot];
+}
+
+let perf=1, pot=2;
+function renderMini(){
+  const grid=document.getElementById('mini-grid');
+  grid.innerHTML='';
+  for(let q=0;q<3;q++) for(let p=0;p<3;p++){
+    const cell=document.createElement('div');
+    cell.style.cssText=`position:absolute;left:${p/3*100}%;top:${(2-q)/3*100}%;width:33.333%;height:33.333%;background:${colorFor(p,q)};border:1px solid var(--surface);display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;pointer-events:none;`;
+    cell.innerHTML=`<span style="font-size:13px;color:var(--ink);line-height:1.5;font-weight:500;">${potWord[q]} Potential<br>${perfWordAxis[p]} Performance</span>`;
+    grid.appendChild(cell);
+  }
+  const dot=document.createElement('div');
+  const x=(perf+0.5)/3*100, y=100-(pot+0.5)/3*100;
+  const name=document.getElementById('emp-name').value || 'You';
+  dot.style.cssText=`position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);width:24px;height:24px;border-radius:50%;background:var(--dot);border:2px solid #fff;box-shadow:0 0 0 2px rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;`;
+  dot.innerHTML=`<span style="font-size:9.5px;font-weight:500;color:#fff;">${initials(name)}</span>`;
+  grid.appendChild(dot);
+}
+function renderDefinitions(){
+  const box=document.getElementById('definitions');
+  let html='';
+  for(let q=2;q>=0;q--){
+    for(let p=0;p<3;p++){
+      html+=`<div style="background:${colorFor(p,q)};border-radius:6px;padding:8px 9px;">
+        <div style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:3px;">${cellTitle(p,q)}</div>
+        <div style="font-size:11px;color:var(--ink);opacity:.8;line-height:1.4;">${cellDef(p,q)}</div>
+      </div>`;
+    }
+  }
+  box.innerHTML=html;
+}
+
+function renderAI(){
+  const perfEv=document.getElementById('perf-ev').value;
+  const potEv=document.getElementById('pot-ev').value;
+  const flags=[];
+  if(!perfEv.trim()){
+    flags.push(["No performance evidence entered","Add at least one concrete example to support this rating before calibration."]);
+  } else if(perf===2 && perfEv.trim().split(/\s+/).length<8){
+    flags.push(["Evidence-rating mismatch","\u201cExceeding\u201d is checked but the evidence is thin. Add a specific, measurable example before calibration."]);
+  }
+  if(!potEv.trim()){
+    flags.push(["No potential evidence entered","Add at least one concrete example to support this rating before calibration."]);
+  } else if(pot===2 && !/lead|own|mentor|scope|architect/i.test(potEv)){
+    flags.push(["Potential evidence is generic","High potential usually shows up as stretch ownership, not just \u2018works hard.\u2019 Name a concrete stretch moment."]);
+  }
+  if(perf===0 || pot===0) flags.push(["Low rating — add a support plan","Placements below the midline should come with a stated development or exit conversation."]);
+  const panel=document.getElementById('ai-panel');
+  if(flags.length===0){
+    panel.innerHTML=`<div style="background:var(--good-bg);border:1px solid var(--good);border-radius:6px;padding:10px 12px;font-size:12.5px;color:var(--good);">Evidence supports this placement. No flags.</div>`;
+  } else {
+    panel.innerHTML=flags.map(f=>`<div style="background:var(--flag-bg);border:1px solid var(--flag);border-radius:6px;padding:10px 12px;font-size:12.5px;color:var(--flag);margin-bottom:8px;"><b>${f[0]}</b><br><span style="color:var(--ink-soft);">${f[1]}</span></div>`).join('');
+  }
+  const name=(document.getElementById('emp-name').value || 'This employee').split(' ')[0];
+  const summaryBox=document.getElementById('summary-text');
+  if(!perfEv.trim() && !potEv.trim()){
+    summaryBox.style.fontStyle='normal';
+    summaryBox.style.color='var(--ink-soft)';
+    summaryBox.textContent='Fill in the performance and potential evidence above to generate a summary.';
+    return;
+  }
+  summaryBox.style.fontStyle='italic';
+  summaryBox.style.color='var(--ink)';
+  const perfWord=["fell short of","met","exceeded"][perf];
+  const potWord2=["shows limited","is showing emerging","is showing high"][pot];
+  const perfClause = perfEv.trim() ? perfEv.split('.')[0].toLowerCase() : 'no evidence entered yet';
+  const potClause = potEv.trim() ? potEv.split('.')[0].toLowerCase() : 'no evidence entered yet';
+  summaryBox.textContent=
+    `${name} ${perfWord} expectations this period — ${perfClause}. ${name} ${potWord2} readiness for broader scope: ${potClause}. Suggested box: ${cellTitle(perf,pot)}.`;
+}
+
+document.querySelectorAll('#perf-seg button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#perf-seg button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); perf=+b.dataset.v; renderMini(); renderAI(); updateHints();
+}));
+document.querySelectorAll('#pot-seg button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#pot-seg button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); pot=+b.dataset.v; renderMini(); renderAI(); updateHints();
+}));
+document.getElementById('perf-ev').addEventListener('input',renderAI);
+document.getElementById('pot-ev').addEventListener('input',renderAI);
+document.getElementById('emp-name').addEventListener('input',()=>{ renderMini(); renderAI(); });
+renderMini(); renderDefinitions(); renderAI(); updateHints();
+</script>
+</body>
+</html>

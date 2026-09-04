@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Talent calibration grid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F4EF; --ink:#1E2420; --ink-soft:#666D63; --line:#DAD7CC;
+  --surface:#FFFFFF;
+  --c-yellow:#FDF3C7; --c-green:#A9D18E; --c-brightgreen:#00E600; --c-orange:#F6B26B; --c-pink:#F4B6C2;
+  --axis:#8A8A85;
+  font-family:'IBM Plex Sans',sans-serif; color:var(--ink);
+}
+*{box-sizing:border-box;}
+.disp{font-family:'Fraunces',serif;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+#session-title:hover{border-bottom-color:var(--line);}
+#session-title:focus{outline:none;border-bottom-color:var(--ink-soft);}
+#session-title::placeholder{font-style:italic;color:var(--ink-soft);opacity:.7;}
+@media (max-width: 680px){
+  body{padding:14px;}
+  .main-grid{grid-template-columns:1fr;}
+  .axis-row{gap:8px;}
+  .pot-axis{gap:4px;}
+  .pot-axis > .mono{font-size:11px;}
+  .def-grid{grid-template-columns:1fr;}
+  #session-title{width:100%;}
+}
+@media (max-width: 420px){
+  .pot-axis{display:none;}
+}
+</style>
+</head>
+<body style="background:var(--paper);margin:0;padding:22px;">
+
+<div style="max-width:920px;margin:0 auto;" class="wrap">
+
+  <div style="margin-bottom:16px;">
+    <div class="disp" style="font-size:20px;font-weight:600;">Calibration session</div>
+    <input id="session-title" type="text" placeholder="Name this session — e.g. Engineering, Q3 review cycle" style="border:none;border-bottom:1px solid transparent;background:transparent;font-size:12px;color:var(--ink-soft);padding:2px 0;font-family:inherit;width:340px;max-width:100%;">
+    <div style="font-size:11px;color:var(--ink-soft);opacity:.75;">Drag dots to recalibrate as a group.</div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 240px;gap:18px;" class="main-grid">
+    <div style="background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;">
+      <div style="display:flex;gap:12px;align-items:stretch;" class="axis-row">
+        <div style="display:flex;align-items:stretch;gap:6px;" class="pot-axis">
+          <div class="mono" style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:13px;font-weight:500;color:var(--ink);letter-spacing:.03em;display:flex;align-items:center;justify-content:center;">Potential</div>
+          <div style="display:flex;flex-direction:column;align-items:center;width:34px;">
+            <div style="width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:14px solid var(--axis);"></div>
+            <div style="flex:1;width:20px;background:var(--axis);display:flex;flex-direction:column-reverse;border-radius:2px;">
+              <div style="flex:1;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;transform:rotate(180deg);color:#fff;font-size:11px;font-weight:500;">Low</div>
+              <div style="flex:1;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;transform:rotate(180deg);color:#fff;font-size:11px;font-weight:500;">Moderate</div>
+              <div style="flex:1;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;transform:rotate(180deg);color:#fff;font-size:11px;font-weight:500;">High</div>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;">
+          <div id="big-grid" style="position:relative;width:100%;aspect-ratio:1.35;border:1px solid var(--line);"></div>
+          <div style="display:flex;gap:0;margin-top:10px;">
+            <div style="flex:1;background:var(--axis);color:#fff;text-align:center;font-size:11px;font-weight:500;padding:6px 0;border-radius:2px 0 0 2px;">Low</div>
+            <div style="flex:1;background:var(--axis);color:#fff;text-align:center;font-size:11px;font-weight:500;padding:6px 0;">Moderate</div>
+            <div style="flex:1;background:var(--axis);color:#fff;text-align:center;font-size:11px;font-weight:500;padding:6px 0;position:relative;">High</div>
+            <div style="width:0;height:0;border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:14px solid var(--axis);align-self:center;"></div>
+          </div>
+          <div class="mono" style="text-align:center;font-size:11px;color:var(--ink-soft);letter-spacing:.05em;margin-top:6px;">Performance</div>
+        </div>
+      </div>
+      <div id="detail-card" style="margin-top:14px;"></div>
+      <div style="margin-top:16px;border-top:1px solid var(--line);padding-top:12px;">
+        <label style="font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:8px;">What each box means</label>
+        <div id="definitions" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;" class="def-grid"></div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div style="background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;">
+        <label style="font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:8px;">Add team member</label>
+        <input id="new-name" type="text" placeholder="Name" style="width:100%;font-size:13px;border:1px solid var(--line);border-radius:6px;padding:6px 8px;margin-bottom:8px;font-family:inherit;background:var(--paper);color:var(--ink);">
+        <input id="new-dept" type="text" placeholder="Department" style="width:100%;font-size:13px;border:1px solid var(--line);border-radius:6px;padding:6px 8px;margin-bottom:8px;font-family:inherit;background:var(--paper);color:var(--ink);">
+        <select id="new-level" style="width:100%;font-size:13px;border:1px solid var(--line);border-radius:6px;padding:6px 8px;margin-bottom:8px;font-family:inherit;background:var(--paper);color:var(--ink);">
+          <option value="">Level (optional)</option>
+          <option>P1</option><option>P2</option><option>P3</option><option>P4</option><option>P5</option>
+          <option>M1</option><option>M2</option><option>M3</option><option>M4</option><option>M5</option><option>M6</option>
+        </select>
+        <div style="font-size:10.5px;color:var(--ink-soft);margin-bottom:4px;">Starting placement</div>
+        <div id="mini-picker" style="position:relative;width:90px;height:90px;border:1px solid var(--line);margin-bottom:8px;"></div>
+        <textarea id="new-ev" rows="2" placeholder="One line of evidence (optional)" style="width:100%;font-size:12.5px;border:1px solid var(--line);border-radius:6px;padding:6px 8px;margin-bottom:6px;font-family:inherit;background:var(--paper);color:var(--ink);resize:vertical;"></textarea>
+        <div id="new-error" style="font-size:11.5px;color:#B0271E;margin-bottom:6px;display:none;"></div>
+        <button id="add-btn" style="width:100%;background:var(--ink);color:var(--paper);border:none;border-radius:6px;padding:8px 0;font-size:13px;font-weight:500;cursor:pointer;">Add to grid</button>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;">
+        <label style="font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:2px;">Team</label>
+        <div style="font-size:10.5px;color:var(--ink-soft);margin-bottom:8px;">Dashed ring = open to adjusting. Click the box to toggle.</div>
+        <div id="legend"></div>
+        <button id="clear-all" style="margin-top:8px;background:none;border:none;color:var(--ink-soft);font-size:11px;text-decoration:underline;cursor:pointer;padding:0;">Clear all</button>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;">
+        <label style="font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:6px;">Distribution</label>
+        <div id="stats"></div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;flex:1;">
+        <label style="font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:6px;">Change log</label>
+        <div id="log" class="mono" style="font-size:11.5px;line-height:1.7;color:var(--ink-soft);max-height:260px;overflow:auto;"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const potWord=["Low","Moderate","High"], perfWordAxis=["Low","Moderate","High"];
+const cellTitle = (p,q) => `${potWord[q]} Potential / ${perfWordAxis[p]} Performance`;
+const cellDef = (p,q)=>[
+ ["Does not consistently meet expectations in the current role and demonstrates limited evidence of capacity for broader or more complex responsibilities. Requires performance improvement and evaluation of role fit.",
+  "Reliably meets the core expectations of the current role but demonstrates limited potential for substantially broader or more complex responsibilities. Development may focus on strengthening effectiveness and expertise within the current scope.",
+  "Consistently delivers strong results in the current role but demonstrates limited capacity or aspiration for substantially broader or more complex responsibilities. May continue to provide significant value through expertise and strong performance in their current scope."],
+ ["Currently performs below expectations while demonstrating some capacity for future growth. Requires focused development and sustained performance improvement before taking on additional responsibilities.",
+  "Reliably meets expectations and demonstrates some capacity for additional responsibility. May progress into broader or more complex work with continued development and demonstrated growth.",
+  "Consistently delivers strong results and demonstrates some capacity to take on additional scope or responsibility, though potential for significantly broader or more complex roles may currently be limited."],
+ ["Demonstrates potential for broader or more complex responsibilities, but current performance is below expectations. Performance gaps should be understood and addressed before advancement is considered.",
+  "Demonstrates strong potential for broader or more complex responsibilities but is not yet consistently performing at a high level in the current role. May benefit from additional experience, development, or support.",
+  "Consistently delivers strong results and demonstrates the capability and capacity to take on significantly broader, more complex, or higher-level responsibilities."]
+][q][p];
+function colorFor(p,q){
+  const map={
+    '2,0':'var(--c-yellow)','2,1':'var(--c-green)','2,2':'var(--c-brightgreen)',
+    '1,0':'var(--c-orange)','1,1':'var(--c-yellow)','1,2':'var(--c-green)',
+    '0,0':'var(--c-pink)','0,1':'var(--c-orange)','0,2':'var(--c-yellow)'
+  };
+  return map[q+','+p];
+}
+
+const team=[
+ {name:"Priya Nandan", dept:"Backend", level:"P4", p:1, q:2, ev:"Led payments-retry migration; owning cross-team architecture work.", color:"#2455B0", open:false},
+ {name:"Marcus Cole", dept:"Backend", level:"P3", p:2, q:1, ev:"Consistently ships high-quality work; comfortable in current scope.", color:"#7A3EA8", open:true},
+ {name:"Elena Ruiz", dept:"Frontend", level:"P4", p:2, q:2, ev:"Shipped the design-system rewrite; already mentoring two teams.", color:"#1B7F79", open:false},
+ {name:"Dev Patel", dept:"Frontend", level:"P2", p:0, q:1, ev:"Missed two milestones; unclear on ownership of the outage last month.", color:"#B0271E", open:true},
+ {name:"Sam Okafor", dept:"Platform", level:"P3", p:1, q:1, ev:"Reliable on-call, steady output, hasn't sought stretch work.", color:"#4A4A48", open:false},
+ {name:"Ana Vidal", dept:"Platform", level:"P5", p:2, q:0, ev:"Deep infra expertise, prefers narrow scope, not seeking growth.", color:"#A8286B", open:false},
+ {name:"Jon Reyes", dept:"Backend", level:"P2", p:1, q:0, ev:"Solid delivery, several attempts to grow scope haven't landed.", color:"#B5661A", open:true},
+ {name:"Tara Singh", dept:"Frontend", level:"P1", p:0, q:2, ev:"Rough quarter output-wise, but peers flag strong systems thinking.", color:"#2F6B2F", open:false},
+];
+const initials = name => name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+const palette=["#2455B0","#7A3EA8","#1B7F79","#B0271E","#4A4A48","#A8286B","#B5661A","#2F6B2F","#0E7490","#946200","#5B3A87","#8A3324"];
+function nextColor(){ return palette[team.length % palette.length]; }
+let newP=1, newQ=1;
+function renderMiniPicker(){
+  const box=document.getElementById('mini-picker');
+  box.innerHTML='';
+  for(let q=0;q<3;q++) for(let p=0;p<3;p++){
+    const cell=document.createElement('div');
+    const selected = p===newP && q===newQ;
+    cell.style.cssText=`position:absolute;left:${p/3*100}%;top:${(2-q)/3*100}%;width:33.333%;height:33.333%;background:${colorFor(p,q)};border:${selected?'2px solid var(--ink)':'1px solid var(--surface)'};cursor:pointer;box-sizing:border-box;`;
+    cell.addEventListener('click',()=>{ newP=p; newQ=q; renderMiniPicker(); });
+    box.appendChild(cell);
+  }
+}
+document.getElementById('add-btn').addEventListener('click',()=>{
+  const nameInput=document.getElementById('new-name');
+  const deptInput=document.getElementById('new-dept');
+  const levelInput=document.getElementById('new-level');
+  const evInput=document.getElementById('new-ev');
+  const errBox=document.getElementById('new-error');
+  const name=nameInput.value.trim();
+  if(!name){
+    errBox.textContent='Enter a name first';
+    errBox.style.display='block';
+    return;
+  }
+  errBox.style.display='none';
+  team.push({
+    name, dept: deptInput.value.trim() || '—', level: levelInput.value || '—', p:newP, q:newQ,
+    ev: evInput.value.trim() || 'No evidence entered yet.',
+    color: nextColor(), open:false
+  });
+  nameInput.value=''; deptInput.value=''; evInput.value=''; levelInput.value='';
+  newP=1; newQ=1; renderMiniPicker();
+  renderGrid(); renderStats(); renderLog(); renderLegend();
+});
+document.getElementById('clear-all').addEventListener('click',()=>{
+  team.length=0; log.length=0;
+  renderGrid(); renderStats(); renderLog(); renderLegend();
+  document.getElementById('detail-card').innerHTML='<div style="color:var(--ink-soft);font-size:13px;">No one on the grid yet. Add a team member to begin.</div>';
+});
+const log=[];
+
+function renderGrid(){
+  const grid=document.getElementById('big-grid');
+  grid.innerHTML='';
+  for(let q=0;q<3;q++) for(let p=0;p<3;p++){
+    const cell=document.createElement('div');
+    cell.style.cssText=`position:absolute;left:${p/3*100}%;top:${(2-q)/3*100}%;width:33.333%;height:33.333%;background:${colorFor(p,q)};border:1px solid var(--surface);display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;pointer-events:none;`;
+    cell.innerHTML=`<span style="font-size:13px;color:var(--ink);line-height:1.5;font-weight:500;">${potWord[q]} Potential<br>${perfWordAxis[p]} Performance</span>`;
+    grid.appendChild(cell);
+  }
+  team.forEach((e,i)=>{
+    const dot=document.createElement('div');
+    const jx=(e._jx??(e._jx=(Math.random()*40-20)));
+    const jy=(e._jy??(e._jy=(Math.random()*40-20)));
+    const x=(e.p+0.5)/3*100, y=100-(e.q+0.5)/3*100;
+    dot.style.cssText=`position:absolute;left:calc(${x}% + ${jx}px);top:calc(${y}% + ${jy}px);transform:translate(-50%,-50%);width:24px;height:24px;border-radius:50%;background:${e.color};border:2px ${e.open?'dashed':'solid'} #fff;box-shadow:0 0 0 2px rgba(0,0,0,0.25);cursor:grab;display:flex;align-items:center;justify-content:center;`;
+    dot.innerHTML=`<span style="font-size:9.5px;font-weight:500;color:#fff;letter-spacing:.01em;pointer-events:none;">${initials(e.name)}</span>`;
+    dot.title=e.name;
+    let dragging=false;
+    dot.addEventListener('pointerdown',ev=>{dragging=true;dot.setPointerCapture(ev.pointerId);dot.style.cursor='grabbing';editingIdx=null;showDetail(e);});
+    dot.addEventListener('pointerup',ev=>{
+      if(!dragging)return; dragging=false; dot.style.cursor='grab';
+      const r=grid.getBoundingClientRect();
+      const nx=Math.min(Math.max((ev.clientX-r.left)/r.width,0),0.999);
+      const ny=Math.min(Math.max((ev.clientY-r.top)/r.height,0),0.999);
+      const np=Math.floor(nx*3), nq=2-Math.floor(ny*3);
+      if(np!==e.p||nq!==e.q){
+        log.unshift(`${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}  ${e.name}: ${cellTitle(e.p,e.q)} → ${cellTitle(np,nq)}`);
+        e.p=np; e.q=nq; e._jx=(Math.random()*40-20); e._jy=(Math.random()*40-20);
+        renderGrid(); renderStats(); renderLog(); showDetail(e);
+      }
+    });
+    dot.addEventListener('pointermove',ev=>{
+      if(!dragging)return;
+      const r=grid.getBoundingClientRect();
+      dot.style.left=(ev.clientX-r.left)+'px'; dot.style.top=(ev.clientY-r.top)+'px';
+    });
+    grid.appendChild(dot);
+  });
+}
+function renderDefinitions(){
+  const box=document.getElementById('definitions');
+  let html='';
+  for(let q=2;q>=0;q--){
+    for(let p=0;p<3;p++){
+      html+=`<div style="background:${colorFor(p,q)};border-radius:6px;padding:8px 9px;">
+        <div style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:3px;">${cellTitle(p,q)}</div>
+        <div style="font-size:11px;color:var(--ink);opacity:.8;line-height:1.4;">${cellDef(p,q)}</div>
+      </div>`;
+    }
+  }
+  box.innerHTML=html;
+}
+function renderLegend(){
+  document.getElementById('legend').innerHTML = team.map((e,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12.5px;">
+      <span style="width:11px;height:11px;border-radius:50%;background:${e.color};flex-shrink:0;"></span>
+      <span>${e.name}</span>
+      <span style="color:var(--ink-soft);margin-left:auto;font-size:11px;">${e.level} · ${e.dept}</span>
+      <button data-i="${i}" class="open-toggle" title="Toggle: open to adjusting this rating" style="border:1px ${e.open?'dashed':'solid'} var(--ink-soft);background:none;border-radius:4px;width:16px;height:16px;padding:0;cursor:pointer;flex-shrink:0;"></button>
+      <button data-i="${i}" class="remove-btn" title="Remove from grid" style="border:none;background:none;color:var(--ink-soft);font-size:14px;cursor:pointer;padding:0 0 0 2px;flex-shrink:0;">×</button>
+    </div>`).join('');
+  document.querySelectorAll('.open-toggle').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const e=team[+btn.dataset.i];
+      e.open=!e.open;
+      renderGrid(); renderLegend();
+    });
+  });
+  document.querySelectorAll('.remove-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      team.splice(+btn.dataset.i,1);
+      renderGrid(); renderStats(); renderLog(); renderLegend();
+    });
+  });
+}
+let editingIdx=null;
+function showDetail(e){
+  const idx=team.indexOf(e);
+  const editMode = editingIdx===idx;
+  const evBlock = editMode
+    ? `<textarea id="edit-ev-input" rows="2" style="width:100%;font-size:12.5px;border:1px solid var(--line);border-radius:6px;padding:6px 8px;margin-top:4px;font-family:inherit;background:var(--paper);color:var(--ink);resize:vertical;">${e.ev}</textarea>
+       <div style="margin-top:6px;">
+         <button id="save-ev-btn" style="background:var(--ink);color:var(--paper);border:none;border-radius:5px;padding:5px 12px;font-size:12px;cursor:pointer;">Save</button>
+         <button id="cancel-ev-btn" style="background:none;border:none;color:var(--ink-soft);font-size:12px;cursor:pointer;padding:5px 8px;">Cancel</button>
+       </div>`
+    : `<div style="color:var(--ink-soft);margin-top:4px;">${e.ev} <button id="edit-ev-btn" style="border:none;background:none;color:var(--ink-soft);text-decoration:underline;font-size:11.5px;cursor:pointer;padding:0 0 0 4px;">Edit</button></div>`;
+  document.getElementById('detail-card').innerHTML=
+    `<div style="border-top:1px solid var(--line);padding-top:12px;font-size:13px;display:flex;gap:10px;"><span style="width:11px;height:11px;border-radius:50%;background:${e.color};flex-shrink:0;margin-top:3px;"></span><div style="flex:1;"><b>${e.name}</b> <span style="color:var(--ink-soft);">— ${e.level} · ${e.dept} · ${cellTitle(e.p,e.q)}</span>${evBlock}${e.open?'<div style="color:var(--ink-soft);margin-top:4px;font-style:italic;">Manager is open to adjusting this rating with stronger peer evidence.</div>':''}</div></div>`;
+  if(editMode){
+    document.getElementById('save-ev-btn').addEventListener('click',()=>{
+      e.ev=document.getElementById('edit-ev-input').value.trim() || 'No evidence entered yet.';
+      editingIdx=null; showDetail(e);
+    });
+    document.getElementById('cancel-ev-btn').addEventListener('click',()=>{
+      editingIdx=null; showDetail(e);
+    });
+  } else {
+    document.getElementById('edit-ev-btn').addEventListener('click',()=>{
+      editingIdx=idx; showDetail(e);
+    });
+  }
+}
+function renderStats(){
+  const total=team.length;
+  const high=team.filter(e=>e.p===2&&e.q===2).length;
+  const risk=team.filter(e=>e.p===0||e.q===0).length;
+  const avgPot=(team.reduce((s,e)=>s+e.q,0)/total).toFixed(1);
+  document.getElementById('stats').innerHTML=`
+    <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--line);"><span style="color:var(--ink-soft);">Top talent</span><span class="mono">${high}/${total}</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--line);"><span style="color:var(--ink-soft);">Flagged / low box</span><span class="mono">${risk}/${total}</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;"><span style="color:var(--ink-soft);">Avg. potential score</span><span class="mono">${avgPot}/2.0</span></div>`;
+}
+function renderLog(){
+  document.getElementById('log').innerHTML = log.length ? log.map(l=>`<div>${l}</div>`).join('') : '<div style="font-style:italic;">No moves yet — drag a dot to recalibrate.</div>';
+}
+renderGrid(); renderStats(); renderLog(); renderLegend(); renderDefinitions(); renderMiniPicker(); showDetail(team[0]);
+</script>
+</body>
+</html>

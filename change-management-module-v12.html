@@ -1,0 +1,2350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Change Management Module</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.4/babel.min.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; }
+  #root { min-height: 100vh; }
+</style>
+</head>
+<body>
+<div id="root">
+  <div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;color:#5B6472;">
+    Loading Change Management Module…
+  </div>
+</div>
+<script>
+  window.addEventListener('error', function(e) {
+    var el = document.getElementById('root');
+    if (el && el.textContent.indexOf('Loading') !== -1) {
+      el.innerHTML = '<div style="max-width:500px;margin:60px auto;font-family:sans-serif;color:#C25848;padding:0 20px;">Something failed to load: ' + (e.message || 'unknown error') + '. If you are viewing this inside a sandboxed preview, try downloading the file and opening it directly in a browser.</div>';
+    }
+  });
+</script>
+<script type="text/babel" data-presets="react">
+/* Minimal inline icon set — replaces lucide-react for the standalone build */
+function Icon({ size = 16, color = "currentColor", style, children, viewBox = "0 0 24 24" }) {
+  return (
+    <svg width={size} height={size} viewBox={viewBox} fill="none" stroke={color} strokeWidth="2"
+      strokeLinecap="round" strokeLinejoin="round" style={style}>
+      {children}
+    </svg>
+  );
+}
+function ChevronRight(props) { return <Icon {...props}><polyline points="9 6 15 12 9 18" /></Icon>; }
+function ChevronLeft(props) { return <Icon {...props}><polyline points="15 6 9 12 15 18" /></Icon>; }
+function Plus(props) { return <Icon {...props}><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></Icon>; }
+function Trash2(props) {
+  return (
+    <Icon {...props}>
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+      <path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+    </Icon>
+  );
+}
+function Users(props) {
+  return (
+    <Icon {...props}>
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </Icon>
+  );
+}
+function Target(props) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1" />
+    </Icon>
+  );
+}
+function ClipboardList(props) {
+  return (
+    <Icon {...props}>
+      <rect x="6" y="3" width="12" height="18" rx="2" />
+      <path d="M9 3h6v3H9z" />
+      <line x1="9" y1="10" x2="15" y2="10" /><line x1="9" y1="14" x2="15" y2="14" /><line x1="9" y1="18" x2="13" y2="18" />
+    </Icon>
+  );
+}
+function Rocket(props) {
+  return (
+    <Icon {...props}>
+      <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
+      <path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 19 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
+      <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" /><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+    </Icon>
+  );
+}
+function AlertTriangle(props) {
+  return (
+    <Icon {...props}>
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+      <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+    </Icon>
+  );
+}
+function CheckCircle2(props) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="9" /><polyline points="8.5 12.5 11 15 16 9" />
+    </Icon>
+  );
+}
+function RotateCcw(props) {
+  return (
+    <Icon {...props}>
+      <polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+    </Icon>
+  );
+}
+function Compass(props) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="9" /><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+    </Icon>
+  );
+}
+function ListChecks(props) {
+  return (
+    <Icon {...props}>
+      <path d="M9 6l1.5 1.5L14 4" /><path d="M9 13l1.5 1.5L14 11" /><path d="M9 20l1.5 1.5L14 18" />
+      <line x1="17" y1="6" x2="21" y2="6" /><line x1="17" y1="13" x2="21" y2="13" /><line x1="17" y1="20" x2="21" y2="20" />
+    </Icon>
+  );
+}
+const { useState, useEffect, useRef } = React;
+
+/* ---------------------------------------------------------------- */
+/* tokens                                                            */
+/* ---------------------------------------------------------------- */
+
+const C = {
+  ink: "#1B2430",
+  inkSoft: "#5B6472",
+  paper: "#F6F3EB",
+  card: "#FFFFFF",
+  cardAlt: "#EFEAE0",
+  line: "#DED6C3",
+  teal: "#3F6B64",
+  tealDark: "#2C4E49",
+  tealSoft: "#E3ECE9",
+  amber: "#C0873F",
+  amberSoft: "#F6E9D4",
+  red: "#C25848",
+  redSoft: "#F6DCD8",
+};
+
+const RATING = {
+  1: { color: "#C0574A", label: "Strongly Disagree" },
+  2: { color: "#D6924A", label: "Disagree" },
+  3: { color: "#D3BB50", label: "Neutral" },
+  4: { color: "#8CB56C", label: "Agree" },
+  5: { color: "#4C8B54", label: "Strongly Agree" },
+};
+
+const LEVEL_COLOR = { Low: "#8CB56C", Medium: "#D6924A", High: "#C0574A" };
+const STATUS_OPTIONS = ["Not Started", "On Track", "At Risk", "Off Track", "Blocked", "Complete"];
+const STATUS_COLOR = {
+  "Not Started": "#5B6472",
+  "On Track": "#4C8B54",
+  "At Risk": "#D6924A",
+  "Off Track": "#C0574A",
+  Blocked: "#8B3A3A",
+  Complete: "#2C6E4F",
+};
+const TREND_OPTIONS = ["Improving", "Stable", "Declining", "Not Yet Determined"];
+const TREND_COLOR = {
+  Improving: "#4C8B54",
+  Stable: "#5B6472",
+  Declining: "#C0574A",
+  "Not Yet Determined": "#A8A192",
+};
+
+const FONT_IMPORT =
+  "@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');";
+
+const uid = () => Math.random().toString(36).slice(2, 10);
+
+/* ---------------------------------------------------------------- */
+/* initial data                                                      */
+/* ---------------------------------------------------------------- */
+
+const initialData = () => ({
+  setup: {
+    initiativeName: "",
+    sponsor: { name: "", title: "" },
+    accountable: { name: "", title: "" },
+    cmLead: { name: "", title: "" },
+    projectLead: { name: "", title: "" },
+    team: [],
+    smes: [],
+    decisionAuthority: "",
+    escalation: "",
+  },
+  impact: {
+    whatChanging: "",
+    why: "",
+    urgency: "",
+    outcome: "",
+    effectiveDate: "",
+    groups: [],
+    sigMore: { yes: null, detail: "" },
+    external: { yes: null, detail: "" },
+    rolesChange: { yes: null, list: [] },
+    start: [],
+    stop: [],
+    cont: [],
+    authorityChange: { yes: null, detail: "" },
+    reportingChange: { yes: null, detail: "" },
+    processes: [],
+    newProcesses: { yes: null, list: [] },
+    handoffs: { yes: null, detail: "" },
+    techChecklist: [],
+    techDetail: "",
+    newSkills: "",
+    obsoleteSkills: "",
+    behaviorChange: "",
+    managerCapability: { yes: null, detail: "" },
+    policyChecklist: [],
+    policyDetail: "",
+    ratings: {}, // groupId -> {degree,frequency,complexity,disruption}
+  },
+  readiness: {
+    ratings: {}, // catKey -> [{score, action}]
+  },
+  plan: {
+    notes: {}, // sectionKey -> [text,...]
+    actions: [], // {id, section, action, group:[], owner, dueDate, measure, status, trend, issues, comments}
+  },
+});
+
+/* ---------------------------------------------------------------- */
+/* config                                                            */
+/* ---------------------------------------------------------------- */
+
+const PHASE_DESCRIPTIONS = [
+  "Define what's changing, who's leading it, and who's on the team.",
+  "Identify who's affected and what's changing for them — their roles, processes, tools, and skills.",
+  "Check how prepared people are for this change, and find any gaps before they become problems.",
+  "Turn what you found in Impact and Readiness into a concrete plan — actions, owners, and timing. Check the action steps you wrote in Change Readiness for ideas on what's needed.",
+  "Track and update the actions you created in the Change Management Plan. Status, issues, and comments live here.",
+  "A live, read-only snapshot of how the rollout is going, calculated automatically from your Action Plan.",
+];
+
+const READINESS_CATS = [
+  { key: "awareness", title: "Awareness & Understanding", statements: [
+    "Employees understand what is changing.",
+    "Employees understand why the change is necessary.",
+    "Employees understand how the change will affect their roles.",
+    "Employees understand what will be expected of them.",
+    "Employees understand the desired future state.",
+  ]},
+  { key: "leadership", title: "Leadership Readiness", statements: [
+    "Senior leaders visibly support the change.",
+    "Senior leaders are aligned on why the change is necessary.",
+    "Senior leaders communicate consistent messages about the change.",
+    "Senior leaders demonstrate the behaviors expected after the change.",
+    "Senior leaders are prepared to address questions, concerns, and resistance.",
+  ]},
+  { key: "manager", title: "Manager Readiness", statements: [
+    "Managers understand how the change will affect their teams.",
+    "Managers demonstrate support for the change.",
+    "Managers are prepared to explain the change to employees.",
+    "Managers are prepared to coach employees through the transition.",
+    "Managers are prepared to identify and address resistance.",
+  ]},
+  { key: "commitment", title: "Employee Commitment", statements: [
+    "Employees believe the change is necessary.",
+    "Employees understand the value of the change.",
+    "Employees are willing to adopt the new way of working.",
+    "Employee concerns or objections have been identified and addressed.",
+    "Resistance has been identified and addressed across employee groups.",
+  ]},
+  { key: "knowledge", title: "Knowledge & Capability", statements: [
+    "Employees have the knowledge required to operate in the future state.",
+    "Employees have the skills required to operate in the future state.",
+    "Gaps between current and required capabilities have been identified.",
+    "Required training, practice, job aids, and performance support have been identified.",
+    "Employees are confident they can perform successfully after the change.",
+  ]},
+  { key: "capacity", title: "Capacity & Resources", statements: [
+    "Employees have sufficient time and capacity to adopt the change.",
+    "Competing initiatives are being managed to minimize change fatigue.",
+    "Sufficient people and resources are available to support implementation.",
+    "Required systems, tools, and processes are ready to support the change.",
+    "Support resources will be available when employees encounter problems.",
+  ]},
+  { key: "communication", title: "Communication", statements: [
+    "Employees have received the information they need.",
+    "Communications are reaching the employees and stakeholder groups who need them.",
+    "Employees know where to find additional information about the change.",
+    "Employees have opportunities to ask questions and provide feedback.",
+    "Communications are tailored appropriately for different stakeholder groups.",
+  ]},
+  { key: "environment", title: "Organizational Environment", statements: [
+    "The organization's experience with previous changes has prepared us to implement this change.",
+    "Previous change efforts have not negatively affected employee trust or willingness to participate.",
+    "The organizational culture supports adoption of the change.",
+    "Dependencies and competing priorities are being managed to support successful adoption.",
+  ]},
+];
+
+const PLAN_SECTIONS = [
+  { key: "stakeholder", title: "Stakeholder Engagement", related: [],
+    questions: [
+      "What involvement or support does each stakeholder group need?",
+      "Who is responsible for engaging each group?",
+    ]},
+  { key: "leadership", title: "Senior Leadership & Manager Actions", related: ["leadership", "manager"],
+    questions: [
+      "What actions do senior leaders need to take to visibly support the change?",
+      "What do managers need to effectively support their teams through the change?",
+      "What resources or support should be provided to senior leaders and managers?",
+    ]},
+  { key: "communications", title: "Communications", related: ["communication"],
+    questions: [
+      "What does each stakeholder group need to know about the change?",
+      "What messages should be communicated to each group?",
+      "When should communications occur, and through which channels?",
+    ]},
+  { key: "learning", title: "Learning & Enablement", related: ["knowledge"],
+    questions: [
+      "What knowledge or skills are needed to successfully adopt the change?",
+      "Which stakeholder groups require training or other support?",
+      "What learning, job aids, tools, or resources should be provided, and when?",
+    ]},
+  { key: "resistance", title: "Resistance & Risk", related: ["commitment", "environment"],
+    questions: [
+      "What resistance or adoption risks need to be addressed?",
+      "Which stakeholder groups are most at risk of not adopting the change?",
+      "What actions will address identified resistance or barriers?",
+    ]},
+  { key: "reinforcement", title: "Reinforcement", related: ["capacity", "environment"],
+    questions: [
+      "How will desired behaviors and ways of working be reinforced after implementation?",
+      "What ongoing support will employees and managers need?",
+      "How will successful adoption be recognized or reinforced?",
+    ]},
+  { key: "measurement", title: "Measurement", related: [],
+    questions: [
+      "What indicators will demonstrate that the change is being adopted?",
+      "What adoption targets should be established?",
+      "How and when will adoption be measured, and by whom?",
+    ]},
+];
+
+const SETUP_STEPS_FULL = ["ownership", "team", "governance"];
+const SETUP_STEPS_QUICK = ["ownership", "governance"];
+const IMPACT_STEPS_FULL = ["overview", "stakeholders", "roles", "processes", "technology", "skills", "policies", "impactLevel", "summary"];
+const IMPACT_STEPS_QUICK = ["overview", "stakeholders", "impactLevel", "summary"];
+const READINESS_STEPS = [...READINESS_CATS.map((c) => c.key), "pairing"];
+const PLAN_STEPS = PLAN_SECTIONS.map((s) => s.key);
+const ACTION_PLAN_STEPS = ["planactions"];
+const DASHBOARD_STEPS = ["dashboard"];
+function getPhaseSteps(mode) {
+  return [
+    mode === "quick" ? SETUP_STEPS_QUICK : SETUP_STEPS_FULL,
+    mode === "quick" ? IMPACT_STEPS_QUICK : IMPACT_STEPS_FULL,
+    READINESS_STEPS,
+    PLAN_STEPS,
+    ACTION_PLAN_STEPS,
+    DASHBOARD_STEPS,
+  ];
+}
+const PHASES = [
+  { label: "Setup & Governance", icon: Users, completable: true },
+  { label: "Organizational Impact", icon: Target, completable: true },
+  { label: "Change Readiness", icon: ClipboardList, completable: true },
+  { label: "Change Management Plan", icon: Rocket, completable: true },
+  { label: "Action Plan", icon: ListChecks, completable: true },
+  { label: "Monitoring Dashboard", icon: Compass, completable: false },
+];
+
+/* ---------------------------------------------------------------- */
+/* small primitives                                                  */
+/* ---------------------------------------------------------------- */
+
+function Eyebrow({ children }) {
+  return (
+    <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, letterSpacing: "0.12em", color: C.teal, textTransform: "uppercase", fontWeight: 500, marginBottom: 8 }}>
+      {children}
+    </div>
+  );
+}
+
+/* Textarea that grows automatically as the person types, instead of relying
+   on a manual drag-handle nobody notices. Still keeps resize:vertical as a
+   fallback in case someone wants to shrink it back down. */
+function AutoTextarea({ value, onChange, placeholder, style, minHeight = 76 }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = Math.max(el.scrollHeight, minHeight) + "px";
+  }, [value, minHeight]);
+  return (
+    <textarea
+      ref={ref}
+      value={value || ""}
+      onChange={onChange}
+      placeholder={placeholder || ""}
+      style={{ width: "100%", ...style, overflow: "hidden", resize: "vertical", minHeight, boxSizing: "border-box" }}
+    />
+  );
+}
+
+function Field({ label, value, onChange, placeholder, area, rows = 4, type = "text", help, required }) {
+  const shared = {
+    value: value || "",
+    onChange: (e) => onChange(e.target.value),
+    placeholder: placeholder || "",
+    style: {
+      width: "100%",
+      boxSizing: "border-box",
+      fontFamily: "'IBM Plex Sans', sans-serif",
+      fontSize: 14.5,
+      color: C.ink,
+      background: C.card,
+      border: `1px solid ${C.line}`,
+      borderRadius: 8,
+      padding: "12px 14px",
+      outline: "none",
+    },
+  };
+  return (
+    <div style={{ marginBottom: 32 }}>
+      {label && <label style={{ display: "block", fontSize: 13.5, fontWeight: 500, color: C.ink, marginBottom: 6 }}>{label}{required && <span style={{ color: C.red }}> *</span>}</label>}
+      {help && <div style={{ fontSize: 12, color: C.inkSoft, marginBottom: 6, lineHeight: 1.4 }}>{help}</div>}
+      {area ? <AutoTextarea value={shared.value} onChange={shared.onChange} placeholder={shared.placeholder} style={shared.style} minHeight={96} /> : <input type={type} {...shared} />}
+    </div>
+  );
+}
+
+function YesNo({ label, value, onChange, detailLabel = "Tell us more", area = true }) {
+  const v = value || { yes: null, detail: "" };
+  return (
+    <div style={{ marginBottom: 32 }}>
+      <label style={{ display: "block", fontSize: 13.5, fontWeight: 500, color: C.ink, marginBottom: 8 }}>{label}</label>
+      <div style={{ display: "flex", gap: 8, marginBottom: v.yes === true ? 10 : 0 }}>
+        {["Yes", "No", "N/A"].map((opt) => {
+          const optVal = opt === "Yes" ? true : opt === "No" ? false : "na";
+          const active = v.yes === optVal;
+          return (
+            <button
+              key={opt}
+              onClick={() => onChange({ ...v, yes: optVal })}
+              style={{
+                fontFamily: "'IBM Plex Sans', sans-serif",
+                fontSize: 13.5,
+                fontWeight: 500,
+                padding: "7px 18px",
+                borderRadius: 999,
+                border: `1px solid ${active ? (opt === "N/A" ? C.inkSoft : C.teal) : C.line}`,
+                background: active ? (opt === "N/A" ? C.inkSoft : C.teal) : C.card,
+                color: active ? "#fff" : C.inkSoft,
+                cursor: "pointer",
+              }}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+      {v.yes === true && (
+        area ? (
+          <AutoTextarea
+            value={v.detail}
+            onChange={(e) => onChange({ ...v, detail: e.target.value })}
+            placeholder={detailLabel}
+            minHeight={80}
+            style={{ width: "100%", fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 14, color: C.ink, background: C.card, border: `1px solid ${C.line}`, borderRadius: 8, padding: "12px 14px", outline: "none" }}
+          />
+        ) : (
+          <input
+            type="text"
+            value={v.detail}
+            onChange={(e) => onChange({ ...v, detail: e.target.value })}
+            placeholder={detailLabel}
+            style={{ width: "100%", fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 14, color: C.ink, background: C.card, border: `1px solid ${C.line}`, borderRadius: 8, padding: "12px 14px", outline: "none" }}
+          />
+        )
+      )}
+    </div>
+  );
+}
+
+/* Yes/No toggle only — used when the "yes" branch reveals a custom widget
+   (like a repeater) elsewhere on the screen, so no free-text detail field
+   is needed here. */
+function YesNoSimple({ label, value, onChange }) {
+  return (
+    <div style={{ marginBottom: 24 }}>
+      <label style={{ display: "block", fontSize: 13.5, fontWeight: 500, color: C.ink, marginBottom: 8 }}>{label}</label>
+      <div style={{ display: "flex", gap: 8 }}>
+        {["Yes", "No", "N/A"].map((opt) => {
+          const optVal = opt === "Yes" ? true : opt === "No" ? false : "na";
+          const active = value === optVal;
+          return (
+            <button
+              key={opt}
+              onClick={() => onChange(optVal)}
+              style={{
+                fontFamily: "'IBM Plex Sans', sans-serif",
+                fontSize: 13.5,
+                fontWeight: 500,
+                padding: "7px 18px",
+                borderRadius: 999,
+                border: `1px solid ${active ? (opt === "N/A" ? C.inkSoft : C.teal) : C.line}`,
+                background: active ? (opt === "N/A" ? C.inkSoft : C.teal) : C.card,
+                color: active ? "#fff" : C.inkSoft,
+                cursor: "pointer",
+              }}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* Add-a-line list, used for Start / Stop / Continue */
+function LineList({ label, items, onChange, placeholder }) {
+  const add = () => onChange([...items, { id: uid(), text: "" }]);
+  const remove = (id) => onChange(items.length > 1 ? items.filter((i) => i.id !== id) : items);
+  const set = (id, text) => {
+    if (items.some((i) => i.id === id)) {
+      onChange(items.map((i) => (i.id === id ? { ...i, text } : i)));
+    } else {
+      onChange([...items, { id, text }]);
+    }
+  };
+  const list = items.length ? items : [{ id: uid(), text: "" }];
+
+  return (
+    <div>
+      <div style={{ fontSize: 11, fontWeight: 600, color: C.inkSoft, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.04em" }}>{label}</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 8 }}>
+        {list.map((item) => (
+          <div key={item.id} style={{ display: "flex", gap: 6 }}>
+            <input
+              value={item.text}
+              onChange={(e) => set(item.id, e.target.value)}
+              placeholder={placeholder}
+              style={{ flex: 1, fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 13.5, color: C.ink, background: C.card, border: `1px solid ${C.line}`, borderRadius: 7, padding: "8px 10px", outline: "none" }}
+            />
+            {list.length > 1 && (
+              <IconBtn onClick={() => remove(item.id)} danger><Trash2 size={13} /></IconBtn>
+            )}
+          </div>
+        ))}
+      </div>
+      <GhostBtn onClick={add}><Plus size={14} /> Add another</GhostBtn>
+    </div>
+  );
+}
+
+function Card({ children, style }) {
+  return (
+    <div style={{ background: C.card, border: `1px solid ${C.line}`, borderRadius: 14, padding: "30px 32px", ...style }}>
+      {children}
+    </div>
+  );
+}
+
+function PrimaryBtn({ children, onClick, disabled }) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        display: "inline-flex", alignItems: "center", gap: 6,
+        fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: 500, fontSize: 14.5,
+        padding: "10px 20px", borderRadius: 9, border: "none",
+        background: disabled ? C.line : C.teal, color: "#fff",
+        cursor: disabled ? "not-allowed" : "pointer",
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function GhostBtn({ children, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        display: "inline-flex", alignItems: "center", gap: 6,
+        fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: 500, fontSize: 14.5,
+        padding: "10px 16px", borderRadius: 9, border: `1px solid ${C.line}`,
+        background: "transparent", color: C.ink, cursor: "pointer",
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function IconBtn({ onClick, children, danger }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        display: "inline-flex", alignItems: "center", justifyContent: "center",
+        width: 30, height: 30, borderRadius: 7, border: `1px solid ${C.line}`,
+        background: C.card, color: danger ? C.red : C.inkSoft, cursor: "pointer", flexShrink: 0,
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+/* Delete button that requires a second click within a few seconds to confirm,
+   instead of deleting instantly or interrupting with a modal for every row. */
+function DeleteButton({ onDelete }) {
+  const [confirming, setConfirming] = useState(false);
+  const timer = useRef(null);
+  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
+  const handleClick = () => {
+    if (confirming) {
+      if (timer.current) clearTimeout(timer.current);
+      setConfirming(false);
+      onDelete();
+    } else {
+      setConfirming(true);
+      timer.current = setTimeout(() => setConfirming(false), 2500);
+    }
+  };
+  return (
+    <button
+      onClick={handleClick}
+      title={confirming ? "Click again to confirm delete" : "Delete"}
+      style={{
+        display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6,
+        height: 30, padding: confirming ? "0 12px" : 0, width: confirming ? "auto" : 30,
+        borderRadius: 7, border: `1px solid ${confirming ? C.red : C.line}`,
+        background: confirming ? C.red : C.card, color: confirming ? "#fff" : C.red, cursor: "pointer", flexShrink: 0,
+        fontSize: 12, fontWeight: 600, fontFamily: "'IBM Plex Sans', sans-serif", whiteSpace: "nowrap",
+      }}
+    >
+      <Trash2 size={14} />
+      {confirming && "Confirm?"}
+    </button>
+  );
+}
+
+function Select({ value, onChange, options, placeholder }) {
+  return (
+    <select
+      value={value || ""}
+      onChange={(e) => onChange(e.target.value)}
+      style={{
+        fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 13.5, color: C.ink,
+        background: C.card, border: `1px solid ${C.line}`, borderRadius: 8,
+        padding: "8px 10px", outline: "none", width: "100%",
+      }}
+    >
+      <option value="">{placeholder || "Select..."}</option>
+      {options.map((o) => (
+        <option key={o} value={o}>{o}</option>
+      ))}
+    </select>
+  );
+}
+
+/* Multi-select rendered as toggleable chips */
+function MultiSelect({ value, onChange, options, placeholder }) {
+  const v = value || [];
+  if (options.length === 0) {
+    return <div style={{ fontSize: 12.5, color: C.inkSoft, fontStyle: "italic", padding: "8px 0" }}>{placeholder || "No options yet"}</div>;
+  }
+  const toggle = (opt) => onChange(v.includes(opt) ? v.filter((x) => x !== opt) : [...v, opt]);
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+      {options.map((opt) => {
+        const active = v.includes(opt);
+        return (
+          <button
+            key={opt}
+            onClick={() => toggle(opt)}
+            style={{
+              fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 12.5, fontWeight: 500,
+              padding: "5px 11px", borderRadius: 999, cursor: "pointer",
+              border: `1px solid ${active ? C.teal : C.line}`,
+              background: active ? C.teal : C.card, color: active ? "#fff" : C.inkSoft,
+            }}
+          >
+            {opt}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/* Checklist of "which of these apply" items sharing one detail box, replacing
+   a stack of near-identical Yes/No-plus-detail questions. */
+function ChecklistBlock({ items, checked, onChangeChecked, detail, onChangeDetail, detailLabel = "Tell us more about what's checked above" }) {
+  const toggle = (key) => onChangeChecked(checked.includes(key) ? checked.filter((k) => k !== key) : [...checked, key]);
+  return (
+    <div style={{ marginBottom: 8 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: checked.length ? 16 : 0 }}>
+        {items.map((item) => {
+          const active = checked.includes(item.key);
+          return (
+            <button
+              key={item.key}
+              onClick={() => toggle(item.key)}
+              style={{
+                display: "flex", alignItems: "center", gap: 10, textAlign: "left",
+                padding: "12px 14px", borderRadius: 9, cursor: "pointer",
+                border: `1.5px solid ${active ? C.teal : C.line}`, background: active ? C.tealSoft : C.card,
+                fontFamily: "'IBM Plex Sans', sans-serif",
+              }}
+            >
+              <span style={{
+                width: 18, height: 18, borderRadius: 5, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+                border: `1.5px solid ${active ? C.teal : C.inkSoft}`, background: active ? C.teal : "transparent",
+              }}>
+                {active && <CheckCircle2 size={13} color="#fff" style={{ margin: -1 }} />}
+              </span>
+              <span style={{ fontSize: 13.5, color: C.ink }}>{item.label}</span>
+            </button>
+          );
+        })}
+      </div>
+      {checked.length > 0 && (
+        <AutoTextarea
+          value={detail}
+          onChange={(e) => onChangeDetail(e.target.value)}
+          placeholder={detailLabel}
+          minHeight={90}
+          style={{ width: "100%", fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 14, color: C.ink, background: C.card, border: `1px solid ${C.line}`, borderRadius: 8, padding: "12px 14px", outline: "none" }}
+        />
+      )}
+    </div>
+  );
+}
+
+/* generic repeater for simple multi-field rows */
+function Repeater({ items, onChange, fields, addLabel, empty }) {
+  const add = () => {
+    const row = { id: uid() };
+    fields.forEach((f) => (row[f.key] = ""));
+    onChange([...items, row]);
+  };
+  const remove = (id) => onChange(items.filter((r) => r.id !== id));
+  const set = (id, key, val) => onChange(items.map((r) => (r.id === id ? { ...r, [key]: val } : r)));
+
+  return (
+    <div>
+      {items.length === 0 && (
+        <div style={{ fontSize: 13.5, color: C.inkSoft, fontStyle: "italic", marginBottom: 12 }}>{empty}</div>
+      )}
+      <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 14 }}>
+        {items.map((row) => (
+          <div key={row.id} style={{ border: `1px solid ${C.line}`, borderRadius: 10, padding: 18, background: C.cardAlt, display: "flex", gap: 12, alignItems: "flex-start" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 14, flex: 1 }}>
+              {fields.map((f) => (
+                <div key={f.key}>
+                  <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.04em" }}>{f.label}</div>
+                  {f.type === "select" ? (
+                    <Select value={row[f.key]} onChange={(v) => set(row.id, f.key, v)} options={f.options} />
+                  ) : f.type === "textarea" ? (
+                    <AutoTextarea
+                      value={row[f.key]}
+                      onChange={(e) => set(row.id, f.key, e.target.value)}
+                      minHeight={76}
+                      style={{ width: "100%", fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 13.5, color: C.ink, background: C.card, border: `1px solid ${C.line}`, borderRadius: 7, padding: "10px 12px", outline: "none" }}
+                    />
+                  ) : (
+                    <input
+                      type={f.type === "number" ? "number" : "text"}
+                      value={row[f.key]}
+                      onChange={(e) => set(row.id, f.key, e.target.value)}
+                      style={{ width: "100%", fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 13.5, color: C.ink, background: C.card, border: `1px solid ${C.line}`, borderRadius: 7, padding: "10px 12px", outline: "none" }}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+            <DeleteButton onDelete={() => remove(row.id)} />
+          </div>
+        ))}
+      </div>
+      <GhostBtn onClick={add}><Plus size={15} /> {addLabel}</GhostBtn>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* impact / readiness helpers                                        */
+/* ---------------------------------------------------------------- */
+
+function overallLevel(dims) {
+  const vals = Object.values(dims).filter(Boolean);
+  if (vals.length < 4) return null;
+  const score = { Low: 1, Medium: 2, High: 3 };
+  const avg = vals.reduce((s, v) => s + score[v], 0) / vals.length;
+  if (avg >= 2.4) return "High";
+  if (avg >= 1.6) return "Medium";
+  return "Low";
+}
+
+function computeOverallImpact(groups, ratings) {
+  const levels = groups.map((g) => overallLevel(ratings[g.id] || {})).filter(Boolean);
+  if (levels.length === 0) return null;
+  const score = { Low: 1, Medium: 2, High: 3 };
+  const avg = levels.reduce((s, l) => s + score[l], 0) / levels.length;
+  if (avg >= 2.4) return "High";
+  if (avg >= 1.6) return "Medium";
+  return "Low";
+}
+
+function catAverage(readinessRatings, key, len) {
+  const rows = readinessRatings[key];
+  if (!rows) return null;
+  const scored = rows.filter((r) => r && r.score);
+  if (scored.length < len) return null;
+  return scored.reduce((s, r) => s + r.score, 0) / scored.length;
+}
+
+function overallReadiness(readinessRatings) {
+  const avgs = READINESS_CATS.map((c) => catAverage(readinessRatings, c.key, c.statements.length)).filter((v) => v !== null);
+  if (avgs.length === 0) return null;
+  return avgs.reduce((a, b) => a + b, 0) / avgs.length;
+}
+
+function readinessFullyScored(readinessRatings) {
+  return READINESS_CATS.every((c) => catAverage(readinessRatings, c.key, c.statements.length) !== null);
+}
+
+function readinessLevel(avg) {
+  if (avg === null) return null;
+  if (avg >= 3.75) return "High";
+  if (avg >= 2.5) return "Medium";
+  return "Low";
+}
+
+function phaseComplete(data, index) {
+  if (index === 0) {
+    const s = data.setup;
+    return !!(data.setup.initiativeName && s.sponsor.name && s.accountable.name && s.cmLead.name && s.projectLead.name);
+  }
+  if (index === 1) {
+    const im = data.impact;
+    if (!(im.whatChanging && im.why && im.urgency && im.outcome && im.groups.length > 0)) return false;
+    return im.groups.every((g) => overallLevel(im.ratings[g.id] || {}) !== null);
+  }
+  if (index === 2) {
+    return readinessFullyScored(data.readiness.ratings);
+  }
+  if (index === 3) {
+    return PLAN_SECTIONS.every((sec) => data.plan.actions.some((a) => a.section === sec.key && a.action));
+  }
+  if (index === 4) {
+    const actions = data.plan.actions.filter((a) => a.action);
+    return actions.length > 0 && actions.every((a) => a.status !== "Not Started");
+  }
+  if (index === 5) {
+    const actions = data.plan.actions.filter((a) => a.action);
+    return actions.length > 0 && actions.every((a) => a.status === "Complete");
+  }
+  return false;
+}
+
+const PHASE_REQUIREMENTS = [
+  [
+    { label: "Initiative is named", check: (d) => !!d.setup.initiativeName, stepKey: "ownership" },
+    { label: "Executive sponsor named", check: (d) => !!d.setup.sponsor.name, stepKey: "ownership" },
+    { label: "Accountable owner named", check: (d) => !!d.setup.accountable.name, stepKey: "ownership" },
+    { label: "Change management lead named", check: (d) => !!d.setup.cmLead.name, stepKey: "ownership" },
+    { label: "Project/implementation lead named", check: (d) => !!d.setup.projectLead.name, stepKey: "ownership" },
+  ],
+  [
+    { label: "What's changing, why, why now, and the outcome are described", check: (d) => !!(d.impact.whatChanging && d.impact.why && d.impact.urgency && d.impact.outcome), stepKey: "overview" },
+    { label: "At least one affected group added", check: (d) => d.impact.groups.length > 0, stepKey: "stakeholders" },
+    { label: "Every affected group has an Impact Level rating", check: (d) => d.impact.groups.length > 0 && d.impact.groups.every((g) => overallLevel(d.impact.ratings[g.id] || {}) !== null), stepKey: "impactLevel" },
+  ],
+  [
+    { label: "All 8 readiness categories fully scored", check: (d) => readinessFullyScored(d.readiness.ratings), stepKey: "awareness" },
+  ],
+  [
+    { label: "Every one of the 7 plan sections has at least one action", check: (d) => PLAN_SECTIONS.every((sec) => d.plan.actions.some((a) => a.section === sec.key && a.action)), stepKey: "stakeholder" },
+  ],
+  [
+    { label: "Every action has been triaged (status set beyond Not Started)", check: (d) => { const a = d.plan.actions.filter((x) => x.action); return a.length > 0 && a.every((x) => x.status !== "Not Started"); }, stepKey: "planactions" },
+  ],
+  [
+    { label: "Every action marked Complete", check: (d) => { const a = d.plan.actions.filter((x) => x.action); return a.length > 0 && a.every((x) => x.status === "Complete"); }, stepKey: "planactions" },
+  ],
+];
+
+/* ---------------------------------------------------------------- */
+/* App                                                                */
+/* ---------------------------------------------------------------- */
+
+function App() {
+  const [data, setData] = useState(initialData());
+  const [mode, setMode] = useState("full"); // 'quick' | 'full'
+  const [phase, setPhase] = useState(0);
+  const [step, setStep] = useState(0);
+  const [loaded, setLoaded] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
+  const [infoPhase, setInfoPhase] = useState(null);
+  const [confirmModal, setConfirmModal] = useState(null); // { message, onConfirm }
+  const [showSummary, setShowSummary] = useState(false);
+  const [saveStatus, setSaveStatus] = useState("idle"); // 'idle' | 'saving' | 'saved'
+  const saveTimer = useRef(null);
+  const savedFlashTimer = useRef(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const raw = localStorage.getItem("cm-module-draft");
+        const res = raw ? { value: raw } : null;
+        if (res && res.value) {
+          const parsed = JSON.parse(res.value);
+          if (parsed && parsed.data) setData(parsed.data);
+          if (parsed && parsed.mode) setMode(parsed.mode);
+          if (parsed && parsed.data && parsed.data.setup.initiativeName) setShowWelcome(false);
+        }
+      } catch (e) { /* nothing saved yet */ }
+      setLoaded(true);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (!loaded) return;
+    setSaveStatus("saving");
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(async () => {
+      try {
+        localStorage.setItem("cm-module-draft", JSON.stringify({ data, mode }));
+        setSaveStatus("saved");
+        if (savedFlashTimer.current) clearTimeout(savedFlashTimer.current);
+        savedFlashTimer.current = setTimeout(() => setSaveStatus("idle"), 2500);
+      } catch (e) { console.error("save failed", e); setSaveStatus("idle"); }
+    }, 700);
+    return () => clearTimeout(saveTimer.current);
+  }, [data, mode, loaded]);
+
+  const update = (section, patch) => setData((d) => ({ ...d, [section]: { ...d[section], ...patch } }));
+
+  const resetAll = () => {
+    setConfirmModal({
+      message: "Clear all entries and start over? This can't be undone.",
+      onConfirm: async () => {
+        setData(initialData());
+        setMode("full");
+        setShowWelcome(true);
+        setPhase(0);
+        setStep(0);
+        try { localStorage.removeItem("cm-module-draft"); } catch (e) {}
+      },
+    });
+  };
+
+  const phaseStepsAll = getPhaseSteps(mode);
+  const stepKeys = phaseStepsAll[phase];
+  const stepKey = stepKeys[step];
+
+  const goNext = () => {
+    if (step < stepKeys.length - 1) setStep(step + 1);
+    else if (phase < PHASES.length - 1) { setPhase(phase + 1); setStep(0); }
+  };
+  const goBack = () => {
+    if (step > 0) setStep(step - 1);
+    else if (phase > 0) { setPhase(phase - 1); setStep(phaseStepsAll[phase - 1].length - 1); }
+  };
+  const jump = (p, s) => { setPhase(p); setStep(s); };
+  const jumpToRequirement = (p, reqStepKey) => {
+    const keys = phaseStepsAll[p];
+    const idx = keys.indexOf(reqStepKey);
+    jump(p, idx >= 0 ? idx : 0);
+  };
+
+  useEffect(() => {
+    if (step >= stepKeys.length) setStep(Math.max(0, stepKeys.length - 1));
+  }, [mode, phase, stepKeys.length, step]);
+
+  const isLast = phase === PHASES.length - 1 && step === stepKeys.length - 1;
+
+  const overallImpact = computeOverallImpact(data.impact.groups, data.impact.ratings);
+  const readyAvg = overallReadiness(data.readiness.ratings);
+  const overallReady = readinessLevel(readyAvg);
+
+  const totalSteps = phaseStepsAll.reduce((s, arr) => s + arr.length, 0);
+  const doneSteps = phaseStepsAll.slice(0, phase).reduce((s, arr) => s + arr.length, 0) + step;
+  const progressPct = Math.round((doneSteps / (totalSteps - 1)) * 100);
+  const completablePhases = PHASES.filter((p) => p.completable);
+  const phasesComplete = PHASES.map((p, i) => p.completable && phaseComplete(data, i)).filter(Boolean).length;
+
+  return (
+    <div style={{ minHeight: "100vh", background: C.paper, fontFamily: "'IBM Plex Sans', sans-serif" }}>
+      <style>{`
+        ${FONT_IMPORT}
+        * { box-sizing: border-box; }
+        ::placeholder { color: #A8A192; }
+        input:focus, textarea:focus, select:focus { border-color: ${C.teal} !important; }
+        @media (prefers-reduced-motion: no-preference) {
+          .cm-fade { animation: cmFade .25s ease; }
+        }
+        @keyframes cmFade { from { opacity: 0; transform: translateY(4px);} to {opacity:1; transform:none;} }
+        @media print {
+          body * { visibility: hidden; }
+          #cm-print-area, #cm-print-area * { visibility: visible; }
+          #cm-print-area { position: absolute; top: 0; left: 0; width: 100%; }
+          .cm-no-print { display: none !important; }
+          .cm-print-only { display: block !important; }
+        }
+      `}</style>
+
+      {/* header */}
+      <div style={{ borderBottom: `1px solid ${C.line}`, background: C.card, position: "sticky", top: 0, zIndex: 10 }}>
+        <div style={{ maxWidth: 1180, margin: "0 auto", padding: "16px 24px 0" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 20, marginBottom: 14 }}>
+            <div>
+              <Eyebrow>Change Management Module</Eyebrow>
+              <input
+                value={data.setup.initiativeName}
+                onChange={(e) => update("setup", { initiativeName: e.target.value })}
+                placeholder="Name this initiative..."
+                style={{
+                  fontFamily: "'Fraunces', serif", fontWeight: 500, fontSize: 26, color: C.ink,
+                  border: "none", outline: "none", background: "transparent", padding: 0, width: 420, maxWidth: "60vw",
+                }}
+              />
+            </div>
+            <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+              <SaveIndicator status={saveStatus} />
+              <Badge label="Sections" value={`${phasesComplete}/${completablePhases.length}`} color={phasesComplete === completablePhases.length ? C.teal : C.inkSoft} />
+              {overallImpact && (
+                <Badge label="Impact" value={overallImpact} color={LEVEL_COLOR[overallImpact]} />
+              )}
+              {overallReady && (
+                <Badge label="Readiness" value={overallReady} color={LEVEL_COLOR[overallReady]} />
+              )}
+              <ModeToggle mode={mode} onChange={setMode} />
+              <button onClick={() => setShowSummary(true)} title="View full summary" style={{ width: 34, height: 34, borderRadius: 8, border: `1px solid ${C.line}`, background: "transparent", color: C.inkSoft, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <ListChecks size={15} />
+              </button>
+              <button onClick={() => setShowWelcome(true)} title="About this tool" style={{ width: 34, height: 34, borderRadius: 8, border: `1px solid ${C.line}`, background: "transparent", color: C.inkSoft, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'IBM Plex Serif', serif", fontStyle: "italic", fontWeight: 600, fontSize: 15 }}>
+                ?
+              </button>
+              <button onClick={resetAll} title="Start over" style={{ width: 34, height: 34, borderRadius: 8, border: `1px solid ${C.line}`, background: "transparent", color: C.inkSoft, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <RotateCcw size={15} />
+              </button>
+            </div>
+          </div>
+
+          {/* legend */}
+          <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap", marginBottom: 10 }}>
+            <span style={{ fontSize: 11, color: C.inkSoft, fontFamily: "'IBM Plex Mono', monospace", textTransform: "uppercase", letterSpacing: "0.05em" }}>Section status:</span>
+            <LegendItem swatch={{ background: "transparent", border: `1.5px solid ${C.line}` }} label="Not started" />
+            <LegendItem swatch={{ background: C.tealSoft, border: `1.5px solid ${C.teal}` }} label="In progress" />
+            <LegendItem swatch={{ background: C.teal, border: `1.5px solid ${C.teal}` }} label="Complete" />
+          </div>
+
+          {/* phase buttons */}
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {PHASES.map((p, i) => {
+              const Icon = p.icon;
+              const active = i === phase;
+              const complete = p.completable && phaseComplete(data, i);
+              const bg = complete ? C.teal : active ? C.tealSoft : "transparent";
+              const color = complete ? "#fff" : active ? C.tealDark : C.inkSoft;
+              const border = complete ? C.teal : active ? C.teal : C.line;
+              return (
+                <div key={p.label} style={{ display: "flex", alignItems: "center", border: `1.5px solid ${border}`, borderRadius: 999, background: bg, overflow: "hidden" }}>
+                  <button
+                    onClick={() => jump(i, 0)}
+                    title={complete ? `${p.label} — complete` : p.label}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 7,
+                      padding: p.completable ? "9px 6px 9px 15px" : "9px 15px", border: "none",
+                      background: "transparent", cursor: "pointer",
+                      color, fontSize: 13.5, fontWeight: 500,
+                    }}
+                  >
+                    {complete ? <CheckCircle2 size={15} /> : <Icon size={15} />} {p.label}
+                  </button>
+                  {p.completable && (
+                    <button
+                      onClick={() => setInfoPhase(infoPhase === i ? null : i)}
+                      title="What's needed to complete this section"
+                      style={{
+                        border: "none", background: "transparent", cursor: "pointer",
+                        color, opacity: 0.75, padding: "9px 13px 9px 4px", fontSize: 12, fontWeight: 700,
+                      }}
+                    >
+                      {infoPhase === i ? "▲" : "▾"}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {infoPhase !== null && (
+            <div style={{ marginTop: 10, marginBottom: 4, background: C.cardAlt, border: `1px solid ${C.line}`, borderRadius: 10, padding: "14px 16px", maxWidth: 480 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: C.ink, marginBottom: 8 }}>To mark "{PHASES[infoPhase].label}" complete:</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                {PHASE_REQUIREMENTS[infoPhase].map((req, ri) => {
+                  const done = req.check(data);
+                  return (
+                    <button
+                      key={ri}
+                      onClick={() => { if (!done) { jumpToRequirement(infoPhase, req.stepKey); setInfoPhase(null); } }}
+                      disabled={done}
+                      style={{
+                        display: "flex", gap: 8, alignItems: "flex-start", fontSize: 13, color: done ? C.teal : C.ink,
+                        background: "transparent", border: "none", padding: "5px 6px", borderRadius: 6,
+                        cursor: done ? "default" : "pointer", textAlign: "left", fontFamily: "'IBM Plex Sans', sans-serif",
+                      }}
+                    >
+                      {done ? <CheckCircle2 size={14} style={{ marginTop: 2, flexShrink: 0 }} /> : <span style={{ width: 14, height: 14, borderRadius: 99, border: `1.5px solid ${C.inkSoft}`, marginTop: 2, flexShrink: 0, display: "inline-block" }} />}
+                      <span style={{ textDecoration: done ? "line-through" : "none" }}>{req.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+        <div style={{ height: 3, background: C.cardAlt }}>
+          <div style={{ height: "100%", width: `${progressPct}%`, background: C.teal, transition: "width .3s ease" }} />
+        </div>
+      </div>
+
+      {showSummary && <SummaryOverlay data={data} overallImpact={overallImpact} overallReady={overallReady} onClose={() => setShowSummary(false)} />}
+      {showWelcome && <WelcomeOverlay mode={mode} onStart={(m) => { setMode(m); setShowWelcome(false); }} />}
+      {confirmModal && (
+        <ConfirmModal
+          message={confirmModal.message}
+          onCancel={() => setConfirmModal(null)}
+          onConfirm={() => { confirmModal.onConfirm(); setConfirmModal(null); }}
+        />
+      )}
+
+      {/* body */}
+      <div style={{ maxWidth: 1180, margin: "0 auto", padding: "34px 24px 120px" }} className="cm-fade" key={phase + "-" + step}>
+        {step === 0 && (
+          <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: C.tealSoft, border: `1px solid ${C.teal}33`, borderRadius: 12, padding: "14px 16px", marginBottom: 20 }}>
+            <Compass size={16} color={C.teal} style={{ marginTop: 2, flexShrink: 0 }} />
+            <p style={{ fontSize: 13.5, color: C.ink, lineHeight: 1.55, margin: 0 }}>{PHASE_DESCRIPTIONS[phase]}</p>
+          </div>
+        )}
+
+        <StepDots steps={stepKeys} current={step} onJump={(s) => setStep(s)} labels={stepLabels(phase, stepKeys)} />
+
+        <div style={{ marginTop: 22 }}>
+          {phase === 0 && <SetupScreen stepKey={stepKey} data={data} update={update} />}
+          {phase === 1 && <ImpactScreen stepKey={stepKey} data={data} update={update} />}
+          {phase === 2 && <ReadinessScreen stepKey={stepKey} data={data} update={update} overallImpact={overallImpact} readyAvg={readyAvg} overallReady={overallReady} />}
+          {phase === 3 && <PlanScreen stepKey={stepKey} data={data} update={update} overallImpact={overallImpact} overallReady={overallReady} />}
+          {phase === 4 && <ActionPlanScreen stepKey={stepKey} data={data} update={update} />}
+          {phase === 5 && <MonitoringDashboardScreen data={data} overallReady={overallReady} />}
+        </div>
+      </div>
+
+      {/* footer nav */}
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: C.card, borderTop: `1px solid ${C.line}` }}>
+        <div style={{ maxWidth: 1180, margin: "0 auto", padding: "14px 24px", display: "flex", justifyContent: "space-between" }}>
+          <GhostBtn onClick={goBack}><ChevronLeft size={16} /> Back</GhostBtn>
+          {!isLast ? (
+            <PrimaryBtn onClick={goNext}>Continue <ChevronRight size={16} /></PrimaryBtn>
+          ) : (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, color: C.teal, fontWeight: 500, fontSize: 14 }}>
+              <CheckCircle2 size={17} /> You're all caught up
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Badge({ label, value, color }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 999, background: color + "22", border: `1px solid ${color}55` }}>
+      <span style={{ width: 7, height: 7, borderRadius: 99, background: color }} />
+      <span style={{ fontSize: 11.5, color: C.inkSoft, fontFamily: "'IBM Plex Mono', monospace" }}>{label}</span>
+      <span style={{ fontSize: 12.5, fontWeight: 600, color: C.ink }}>{value}</span>
+    </div>
+  );
+}
+
+function LegendItem({ swatch, label }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      <span style={{ width: 13, height: 13, borderRadius: 999, flexShrink: 0, ...swatch }} />
+      <span style={{ fontSize: 12, color: C.inkSoft }}>{label}</span>
+    </div>
+  );
+}
+
+function SaveIndicator({ status }) {
+  if (status === "idle") return null;
+  const saving = status === "saving";
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.inkSoft, fontFamily: "'IBM Plex Mono', monospace" }}>
+      {saving ? (
+        <>
+          <span style={{ width: 6, height: 6, borderRadius: 99, background: C.amber }} />
+          Saving…
+        </>
+      ) : (
+        <>
+          <CheckCircle2 size={12} color={C.teal} />
+          Saved
+        </>
+      )}
+    </div>
+  );
+}
+
+function ModeToggle({ mode, onChange }) {
+  return (
+    <div style={{ display: "flex", border: `1px solid ${C.line}`, borderRadius: 999, overflow: "hidden" }}>
+      {["quick", "full"].map((m) => {
+        const active = mode === m;
+        return (
+          <button
+            key={m}
+            onClick={() => onChange(m)}
+            title={m === "quick" ? "Quick plan — required fields only" : "Full plan — every question"}
+            style={{
+              border: "none", padding: "7px 12px", fontSize: 12, fontWeight: 500, textTransform: "capitalize",
+              background: active ? C.teal : "transparent", color: active ? "#fff" : C.inkSoft, cursor: "pointer",
+              fontFamily: "'IBM Plex Sans', sans-serif",
+            }}
+          >
+            {m}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function Overlay({ children, onBackdropClick }) {
+  return (
+    <div
+      onClick={onBackdropClick}
+      style={{ position: "fixed", inset: 0, background: "rgba(27,36,48,0.55)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, zIndex: 100 }}
+    >
+      <div onClick={(e) => e.stopPropagation()}>{children}</div>
+    </div>
+  );
+}
+
+function WelcomeOverlay({ mode, onStart }) {
+  const [choice, setChoice] = useState(mode || "full");
+  return (
+    <Overlay onBackdropClick={() => onStart(choice)}>
+      <div style={{ background: C.card, borderRadius: 16, padding: "36px 40px", maxWidth: 560, boxShadow: "0 20px 60px rgba(27,36,48,0.35)" }}>
+        <Eyebrow>Change Management Module</Eyebrow>
+        <h1 style={{ fontFamily: "'Fraunces', serif", fontWeight: 500, fontSize: 26, color: C.ink, margin: "0 0 14px" }}>
+          Plan a change from setup through rollout
+        </h1>
+        <p style={{ fontSize: 14.5, color: C.inkSoft, lineHeight: 1.6, margin: "0 0 18px" }}>
+          This tool walks you through six sections. Information you enter once — like affected groups or your change
+          team — carries forward automatically, so you won't re-type it later.
+        </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 22 }}>
+          {PHASES.map((p, i) => {
+            const Icon = p.icon;
+            return (
+              <div key={p.label} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <div style={{ width: 26, height: 26, borderRadius: 8, background: C.tealSoft, color: C.teal, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
+                  <Icon size={14} />
+                </div>
+                <div>
+                  <div style={{ fontSize: 13.5, fontWeight: 600, color: C.ink }}>{p.label}</div>
+                  <div style={{ fontSize: 12.5, color: C.inkSoft, lineHeight: 1.4 }}>{PHASE_DESCRIPTIONS[i]}</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <p style={{ fontSize: 12.5, color: C.inkSoft, lineHeight: 1.5, margin: "0 0 22px", display: "flex", gap: 8, alignItems: "flex-start" }}>
+          <CheckCircle2 size={14} color={C.teal} style={{ marginTop: 2, flexShrink: 0 }} />
+          A section's button turns solid green once it's complete. Click the small arrow next to any section to see exactly what's still needed.
+        </p>
+
+        <div style={{ marginBottom: 18 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: C.ink, marginBottom: 10 }}>How thorough should this plan be?</div>
+          <div style={{ display: "flex", gap: 10 }}>
+            <ModeCard
+              title="Quick plan"
+              description="Just the required fields — ownership, overview, stakeholders, impact, readiness, and actions. Good for smaller changes."
+              active={choice === "quick"}
+              onClick={() => setChoice("quick")}
+            />
+            <ModeCard
+              title="Full plan"
+              description="Every question, including roles, processes, technology, skills, and policy impacts. Best for larger changes."
+              active={choice === "full"}
+              onClick={() => setChoice("full")}
+            />
+          </div>
+          <div style={{ fontSize: 11.5, color: C.inkSoft, marginTop: 8 }}>You can switch this anytime from the toggle in the header.</div>
+        </div>
+
+        <PrimaryBtn onClick={() => onStart(choice)}>Get started</PrimaryBtn>
+      </div>
+    </Overlay>
+  );
+}
+
+function ModeCard({ title, description, active, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        flex: 1, textAlign: "left", padding: "14px 16px", borderRadius: 10, cursor: "pointer",
+        border: `1.5px solid ${active ? C.teal : C.line}`, background: active ? C.tealSoft : C.card,
+        fontFamily: "'IBM Plex Sans', sans-serif",
+      }}
+    >
+      <div style={{ fontSize: 13.5, fontWeight: 600, color: active ? C.tealDark : C.ink, marginBottom: 4 }}>{title}</div>
+      <div style={{ fontSize: 12, color: C.inkSoft, lineHeight: 1.4 }}>{description}</div>
+    </button>
+  );
+}
+
+function ConfirmModal({ message, onConfirm, onCancel }) {
+  return (
+    <Overlay onBackdropClick={onCancel}>
+      <div style={{ background: C.card, borderRadius: 14, padding: "26px 28px", maxWidth: 380, boxShadow: "0 20px 60px rgba(27,36,48,0.35)" }}>
+        <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 22 }}>
+          <AlertTriangle size={18} color={C.amber} style={{ marginTop: 1, flexShrink: 0 }} />
+          <p style={{ fontSize: 14.5, color: C.ink, lineHeight: 1.5, margin: 0 }}>{message}</p>
+        </div>
+        <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+          <GhostBtn onClick={onCancel}>Cancel</GhostBtn>
+          <button
+            onClick={onConfirm}
+            style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: 500, fontSize: 14.5, padding: "10px 20px", borderRadius: 9, border: "none", background: C.red, color: "#fff", cursor: "pointer" }}
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    </Overlay>
+  );
+}
+
+function SumSection({ title, children }) {
+  return (
+    <div style={{ marginBottom: 26, breakInside: "avoid" }}>
+      <div style={{ fontFamily: "'Fraunces', serif", fontWeight: 500, fontSize: 18, color: C.ink, marginBottom: 12, paddingBottom: 8, borderBottom: `2px solid ${C.ink}` }}>{title}</div>
+      {children}
+    </div>
+  );
+}
+
+function SumRow({ label, value }) {
+  return (
+    <div style={{ marginBottom: 10 }}>
+      <div style={{ fontSize: 11, fontWeight: 600, color: C.teal, textTransform: "uppercase", letterSpacing: "0.03em", marginBottom: 2 }}>{label}</div>
+      <div style={{ fontSize: 13.5, color: C.ink, lineHeight: 1.5, whiteSpace: "pre-line" }}>{value || "—"}</div>
+    </div>
+  );
+}
+
+function SummaryOverlay({ data, overallImpact, overallReady, onClose }) {
+  const s = data.setup, im = data.impact, rr = data.readiness.ratings, pl = data.plan;
+  const actions = pl.actions.filter((a) => a.action);
+  return (
+    <Overlay onBackdropClick={onClose}>
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{ background: C.card, borderRadius: 16, padding: "36px 40px", maxWidth: 760, width: "90vw", maxHeight: "85vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(27,36,48,0.35)" }}
+      >
+        <div id="cm-print-area">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 26 }} className="cm-no-print">
+            <div>
+              <Eyebrow>Full Plan Summary</Eyebrow>
+              <h1 style={{ fontFamily: "'Fraunces', serif", fontWeight: 500, fontSize: 24, color: C.ink, margin: 0 }}>{s.initiativeName || "Untitled Initiative"}</h1>
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <GhostBtn onClick={() => window.print()}><ListChecks size={15} /> Print / Save as PDF</GhostBtn>
+              <IconBtn onClick={onClose}><ChevronLeft size={15} /></IconBtn>
+            </div>
+          </div>
+          <h1 className="cm-print-only" style={{ display: "none", fontFamily: "'Fraunces', serif", fontWeight: 500, fontSize: 24, color: C.ink, margin: "0 0 24px" }}>{s.initiativeName || "Untitled Initiative"} — Change Plan Summary</h1>
+
+          <SumSection title="Setup & Governance">
+            <SumRow label="Executive Sponsor" value={`${s.sponsor.name}${s.sponsor.title ? ", " + s.sponsor.title : ""}`} />
+            <SumRow label="Accountable Owner" value={`${s.accountable.name}${s.accountable.title ? ", " + s.accountable.title : ""}`} />
+            <SumRow label="Change Management Lead" value={`${s.cmLead.name}${s.cmLead.title ? ", " + s.cmLead.title : ""}`} />
+            <SumRow label="Project Lead" value={`${s.projectLead.name}${s.projectLead.title ? ", " + s.projectLead.title : ""}`} />
+            <SumRow label="Change Team" value={s.team.map((t) => `${t.name || "—"} (${t.role || "—"})`).join("; ")} />
+            <SumRow label="Decision Authority" value={s.decisionAuthority} />
+            <SumRow label="Escalation Process" value={s.escalation} />
+          </SumSection>
+
+          <SumSection title="Organizational Impact">
+            <SumRow label="What's Changing" value={im.whatChanging} />
+            <SumRow label="Why" value={im.why} />
+            <SumRow label="Why Now" value={im.urgency} />
+            <SumRow label="Target Outcome" value={im.outcome} />
+            <SumRow label="Effective Date" value={im.effectiveDate} />
+            <SumRow label="Affected Groups & Impact Level" value={im.groups.map((g) => `${g.name || "—"} (${g.count || "?"} people) — ${overallLevel(im.ratings[g.id] || {}) || "unrated"}`).join("\n")} />
+          </SumSection>
+
+          <SumSection title="Change Readiness">
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 10, marginBottom: 10 }}>
+              {READINESS_CATS.map((c) => {
+                const avg = catAverage(rr, c.key, c.statements.length);
+                return <SumRow key={c.key} label={c.title} value={avg !== null ? `${avg.toFixed(1)} / 5` : "Not scored"} />;
+              })}
+            </div>
+            <SumRow label="Overall Impact × Readiness" value={overallImpact && overallReady ? `${overallImpact} impact, ${overallReady} readiness` : "Incomplete"} />
+          </SumSection>
+
+          <SumSection title="Action Plan">
+            {actions.length === 0 ? (
+              <div style={{ fontSize: 13.5, color: C.inkSoft, fontStyle: "italic" }}>No actions documented yet.</div>
+            ) : (
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12.5 }}>
+                <thead>
+                  <tr>
+                    {["Action", "Owner", "Due", "Status"].map((h) => (
+                      <th key={h} style={{ textAlign: "left", padding: "6px 8px", borderBottom: `2px solid ${C.ink}`, fontSize: 10.5, textTransform: "uppercase", color: C.inkSoft }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {actions.map((a) => (
+                    <tr key={a.id} style={{ borderBottom: `1px solid ${C.line}` }}>
+                      <td style={{ padding: "6px 8px" }}>{a.action}</td>
+                      <td style={{ padding: "6px 8px" }}>{a.owner || "—"}</td>
+                      <td style={{ padding: "6px 8px" }}>{a.dueDate || "—"}</td>
+                      <td style={{ padding: "6px 8px", color: STATUS_COLOR[a.status], fontWeight: 600 }}>{a.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </SumSection>
+        </div>
+      </div>
+    </Overlay>
+  );
+}
+
+function stepLabels(phase, keys) {
+  const maps = [
+    { ownership: "Ownership", team: "Change Team", governance: "Governance" },
+    { overview: "Overview", stakeholders: "Stakeholders", roles: "Roles", processes: "Processes", technology: "Technology", skills: "Skills", policies: "Policies", impactLevel: "Impact Level", summary: "Summary" },
+    Object.fromEntries(READINESS_CATS.map((c) => [c.key, c.title.split(" ")[0]]).concat([["pairing", "Impact × Readiness"]])),
+    Object.fromEntries(PLAN_SECTIONS.map((s) => [s.key, s.title])),
+    { planactions: "Change Management Plan Actions" },
+    { dashboard: "Dashboard" },
+  ];
+  return keys.map((k) => maps[phase][k] || k);
+}
+
+function StepDots({ steps, current, onJump, labels }) {
+  if (steps.length <= 1) return null;
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+      {steps.map((s, i) => {
+        const active = i === current;
+        const done = i < current;
+        return (
+          <button
+            key={s}
+            onClick={() => onJump(i)}
+            style={{
+              fontSize: 12, fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: 500,
+              padding: "5px 11px", borderRadius: 999, cursor: "pointer",
+              border: `1px solid ${active ? C.teal : C.line}`,
+              background: active ? C.teal : done ? C.tealSoft : "transparent",
+              color: active ? "#fff" : done ? C.tealDark : C.inkSoft,
+            }}
+          >
+            {labels[i]}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* Phase 1 — Setup & Governance                                      */
+/* ---------------------------------------------------------------- */
+
+function RequiredLegend() {
+  return (
+    <div style={{ fontSize: 12, color: C.inkSoft, marginBottom: 18, marginTop: -6 }}>
+      <span style={{ color: C.red }}>*</span> Required for this section to be marked complete
+    </div>
+  );
+}
+
+function PersonFields({ label, value, onChange, required }) {
+  return (
+    <div style={{ marginBottom: 32 }}>
+      <label style={{ display: "block", fontSize: 13.5, fontWeight: 500, color: C.ink, marginBottom: 6 }}>{label}{required && <span style={{ color: C.red }}> *</span>}</label>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <input value={value.name} onChange={(e) => onChange({ ...value, name: e.target.value })} placeholder="Name"
+          style={{ width: "100%", fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 14.5, color: C.ink, background: C.card, border: `1px solid ${C.line}`, borderRadius: 8, padding: "12px 14px", outline: "none" }} />
+        <input value={value.title} onChange={(e) => onChange({ ...value, title: e.target.value })} placeholder="Job title"
+          style={{ width: "100%", fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 14.5, color: C.ink, background: C.card, border: `1px solid ${C.line}`, borderRadius: 8, padding: "12px 14px", outline: "none" }} />
+      </div>
+    </div>
+  );
+}
+
+function SetupScreen({ stepKey, data, update }) {
+  const s = data.setup;
+  const set = (patch) => update("setup", patch);
+
+  if (stepKey === "ownership") {
+    return (
+      <Card>
+        <Eyebrow>Change Ownership</Eyebrow>
+        <RequiredLegend />
+        <PersonFields label="Executive sponsor" value={s.sponsor} onChange={(v) => set({ sponsor: v })} required />
+        <PersonFields label="Who is accountable for the overall success of the change?" value={s.accountable} onChange={(v) => set({ accountable: v })} required />
+        <PersonFields label="Who is leading the change management effort?" value={s.cmLead} onChange={(v) => set({ cmLead: v })} required />
+        <PersonFields label="Who is leading the overall project or implementation?" value={s.projectLead} onChange={(v) => set({ projectLead: v })} required />
+      </Card>
+    );
+  }
+  if (stepKey === "team") {
+    return (
+      <>
+        <Card style={{ marginBottom: 20 }}>
+          <Eyebrow>Change Team</Eyebrow>
+          <p style={{ fontSize: 14, color: C.inkSoft, marginTop: -4, marginBottom: 14 }}>Who's on the core change team, and what each person will do.</p>
+          <Repeater
+            items={s.team}
+            onChange={(v) => set({ team: v })}
+            addLabel="Add team member"
+            empty="No team members added yet."
+            fields={[
+              { key: "name", label: "Name" },
+              { key: "function", label: "Business Function" },
+              { key: "role", label: "Role on Change Team" },
+              { key: "roleDescription", label: "Role Description", type: "textarea", wide: true },
+              { key: "contact", label: "Contact Info" },
+            ]}
+          />
+        </Card>
+        <Card>
+          <Eyebrow>Extended Contributors</Eyebrow>
+          <p style={{ fontSize: 14, color: C.inkSoft, marginTop: -4, marginBottom: 14 }}>Anyone who needs to be involved but isn't on the core team.</p>
+          <Repeater
+            items={s.smes}
+            onChange={(v) => set({ smes: v })}
+            addLabel="Add contributor"
+            empty="None yet — add if applicable."
+            fields={[
+              { key: "name", label: "Name" },
+              { key: "function", label: "Business Function" },
+              { key: "role", label: "Role in the Change" },
+            ]}
+          />
+        </Card>
+      </>
+    );
+  }
+  if (stepKey === "governance") {
+    return (
+      <Card>
+        <Eyebrow>Governance</Eyebrow>
+        <Field label="Who has final decision-making authority for the change?" value={s.decisionAuthority} onChange={(v) => set({ decisionAuthority: v })} area rows={2} />
+        <Field label="How will major issues, risks, or decisions be escalated?" value={s.escalation} onChange={(v) => set({ escalation: v })} area />
+      </Card>
+    );
+  }
+  return null;
+}
+
+/* ---------------------------------------------------------------- */
+/* Phase 2 — Organizational Impact Assessment                        */
+/* ---------------------------------------------------------------- */
+
+function ImpactScreen({ stepKey, data, update }) {
+  const im = data.impact;
+  const set = (patch) => update("impact", patch);
+
+  if (stepKey === "overview") {
+    return (
+      <Card>
+        <Eyebrow>Change Overview</Eyebrow>
+        <RequiredLegend />
+        <Field label="What is changing?" value={im.whatChanging} onChange={(v) => set({ whatChanging: v })} area rows={5} required />
+        <Field label="Why is the change being made?" value={im.why} onChange={(v) => set({ why: v })} area rows={5} required />
+        <Field label="Why now? What happens if this waits?" value={im.urgency} onChange={(v) => set({ urgency: v })} area rows={4} required help="This is what a sponsor points to when someone asks 'why can't this wait until next quarter?'" />
+        <Field label="What business outcome is the change intended to achieve?" value={im.outcome} onChange={(v) => set({ outcome: v })} area rows={5} required />
+        <Field label="When will the change take effect?" value={im.effectiveDate} onChange={(v) => set({ effectiveDate: v })} type="date" />
+      </Card>
+    );
+  }
+
+  if (stepKey === "stakeholders") {
+    return (
+      <>
+        <Card style={{ marginBottom: 20 }}>
+          <Eyebrow>Stakeholders</Eyebrow>
+          <p style={{ fontSize: 14, color: C.inkSoft, marginTop: -4, marginBottom: 14 }}>List every group affected by this change — a team, department, or location. You'll rate each one's impact next, and they'll carry forward automatically into Readiness and the Change Management Plan.</p>
+          <Repeater
+            items={im.groups}
+            onChange={(v) => set({ groups: v })}
+            addLabel="Add affected group"
+            empty="No groups added yet."
+            fields={[
+              { key: "name", label: "Group" },
+              { key: "count", label: "# People Affected", type: "number" },
+              { key: "effect", label: "How They're Affected", type: "textarea", wide: true },
+            ]}
+          />
+        </Card>
+        <Card style={{ marginBottom: 20 }}>
+          <YesNo label="Are any groups affected significantly more than others?" value={im.sigMore} onChange={(v) => set({ sigMore: v })} detailLabel="Which groups, and how?" />
+          <YesNo label="Are customers, vendors, or external partners affected?" value={im.external} onChange={(v) => set({ external: v })} detailLabel="Which external groups, and how?" />
+        </Card>
+      </>
+    );
+  }
+
+  if (stepKey === "roles") {
+    return (
+      <Card>
+        <Eyebrow>Roles & Responsibilities</Eyebrow>
+        <YesNoSimple
+          label="Will any roles or responsibilities change?"
+          value={im.rolesChange.yes}
+          onChange={(v) => set({ rolesChange: { ...im.rolesChange, yes: v } })}
+        />
+        {im.rolesChange.yes === true && (
+          <div style={{ marginTop: 16, marginBottom: 28 }}>
+            <Repeater
+              items={im.rolesChange.list}
+              onChange={(v) => set({ rolesChange: { ...im.rolesChange, list: v } })}
+              addLabel="Add role change"
+              empty="No role changes added yet."
+              fields={[{ key: "role", label: "Role / Responsibility" }, { key: "detail", label: "What Changes", type: "textarea", wide: true }]}
+            />
+          </div>
+        )}
+        <div style={{ marginBottom: 10, marginTop: 4 }}>
+          <label style={{ display: "block", fontSize: 13.5, fontWeight: 500, color: C.ink, marginBottom: 8 }}>What will people need to start, stop, or continue doing?</label>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16, marginBottom: 8 }}>
+          <LineList label="Start" items={im.start} onChange={(v) => set({ start: v })} placeholder="Something to start doing" />
+          <LineList label="Stop" items={im.stop} onChange={(v) => set({ stop: v })} placeholder="Something to stop doing" />
+          <LineList label="Continue" items={im.cont} onChange={(v) => set({ cont: v })} placeholder="Something to keep doing" />
+        </div>
+        <div style={{ height: 8 }} />
+        <YesNo label="Will decision-making authority or accountability change?" value={im.authorityChange} onChange={(v) => set({ authorityChange: v })} />
+        <YesNo label="Will reporting relationships or team structures change?" value={im.reportingChange} onChange={(v) => set({ reportingChange: v })} />
+      </Card>
+    );
+  }
+
+  if (stepKey === "processes") {
+    return (
+      <Card>
+        <Eyebrow>Processes & Ways of Working</Eyebrow>
+        <p style={{ fontSize: 14, color: C.inkSoft, marginTop: -4, marginBottom: 14 }}>List any existing processes or workflows this change affects.</p>
+        <Repeater
+          items={im.processes}
+          onChange={(v) => set({ processes: v })}
+          addLabel="Add process"
+          empty="No processes added yet."
+          fields={[
+            { key: "name", label: "Process / Workflow" },
+            { key: "whatChanges", label: "What Will Change", type: "textarea", wide: true },
+            { key: "significance", label: "Significance", type: "select", options: ["Low", "Medium", "High"] },
+          ]}
+        />
+        <div style={{ height: 18 }} />
+        <YesNoSimple
+          label="Are any new processes, outside of what was listed above, being introduced?"
+          value={im.newProcesses.yes}
+          onChange={(v) => set({ newProcesses: { ...im.newProcesses, yes: v } })}
+        />
+        {im.newProcesses.yes === true && (
+          <Repeater
+            items={im.newProcesses.list}
+            onChange={(v) => set({ newProcesses: { ...im.newProcesses, list: v } })}
+            addLabel="Add new process"
+            empty="None added yet."
+            fields={[{ key: "name", label: "New Process" }, { key: "significance", label: "Significance", type: "select", options: ["Low", "Medium", "High"] }]}
+          />
+        )}
+        <div style={{ height: 10 }} />
+        <YesNo label="Will the change affect how teams work together or depend on one another?" value={im.handoffs} onChange={(v) => set({ handoffs: v })} />
+      </Card>
+    );
+  }
+
+  if (stepKey === "technology") {
+    return (
+      <Card>
+        <Eyebrow>Technology & Tools</Eyebrow>
+        <p style={{ fontSize: 13.5, color: C.inkSoft, marginTop: -4, marginBottom: 18 }}>Check anything that applies, then add detail once below.</p>
+        <ChecklistBlock
+          items={[
+            { key: "newSystems", label: "Employees will use new or different systems, tools, or technology" },
+            { key: "retiredSystems", label: "Existing systems or tools will be retired" },
+            { key: "accessChange", label: "Workflows, permissions, or system access will change" },
+            { key: "infoHandling", label: "Employees will need to enter, update, or manage information differently" },
+          ]}
+          checked={im.techChecklist}
+          onChangeChecked={(v) => set({ techChecklist: v })}
+          detail={im.techDetail}
+          onChangeDetail={(v) => set({ techDetail: v })}
+          detailLabel="What's changing — which systems, what access, what's different?"
+        />
+      </Card>
+    );
+  }
+
+  if (stepKey === "skills") {
+    return (
+      <Card>
+        <Eyebrow>Skills & Behaviors</Eyebrow>
+        <Field label="What new knowledge or skills will employees need?" value={im.newSkills} onChange={(v) => set({ newSkills: v })} area rows={5} />
+        <Field label="What existing skills will become less important or obsolete?" value={im.obsoleteSkills} onChange={(v) => set({ obsoleteSkills: v })} area rows={5} />
+        <Field label="What behaviors will need to change?" value={im.behaviorChange} onChange={(v) => set({ behaviorChange: v })} area rows={5} />
+        <YesNo label="Will managers need new capabilities to support the change?" value={im.managerCapability} onChange={(v) => set({ managerCapability: v })} />
+      </Card>
+    );
+  }
+
+  if (stepKey === "policies") {
+    return (
+      <Card>
+        <Eyebrow>Policies & Structure</Eyebrow>
+        <p style={{ fontSize: 13.5, color: C.inkSoft, marginTop: -4, marginBottom: 18 }}>Check anything that applies, then add detail once below.</p>
+        <ChecklistBlock
+          items={[
+            { key: "policyChange", label: "Policies, procedures, governance, or controls will change" },
+            { key: "structureChange", label: "Organizational structures or reporting relationships will change" },
+            { key: "performanceChange", label: "Performance expectations or measures will change" },
+            { key: "incentiveChange", label: "Incentives or rewards will change" },
+          ]}
+          checked={im.policyChecklist}
+          onChangeChecked={(v) => set({ policyChecklist: v })}
+          detail={im.policyDetail}
+          onChangeDetail={(v) => set({ policyDetail: v })}
+          detailLabel="What's changing about policy, structure, performance, or incentives?"
+        />
+      </Card>
+    );
+  }
+
+  if (stepKey === "impactLevel") {
+    if (im.groups.length === 0) {
+      return <Card><p style={{ fontSize: 14, color: C.inkSoft }}>Add affected groups on the Stakeholders step to rate their impact level here.</p></Card>;
+    }
+    return (
+      <Card>
+        <Eyebrow>Impact Level</Eyebrow>
+        <p style={{ fontSize: 14, color: C.inkSoft, marginTop: -4, marginBottom: 18 }}>Rate each group below. Their overall impact level is calculated automatically and determines which groups get flagged as priorities later in your Change Management Plan.</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {im.groups.map((g) => {
+            const dims = im.ratings[g.id] || {};
+            const level = overallLevel(dims);
+            const setDim = (dim, val) => set({ ratings: { ...im.ratings, [g.id]: { ...dims, [dim]: val } } });
+            return (
+              <div key={g.id} style={{ border: `1px solid ${C.line}`, borderRadius: 10, padding: 18, background: C.cardAlt }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: g.effect ? 4 : 10, gap: 10 }}>
+                  <div style={{ fontWeight: 600, fontSize: 14.5 }}>{g.name || "Unnamed group"}</div>
+                  {level && <Badge label="Overall" value={level} color={LEVEL_COLOR[level]} />}
+                </div>
+                {g.effect && (
+                  <div style={{ fontSize: 12.5, color: C.inkSoft, lineHeight: 1.5, marginBottom: 14, maxWidth: 640 }}>{g.effect}</div>
+                )}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16 }}>
+                  {[
+                    ["degree", "Degree of Change", "How different the future state is from how things work today."],
+                    ["frequency", "Frequency", "How often this group will encounter or use the change."],
+                    ["complexity", "Complexity", "How difficult the change will be to learn or carry out."],
+                    ["disruption", "Disruption", "How much the change will interrupt current work or routines."],
+                  ].map(([key, label, def]) => (
+                    <div key={key}>
+                      <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 4, textTransform: "uppercase" }}>{label}</div>
+                      <div style={{ fontSize: 11, color: C.inkSoft, marginBottom: 6, lineHeight: 1.4 }}>{def}</div>
+                      <Select value={dims[key]} onChange={(v) => setDim(key, v)} options={["Low", "Medium", "High"]} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+    );
+  }
+
+  if (stepKey === "summary") {
+    return (
+      <Card>
+        <Eyebrow>Organizational Impact — Summary</Eyebrow>
+        <SummaryBlock label="What's changing" text={im.whatChanging} />
+        <SummaryBlock label="Why" text={im.why} />
+        <SummaryBlock label="Why now" text={im.urgency} />
+        <SummaryBlock label="Target outcome" text={im.outcome} />
+        <SummaryBlock label="Effective date" text={im.effectiveDate} />
+        <SummaryBlock label="Affected groups" text={im.groups.map((g) => `${g.name || "—"} (${g.count || "?"} people): ${g.effect || "—"}`).join("\n") || "None entered."} />
+        <SummaryBlock label="Start / Stop / Continue" text={`Start: ${im.start.map((i) => i.text).filter(Boolean).join("; ") || "—"}\nStop: ${im.stop.map((i) => i.text).filter(Boolean).join("; ") || "—"}\nContinue: ${im.cont.map((i) => i.text).filter(Boolean).join("; ") || "—"}`} />
+        <SummaryBlock label="Process changes" text={im.processes.map((p) => `${p.name || "—"} — ${p.whatChanges || "—"} (${p.significance || "unrated"})`).join("\n") || "None entered."} />
+        <SummaryBlock label="Technology changes" text={im.techChecklist.length > 0 ? `${im.techChecklist.length} area(s) flagged: ${im.techDetail || "no detail yet"}` : "No system changes flagged."} />
+        <SummaryBlock label="Skills & behaviors" text={`New skills: ${im.newSkills || "—"}\nBehavior change: ${im.behaviorChange || "—"}`} />
+        <SummaryBlock label="Impact levels" text={im.groups.map((g) => `${g.name || "—"}: ${overallLevel(im.ratings[g.id] || {}) || "not yet rated"}`).join("\n") || "None entered."} last />
+      </Card>
+    );
+  }
+
+  return null;
+}
+
+function SummaryBlock({ label, text, last }) {
+  return (
+    <div style={{ marginBottom: last ? 0 : 16, paddingBottom: last ? 0 : 16, borderBottom: last ? "none" : `1px solid ${C.line}` }}>
+      <div style={{ fontSize: 12, fontWeight: 600, color: C.teal, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>{label}</div>
+      <div style={{ fontSize: 14, color: C.ink, whiteSpace: "pre-line", lineHeight: 1.5 }}>{text || "Not yet entered."}</div>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* Phase 3 — Change Readiness Assessment                             */
+/* ---------------------------------------------------------------- */
+
+function ReadinessScreen({ stepKey, data, update, overallImpact, readyAvg, overallReady }) {
+  const rr = data.readiness.ratings;
+
+  const setRow = (catKey, idx, patch, len) => {
+    const rows = rr[catKey] ? [...rr[catKey]] : Array(len).fill(null);
+    rows[idx] = { ...(rows[idx] || {}), ...patch };
+    update("readiness", { ratings: { ...rr, [catKey]: rows } });
+  };
+
+  const cat = READINESS_CATS.find((c) => c.key === stepKey);
+
+  if (cat) {
+    const avg = catAverage(rr, cat.key, cat.statements.length);
+    return (
+      <Card>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
+          <Eyebrow>{cat.title}</Eyebrow>
+          {avg !== null && <Badge label="Section avg" value={avg.toFixed(1)} color={RATING[Math.round(avg)].color} />}
+        </div>
+        <p style={{ fontSize: 13.5, color: C.inkSoft, marginTop: -2, marginBottom: 16, lineHeight: 1.5 }}>
+          Rate each statement from 1–5, where 1 = Strongly Disagree and 5 = Strongly Agree. For each statement, identify the actions needed to improve readiness.
+        </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {cat.statements.map((stmt, idx) => {
+            const row = (rr[cat.key] || [])[idx] || {};
+            return (
+              <div key={idx} style={{ border: `1px solid ${C.line}`, borderRadius: 10, padding: 14, background: C.cardAlt }}>
+                <div style={{ fontSize: 14, color: C.ink, marginBottom: 10 }}>{stmt}</div>
+                <div style={{ display: "flex", gap: 6, marginBottom: row.score ? 10 : 0 }}>
+                  {[1, 2, 3, 4, 5].map((n) => {
+                    const active = row.score === n;
+                    return (
+                      <button
+                        key={n}
+                        onClick={() => setRow(cat.key, idx, { score: n }, cat.statements.length)}
+                        title={RATING[n].label}
+                        style={{
+                          width: 36, height: 36, borderRadius: 8, border: `1.5px solid ${active ? RATING[n].color : C.line}`,
+                          background: active ? RATING[n].color : "#fff", color: active ? "#fff" : C.inkSoft,
+                          fontWeight: 600, fontSize: 14, cursor: "pointer",
+                        }}
+                      >
+                        {n}
+                      </button>
+                    );
+                  })}
+                  {row.score && <span style={{ fontSize: 12.5, color: C.inkSoft, alignSelf: "center", marginLeft: 4 }}>{RATING[row.score].label}</span>}
+                </div>
+                <input
+                  value={row.action || ""}
+                  onChange={(e) => setRow(cat.key, idx, { action: e.target.value }, cat.statements.length)}
+                  placeholder="Action step to close the gap (optional)"
+                  style={{ width: "100%", fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 13.5, color: C.ink, background: C.card, border: `1px solid ${C.line}`, borderRadius: 7, padding: "8px 10px", outline: "none" }}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+    );
+  }
+
+  if (stepKey === "pairing") {
+    const px = overallReady === "Low" ? 0 : overallReady === "Medium" ? 1 : overallReady === "High" ? 2 : null;
+    const py = overallImpact === "Low" ? 0 : overallImpact === "Medium" ? 1 : overallImpact === "High" ? 2 : null;
+    return (
+      <Card>
+        <Eyebrow>Overall Readiness</Eyebrow>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14, marginBottom: 24 }}>
+          {READINESS_CATS.map((c) => {
+            const a = catAverage(rr, c.key, c.statements.length);
+            const rows = rr[c.key] || [];
+            const actionTexts = rows.map((r) => r && r.action).filter((t) => t && t.trim());
+            return (
+              <div key={c.key} style={{ border: `1px solid ${C.line}`, borderRadius: 10, padding: 14, background: C.cardAlt }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: C.ink, marginBottom: 4 }}>{c.title}</div>
+                <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 18, fontWeight: 500, color: a !== null ? RATING[Math.round(a)].color : C.line, marginBottom: actionTexts.length ? 8 : 0 }}>
+                  {a !== null ? a.toFixed(1) : "—"}
+                </div>
+                {actionTexts.length > 0 && (
+                  <ul style={{ margin: 0, paddingLeft: 16, display: "flex", flexDirection: "column", gap: 3 }}>
+                    {actionTexts.map((t, i) => (
+                      <li key={i} style={{ fontSize: 12, color: C.inkSoft, lineHeight: 1.45 }}>{t}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <div style={{ display: "flex", gap: 10, marginBottom: 24 }}>
+          <Badge label="Overall readiness" value={readyAvg !== null ? `${readyAvg.toFixed(1)} · ${overallReady}` : "Not yet scored"} color={overallReady ? LEVEL_COLOR[overallReady] : C.inkSoft} />
+          <Badge label="Overall impact" value={overallImpact || "Not yet rated"} color={overallImpact ? LEVEL_COLOR[overallImpact] : C.inkSoft} />
+        </div>
+
+        <Eyebrow>Impact × Readiness</Eyebrow>
+        <div style={{ display: "flex", gap: 20, alignItems: "flex-start", marginTop: 10 }}>
+          <div style={{ position: "relative", width: 240, height: 240 }}>
+            <div style={{ position: "absolute", inset: 0, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gridTemplateRows: "1fr 1fr 1fr", border: `1px solid ${C.line}`, borderRadius: 10, overflow: "hidden" }}>
+              {Array.from({ length: 9 }).map((_, i) => {
+                const col = i % 3, row = Math.floor(i / 3);
+                const highlight = px !== null && py !== null && col === px && row === 2 - py;
+                return <div key={i} style={{ background: highlight ? C.amberSoft : i % 2 === 0 ? "#FBF9F4" : "#F3EEE2", border: `1px solid ${C.line}` }} />;
+              })}
+            </div>
+            {px !== null && py !== null && (
+              <div style={{
+                position: "absolute", width: 16, height: 16, borderRadius: 99, background: C.amber, border: "2px solid #fff", boxShadow: "0 0 0 2px " + C.amber,
+                left: `${(px / 2) * 100}%`, top: `${((2 - py) / 2) * 100}%`, transform: "translate(-50%,-50%) translate(40px,40px)",
+              }} />
+            )}
+            <div style={{ position: "absolute", left: -6, top: "50%", transform: "translate(-100%,-50%) rotate(-90deg)", fontSize: 11, color: C.inkSoft, fontFamily: "'IBM Plex Mono', monospace" }}>IMPACT →</div>
+            <div style={{ position: "absolute", bottom: -22, left: "50%", transform: "translateX(-50%)", fontSize: 11, color: C.inkSoft, fontFamily: "'IBM Plex Mono', monospace" }}>READINESS →</div>
+          </div>
+          <div style={{ flex: 1, paddingTop: 6 }}>
+            <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 6, color: C.ink }}>
+              {overallImpact && overallReady ? `${overallImpact} impact, ${overallReady.toLowerCase()} readiness` : "Complete both assessments to see the full picture"}
+            </div>
+            <p style={{ fontSize: 13.5, color: C.inkSoft, lineHeight: 1.6 }}>
+              {overallImpact === "High" && overallReady === "Low" && "Largest gap on the board — the Change Management Plan will prioritize stakeholder engagement, leadership visibility, and resistance planning."}
+              {overallImpact === "High" && overallReady !== "Low" && "Significant change with a reasonable foundation — the plan will focus on sustaining momentum and reinforcing new behaviors."}
+              {overallImpact !== "High" && overallReady === "Low" && "Modest change, but low readiness signals a communication or awareness gap worth closing early."}
+              {overallImpact !== "High" && overallReady !== "Low" && overallImpact !== null && overallReady !== null && "Favorable position — lighter-touch engagement should be enough to sustain adoption."}
+              {(!overallImpact || !overallReady) && "This quadrant fills in automatically from your Impact Level and Readiness scores."}
+            </p>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
+  return null;
+}
+
+/* ---------------------------------------------------------------- */
+/* Phase 4 — Change Management Plan                                  */
+/* ---------------------------------------------------------------- */
+
+function ActionsRepeater({ sectionKey, data, update, groups }) {
+  const all = data.plan.actions;
+  const items = all.filter((a) => a.section === sectionKey);
+  const owners = [
+    data.setup.sponsor.name, data.setup.accountable.name, data.setup.cmLead.name, data.setup.projectLead.name,
+    ...data.setup.team.map((t) => t.name),
+  ].filter(Boolean);
+  const groupNames = groups.map((g) => g.name).filter(Boolean);
+
+  const add = () => update("plan", { actions: [...all, { id: uid(), section: sectionKey, action: "", group: [], owner: "", dueDate: "", measure: "", status: "Not Started", trend: "Not Yet Determined", issues: "", comments: "" }] });
+  const remove = (id) => update("plan", { actions: all.filter((a) => a.id !== id) });
+  const set = (id, key, val) => update("plan", { actions: all.map((a) => (a.id === id ? { ...a, [key]: val } : a)) });
+
+  return (
+    <div>
+      <Eyebrow>Actions</Eyebrow>
+      <p style={{ fontSize: 13.5, color: C.inkSoft, marginTop: -4, marginBottom: 16, lineHeight: 1.55 }}>
+        Turn the answers above into specific actions — who owns each one, when it's due, and what success looks like. Status, issues, and comments are tracked separately in the Action Plan section.
+      </p>
+      {items.length === 0 && <div style={{ fontSize: 13.5, color: C.inkSoft, fontStyle: "italic", marginBottom: 12 }}>No actions added yet. These roll up automatically into the Action Plan and the Monitoring Dashboard.</div>}
+      <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 14 }}>
+        {items.map((row) => (
+          <div key={row.id} style={{ border: `1px solid ${C.line}`, borderRadius: 10, padding: 18, background: C.cardAlt }}>
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 5, textTransform: "uppercase" }}>Action</div>
+              <AutoTextarea value={row.action} onChange={(e) => set(row.id, "action", e.target.value)} minHeight={56} style={inputStyle} />
+            </div>
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 5, textTransform: "uppercase" }}>Stakeholder Group(s)</div>
+              <MultiSelect value={row.group} onChange={(v) => set(row.id, "group", v)} options={groupNames} placeholder="Add stakeholder groups on the Stakeholders step first" />
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 5, textTransform: "uppercase" }}>Owner</div>
+                <Select value={row.owner} onChange={(v) => set(row.id, "owner", v)} options={owners} />
+              </div>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 5, textTransform: "uppercase" }}>Due Date</div>
+                <input type="date" value={row.dueDate} onChange={(e) => set(row.id, "dueDate", e.target.value)} style={inputStyle} />
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 5, textTransform: "uppercase" }}>Success Measure</div>
+                <input value={row.measure} onChange={(e) => set(row.id, "measure", e.target.value)} style={inputStyle} />
+              </div>
+              <DeleteButton onDelete={() => remove(row.id)} />
+            </div>
+          </div>
+        ))}
+      </div>
+      <GhostBtn onClick={add}><Plus size={15} /> Add action</GhostBtn>
+    </div>
+  );
+}
+
+const inputStyle = { width: "100%", fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 13.5, color: C.ink, background: C.card, border: `1px solid ${C.line}`, borderRadius: 7, padding: "10px 12px", outline: "none" };
+
+function GapBanner({ section, data }) {
+  const rr = data.readiness.ratings;
+  if (section.key === "stakeholder") return null;
+  const gaps = section.related.map((key) => {
+    const cat = READINESS_CATS.find((c) => c.key === key);
+    const avg = catAverage(rr, key, cat.statements.length);
+    return { title: cat.title, avg };
+  }).filter((g) => g.avg !== null && g.avg < 3.5);
+
+  if (section.related.length === 0) return null;
+  if (gaps.length > 0) {
+    return (
+      <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: C.amberSoft, border: `1px solid ${C.amber}55`, borderRadius: 10, padding: "12px 14px", marginBottom: 18 }}>
+        <AlertTriangle size={16} color={C.amber} style={{ marginTop: 2, flexShrink: 0 }} />
+        <div style={{ fontSize: 13.5, color: C.ink, lineHeight: 1.5 }}>
+          <strong>Priority — </strong>flagged from Readiness: {gaps.map((g) => `${g.title} scored ${g.avg.toFixed(1)}/5`).join("; ")}.
+        </div>
+      </div>
+    );
+  }
+  const scored = section.related.every((key) => {
+    const cat = READINESS_CATS.find((c) => c.key === key);
+    return catAverage(rr, key, cat.statements.length) !== null;
+  });
+  if (scored) {
+    return (
+      <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: C.tealSoft, border: `1px solid ${C.teal}44`, borderRadius: 10, padding: "12px 14px", marginBottom: 18 }}>
+        <CheckCircle2 size={16} color={C.teal} style={{ marginTop: 2, flexShrink: 0 }} />
+        <div style={{ fontSize: 13.5, color: C.ink, lineHeight: 1.5 }}>
+          <strong>Light touch — </strong>related readiness scores are healthy. Keep this section brief.
+        </div>
+      </div>
+    );
+  }
+  return null;
+}
+
+function ChangeContextCard({ data }) {
+  const im = data.impact;
+  if (im.groups.length === 0) return null;
+  return (
+    <div style={{ border: `1px solid ${C.teal}44`, background: C.tealSoft, borderRadius: 12, padding: "16px 20px", marginBottom: 20 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+        {im.groups.map((g) => {
+          const lvl = overallLevel(im.ratings[g.id] || {});
+          return <Badge key={g.id} label={g.name || "Group"} value={lvl || "unrated"} color={lvl ? LEVEL_COLOR[lvl] : C.inkSoft} />;
+        })}
+      </div>
+    </div>
+  );
+}
+
+function PlanScreen({ stepKey, data, update, overallImpact, overallReady }) {
+  const section = PLAN_SECTIONS.find((s) => s.key === stepKey);
+  const notes = data.plan.notes;
+
+  if (section) {
+    const setNote = (idx, val) => {
+      const arr = notes[section.key] ? [...notes[section.key]] : Array(section.questions.length).fill("");
+      arr[idx] = val;
+      update("plan", { notes: { ...notes, [section.key]: arr } });
+    };
+    return (
+      <>
+        <ChangeContextCard data={data} />
+        {section.key === "stakeholder" && (
+          <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: C.tealSoft, border: `1px solid ${C.teal}33`, borderRadius: 10, padding: "12px 14px", marginBottom: 18 }}>
+            <ListChecks size={15} color={C.teal} style={{ marginTop: 2, flexShrink: 0 }} />
+            <p style={{ fontSize: 12.5, color: C.ink, lineHeight: 1.5, margin: 0 }}>
+              Think of this whole phase as gap-to-action: sections flagged "Priority" below are pulled directly from low scores back in Change Readiness — that's what tells you where to focus first.
+            </p>
+          </div>
+        )}
+        <Card>
+          <Eyebrow>{section.title}</Eyebrow>
+          <GapBanner section={section} data={data} />
+          {section.questions.map((q, idx) => (
+            <Field key={idx} label={q} value={(notes[section.key] || [])[idx]} onChange={(v) => setNote(idx, v)} area rows={4} />
+          ))}
+          <div style={{ height: 6 }} />
+          <ActionsRepeater sectionKey={section.key} data={data} update={update} groups={data.impact.groups} />
+        </Card>
+      </>
+    );
+  }
+
+  return null;
+}
+
+/* ---------------------------------------------------------------- */
+/* Phase 5 — Action Plan                                             */
+/* ---------------------------------------------------------------- */
+
+function ActionPlanScreen({ stepKey, data, update }) {
+  if (stepKey === "planactions") {
+    const actions = data.plan.actions.filter((a) => a.action);
+    const set = (id, key, val) => update("plan", { actions: data.plan.actions.map((a) => (a.id === id ? { ...a, [key]: val } : a)) });
+    return (
+      <Card>
+        <Eyebrow>Change Management Plan Actions</Eyebrow>
+        {actions.length > 0 && (
+          <p style={{ fontSize: 12.5, color: C.inkSoft, marginTop: -4, marginBottom: 18, lineHeight: 1.5 }}>
+            Status and Trend here feed the Monitoring Dashboard's calculations automatically — keep them current as work progresses.
+          </p>
+        )}
+        {actions.length === 0 ? (
+          <div style={{ fontSize: 14, color: C.inkSoft, fontStyle: "italic" }}>No actions added yet — go to the Change Management Plan section and use "Add action" within any section.</div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {actions.map((a) => {
+              const sec = PLAN_SECTIONS.find((s) => s.key === a.section);
+              return (
+                <div key={a.id} style={{ border: `1px solid ${C.line}`, borderRadius: 12, padding: 18, background: C.cardAlt }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 12 }}>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: C.ink, lineHeight: 1.4 }}>{a.action}</div>
+                    <Badge label="Category" value={sec ? sec.title : a.section} color={C.teal} />
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 10, marginBottom: 16, paddingBottom: 16, borderBottom: `1px solid ${C.line}` }}>
+                    <ReadField label="Stakeholder Group(s)" value={(a.group || []).join(", ")} />
+                    <ReadField label="Owner" value={a.owner} />
+                    <ReadField label="Success Measure" value={a.measure} />
+                    <ReadField label="Due Date" value={a.dueDate} />
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14, marginBottom: 14 }}>
+                    <div>
+                      <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 5, textTransform: "uppercase" }}>Status</div>
+                      <Select value={a.status} onChange={(v) => set(a.id, "status", v)} options={STATUS_OPTIONS} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 5, textTransform: "uppercase" }}>Trend</div>
+                      <Select value={a.trend} onChange={(v) => set(a.id, "trend", v)} options={TREND_OPTIONS} />
+                    </div>
+                  </div>
+
+                  <div style={{ marginBottom: 14 }}>
+                    <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 5, textTransform: "uppercase" }}>Emerging Issues / Roadblocks</div>
+                    <AutoTextarea value={a.issues || ""} onChange={(e) => set(a.id, "issues", e.target.value)} placeholder="None logged" minHeight={56} style={inputStyle} />
+                  </div>
+
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 5, textTransform: "uppercase" }}>Comments</div>
+                    <AutoTextarea value={a.comments || ""} onChange={(e) => set(a.id, "comments", e.target.value)} placeholder="Optional" minHeight={56} style={inputStyle} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </Card>
+    );
+  }
+
+  return null;
+}
+
+function ReadField({ label, value }) {
+  return (
+    <div>
+      <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 3, textTransform: "uppercase" }}>{label}</div>
+      <div style={{ fontSize: 13.5, color: C.ink }}>{value || "—"}</div>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* Phase 6 — Monitoring Dashboard                                    */
+/* ---------------------------------------------------------------- */
+
+function isOverdue(a) {
+  if (!a.dueDate || a.status === "Complete") return false;
+  const today = new Date().toISOString().slice(0, 10);
+  return a.dueDate < today;
+}
+
+function computeOverallStatus(actions) {
+  if (actions.length === 0) return "Not Started";
+  if (actions.every((a) => a.status === "Complete")) return "Complete";
+  const severity = { Blocked: 5, "Off Track": 4, "At Risk": 3, "Not Started": 2, "On Track": 1, Complete: 0 };
+  let worst = null;
+  actions.forEach((a) => {
+    if (a.status === "Complete") return;
+    if (worst === null || severity[a.status] > severity[worst]) worst = a.status;
+  });
+  return worst || "Complete";
+}
+
+function computeOverallTrend(actions) {
+  const counts = {};
+  actions.forEach((a) => { const t = a.trend || "Not Yet Determined"; counts[t] = (counts[t] || 0) + 1; });
+  if (Object.keys(counts).length === 0) return "Not Yet Determined";
+  const priority = ["Declining", "Stable", "Improving", "Not Yet Determined"];
+  let best = null, bestCount = -1;
+  priority.forEach((t) => {
+    const c = counts[t] || 0;
+    if (c > bestCount) { bestCount = c; best = t; }
+  });
+  return best;
+}
+
+function leadershipSupportFor(status) {
+  if (status === "Blocked") return "Immediate senior leadership intervention to remove the blocker";
+  if (status === "Off Track") return "Senior leadership visibility and additional resourcing";
+  if (status === "At Risk") return "Manager check-in and closer monitoring";
+  return "Standard monitoring";
+}
+
+function MonitoringDashboardScreen({ data, overallReady }) {
+  const actions = data.plan.actions.filter((a) => a.action);
+  const complete = actions.filter((a) => a.status === "Complete").length;
+  const pctComplete = actions.length > 0 ? Math.round((complete / actions.length) * 100) : 0;
+  const overallStatus = computeOverallStatus(actions);
+  const overallTrend = computeOverallTrend(actions);
+  const attention = actions.filter((a) => ["At Risk", "Off Track", "Blocked"].includes(a.status));
+
+  if (actions.length === 0) {
+    return (
+      <Card>
+        <Eyebrow>Monitoring Dashboard</Eyebrow>
+        <p style={{ fontSize: 14, color: C.inkSoft }}>Add actions in the Change Management Plan first — this dashboard fills in automatically once you do.</p>
+      </Card>
+    );
+  }
+
+  return (
+    <>
+      <Card style={{ marginBottom: 20 }}>
+        <Eyebrow>Executive Overview</Eyebrow>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14, marginTop: 8 }}>
+          <StatTile label="Overall Status" value={overallStatus} color={STATUS_COLOR[overallStatus] || C.inkSoft} text />
+          <StatTile label="Overall Trend" value={overallTrend} color={TREND_COLOR[overallTrend] || C.inkSoft} text />
+          <StatTile label="Overall Readiness" value={overallReady || "Not yet scored"} color={overallReady ? LEVEL_COLOR[overallReady] : C.inkSoft} text />
+          <StatTile label="Actions Completed" value={`${pctComplete}%`} color={C.teal} />
+        </div>
+      </Card>
+
+      <Card style={{ marginBottom: 20 }}>
+        <Eyebrow>Actions Requiring Attention</Eyebrow>
+        {attention.length === 0 ? (
+          <div style={{ fontSize: 13.5, color: C.inkSoft, fontStyle: "italic" }}>No actions currently At Risk, Off Track, or Blocked.</div>
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr>
+                  {["Area", "Current Condition", "Leadership Support Needed"].map((h) => (
+                    <th key={h} style={{ textAlign: "left", padding: "8px 10px", borderBottom: `2px solid ${C.ink}`, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.03em", color: C.inkSoft }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {attention.map((a) => (
+                  <tr key={a.id} style={{ borderBottom: `1px solid ${C.line}` }}>
+                    <td style={{ padding: "9px 10px", fontWeight: 500 }}>{a.action}</td>
+                    <td style={{ padding: "9px 10px" }}>
+                      <span style={{ color: STATUS_COLOR[a.status], fontWeight: 600 }}>{a.status}</span>
+                      {a.issues ? ` — ${a.issues}` : ""}
+                      {isOverdue(a) ? " (overdue)" : ""}
+                    </td>
+                    <td style={{ padding: "9px 10px" }}>{leadershipSupportFor(a.status)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
+
+      <Card>
+        <Eyebrow>All Actions</Eyebrow>
+        <p style={{ fontSize: 13.5, color: C.inkSoft, marginTop: -4, marginBottom: 16 }}>This list is read-only. Update status, issues, trend, and comments from the Action Plan section.</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {actions.map((a) => {
+            const sec = PLAN_SECTIONS.find((s) => s.key === a.section);
+            const overdueRow = isOverdue(a);
+            return (
+              <div key={a.id} style={{ border: `1px solid ${overdueRow ? C.red + "66" : C.line}`, background: overdueRow ? C.redSoft : C.cardAlt, borderRadius: 10, padding: 14 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 10, marginBottom: 8 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: C.ink }}>{a.action}</div>
+                  <div style={{ fontSize: 11.5, color: C.inkSoft, whiteSpace: "nowrap" }}>{sec ? sec.title : a.section}</div>
+                </div>
+                <div style={{ fontSize: 12.5, color: C.inkSoft, marginBottom: 8 }}>
+                  {(a.group || []).join(", ") || "No group"} · Owner: {a.owner || "Unassigned"} · Due: {a.dueDate || "—"} · Success: {a.measure || "—"}
+                </div>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                  <Badge label="Status" value={a.status} color={STATUS_COLOR[a.status] || C.inkSoft} />
+                  <Badge label="Trend" value={a.trend || "Not Yet Determined"} color={TREND_COLOR[a.trend] || C.inkSoft} />
+                  {overdueRow && <Badge label="Due" value="Overdue" color={C.red} />}
+                </div>
+                {a.issues && <div style={{ fontSize: 12.5, color: C.ink, marginTop: 8 }}><strong>Issues:</strong> {a.issues}</div>}
+                {a.comments && <div style={{ fontSize: 12.5, color: C.inkSoft, marginTop: 4 }}><strong>Comments:</strong> {a.comments}</div>}
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+    </>
+  );
+}
+
+function StatTile({ label, value, color, text }) {
+  return (
+    <div style={{ border: `1px solid ${C.line}`, borderRadius: 10, padding: "14px 12px", textAlign: "center" }}>
+      <div style={{ fontFamily: text ? "'IBM Plex Sans', sans-serif" : "'IBM Plex Mono', monospace", fontSize: text ? 16 : 26, fontWeight: text ? 600 : 500, color }}>{value}</div>
+      <div style={{ fontSize: 11, color: C.inkSoft, marginTop: 4, textTransform: "uppercase", letterSpacing: "0.03em" }}>{label}</div>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+
+</script>
+</body>
+</html>
