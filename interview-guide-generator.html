@@ -175,10 +175,38 @@
     .ig-comp-list li .comp-why { color: #333; }
   }
 
+  @media (max-width: 768px) {
+    #ig-root { padding: 28px 16px 40px; border-radius: 12px; }
+    .ig-card { padding: 20px; }
+    .ig-comp-block { padding: 18px; }
+    .ig-title { font-size: 26px; }
+    .ig-cover-role { font-size: 32px; }
+    .ig-cover-page { min-height: auto; padding: 30px 0; }
+    .ig-comp-name { font-size: 19px; }
+    .ig-guide-title { font-size: 24px; }
+    .ig-actions { flex-wrap: wrap; }
+    .ig-actions .ig-btn { flex: 1 1 auto; text-align: center; }
+  }
+
   @media (max-width: 480px) {
-    .ig-title { font-size: 24px; }
+    #ig-root { padding: 20px 12px 32px; }
+    .ig-card { padding: 16px; }
+    .ig-comp-block { padding: 14px; }
+    .ig-title { font-size: 22px; }
+    .ig-sub { font-size: 13px; }
+    .ig-cover-role { font-size: 26px; }
+    .ig-cover-eyebrow { font-size: 11px; }
+    .ig-cover-meta { margin-bottom: 32px; }
+    .ig-cover-field { max-width: 100%; }
     .ig-np-grid { grid-template-columns: 1fr; }
-    .ig-cover-role { font-size: 30px; }
+    .ig-comp-name { font-size: 18px; }
+    .ig-guide-title { font-size: 21px; }
+    .ig-check-item { font-size: 13px; }
+    .ig-actions { flex-direction: column; }
+    .ig-actions .ig-btn { width: 100%; margin-top: 10px; }
+    .ig-actions .ig-btn:first-child { margin-top: 16px; }
+    .ig-role-chip { font-size: 12px; padding: 6px 12px; }
+    .ig-btn { padding: 13px 20px; font-size: 12px; }
   }
 </style>
 
