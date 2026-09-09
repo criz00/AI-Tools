@@ -1262,9 +1262,11 @@ function Overlay({ children, onBackdropClick }) {
   return (
     <div
       onClick={onBackdropClick}
-      style={{ position: "fixed", inset: 0, background: "rgba(27,36,48,0.55)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, zIndex: 100 }}
+      style={{ position: "fixed", inset: 0, background: "rgba(27,36,48,0.55)", overflowY: "auto", zIndex: 100 }}
     >
-      <div onClick={(e) => e.stopPropagation()}>{children}</div>
+      <div style={{ minHeight: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+        <div onClick={(e) => e.stopPropagation()}>{children}</div>
+      </div>
     </div>
   );
 }
@@ -1397,7 +1399,7 @@ function SummaryOverlay({ data, overallImpact, overallReady, onClose }) {
       <div
         onClick={(e) => e.stopPropagation()}
         className="cm-overlay-box"
-        style={{ background: C.card, borderRadius: 16, padding: "36px 40px", maxWidth: 760, width: "90vw", maxHeight: "85vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(27,36,48,0.35)" }}
+        style={{ background: C.card, borderRadius: 16, padding: "36px 40px", maxWidth: 760, width: "90vw", boxShadow: "0 20px 60px rgba(27,36,48,0.35)" }}
       >
         <div id="cm-print-area">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 26 }} className="cm-no-print">
