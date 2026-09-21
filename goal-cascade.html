@@ -1,0 +1,1164 @@
+<title>Goal Cascade</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg:#EEF1F4;
+    --surface:#FFFFFF;
+    --surface-alt:#E4E9EF;
+    --ink:#1B2430;
+    --ink-soft:#5B6675;
+    --line:#D6DCE3;
+    --accent:#2F6F63;
+    --accent-deep:#176480;
+    --accent-soft:#82B3C1;
+    --error:#B3432B;
+    --font-display:'Fraunces', Georgia, serif;
+    --font-body:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color-scheme: light;
+  }
+
+  *{box-sizing:border-box;}
+  body{background:var(--bg); color:var(--ink); font-family:var(--font-body); line-height:1.5;}
+  .view{padding:0 24px 72px; max-width:1180px; margin:0 auto;}
+  h1,h2,h3{font-family:var(--font-display); font-weight:600; text-wrap:balance; margin:0;}
+  button{font-family:var(--font-body); cursor:pointer;}
+  select, textarea, input{font-family:var(--font-body); font-size:14px;}
+
+  /* ---------- top bar ---------- */
+  .topbar{display:flex; align-items:center; justify-content:space-between; padding:16px 24px; max-width:1180px; margin:0 auto; gap:16px; flex-wrap:wrap;}
+  .brand{display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:600; font-size:17px;}
+  .brand-mark{width:22px; height:22px; border-radius:6px; background:linear-gradient(135deg, var(--accent), var(--accent-deep)); flex:none;}
+  .nav-pills{display:flex; gap:6px; background:var(--surface-alt); padding:4px; border-radius:10px; flex-wrap:wrap;}
+  .nav-pill{padding:7px 14px; border:none; background:transparent; border-radius:7px; font-size:12.5px; font-weight:600; color:var(--ink-soft);}
+  .nav-pill.active{background:var(--surface); color:var(--ink); box-shadow:0 1px 2px rgba(27,36,48,.08);}
+
+  /* ---------- buttons ---------- */
+  .btn{border:none; border-radius:9px; padding:11px 22px; font-size:14px; font-weight:600; display:inline-flex; align-items:center; gap:8px; white-space:nowrap;}
+  .btn-primary{background:var(--accent); color:#fff;}
+  .btn-primary:hover{background:var(--accent-deep);}
+  .btn-ghost{background:var(--surface-alt); color:var(--ink);}
+  .btn-ghost:hover{background:var(--line);}
+  .btn-sm{padding:7px 13px; font-size:12.5px; border-radius:7px;}
+  .btn:disabled{opacity:.45; cursor:not-allowed;}
+  .btn-row{display:flex; justify-content:space-between; margin-top:32px; gap:10px;}
+
+  /* ---------- landing ---------- */
+  .hero{padding:72px 0 32px; text-align:center;}
+  .eyebrow{font-size:12.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--accent-deep); margin-bottom:14px;}
+  .hero h1{font-size:44px; letter-spacing:-.01em; margin-bottom:18px;}
+  .hero p.lede{font-size:17px; color:var(--ink-soft); max-width:640px; margin:0 auto 36px; line-height:1.65;}
+  .cascade-diagram{display:flex; flex-direction:column; align-items:center; gap:0; max-width:520px; margin:0 auto 44px;}
+  .tier{width:100%; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:18px 24px; text-align:left; box-shadow:0 1px 3px rgba(27,36,48,.06);}
+  .tier .tier-label{font-weight:700; font-size:15px; margin-bottom:4px;}
+  .tier .tier-desc{font-size:13px; color:var(--ink-soft);}
+  .tier.t1{border-top:4px solid var(--accent);}
+  .tier.t2{border-top:4px solid var(--accent-deep);}
+  .tier.t3{border-top:4px solid var(--accent-soft);}
+  .arrow-down{padding:6px 0; color:var(--ink-soft); font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px;}
+  .arrow-down svg{width:14px; height:14px;}
+  .explainer{text-align:left; max-width:640px; margin:0 auto; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:30px 34px;}
+  .explainer p{color:var(--ink-soft); font-size:14.5px; margin:0 0 14px; line-height:1.7;}
+  .explainer p:last-child{margin-bottom:0;}
+
+  /* ---------- entry pages (shared) ---------- */
+  .entry-head{padding:36px 0 4px;}
+  .entry-head .eyebrow-row{display:flex; align-items:center; gap:8px; margin-bottom:8px;}
+  .step-dot{width:24px; height:24px; border-radius:50%; color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; flex:none;}
+  .entry-head h2{font-size:26px;}
+  .entry-head p{color:var(--ink-soft); font-size:14px; margin-top:6px;}
+
+  .summary-panel{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:22px 24px; margin-top:22px;}
+  .summary-panel h3{font-size:14px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-soft); margin-bottom:14px;}
+  .summary-table{width:100%; border-collapse:collapse;}
+  .summary-table th{text-align:left; font-size:11.5px; text-transform:uppercase; letter-spacing:.03em; color:var(--ink-soft); font-weight:600; padding:0 10px 8px; border-bottom:1px solid var(--line);}
+  .summary-table td{padding:11px 10px; font-size:13.5px; border-bottom:1px solid var(--line); vertical-align:top;}
+  .summary-table tr:last-child td{border-bottom:none;}
+  .summary-table .col-name{font-weight:600;}
+  .summary-table .col-dates{white-space:nowrap; color:var(--ink-soft); font-variant-numeric:tabular-nums;}
+  .summary-table .col-outcomes{color:var(--ink-soft); max-width:260px;}
+  .dot{width:9px; height:9px; border-radius:50%; display:inline-block; flex:none; margin-right:7px;}
+  .align-tag{display:flex; align-items:center; font-size:12.5px; color:var(--ink-soft);}
+  .align-tag em{font-style:normal; color:var(--error);}
+  .empty-note{color:var(--ink-soft); font-size:13px; font-style:italic; padding:6px 2px;}
+
+  .picker-bar{display:flex; align-items:flex-end; gap:14px; flex-wrap:wrap; margin-top:24px; background:var(--surface-alt); border-radius:12px; padding:16px 18px;}
+  .picker-bar .field{margin:0; flex:1; min-width:180px;}
+  .picker-bar .add-btn-wrap{flex:none;}
+
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:12.5px; font-weight:600; color:var(--ink-soft); margin-bottom:6px;}
+  .field select, .field textarea, .field input{width:100%; border:1px solid var(--line); background:var(--bg); color:var(--ink); border-radius:8px; padding:10px 12px; resize:vertical;}
+  .field select:focus, .field textarea:focus, .field input:focus{outline:2px solid var(--accent-soft); outline-offset:1px;}
+  .field textarea{min-height:60px;}
+  .row-2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:640px){.row-2{grid-template-columns:1fr;} .picker-bar{flex-direction:column; align-items:stretch;}}
+
+  .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch;}
+  .table-scroll .summary-table{min-width:560px;}
+  @media (max-width:640px){
+    .view{padding:0 16px 72px;}
+    .topbar{padding:14px 16px;}
+    .hero{padding:48px 0 24px;}
+    .hero h1{font-size:32px;}
+    .dash-head{align-items:flex-start;}
+    .dash-actions{width:100%; justify-content:space-between;}
+    .btn-row{flex-direction:column-reverse;}
+    .btn-row .btn{width:100%; justify-content:center;}
+  }
+  @media (pointer:coarse){
+    .icon-btn{padding:9px 11px; font-size:17px;}
+    .drag-handle{padding:9px 12px; font-size:18px;}
+    .btn-sm{padding:9px 15px;}
+    .nav-pill{padding:10px 14px;}
+  }
+  body.dragging-active{-webkit-user-select:none; user-select:none;}
+
+  .add-form{background:var(--surface); border:1px dashed var(--accent-soft); border-radius:14px; padding:22px 24px; margin-top:16px;}
+  .add-form-head{font-size:13px; font-weight:700; color:var(--accent-deep); margin-bottom:14px; text-transform:uppercase; letter-spacing:.03em;}
+  .form-actions{display:flex; gap:10px; margin-top:6px;}
+
+  /* ---------- dashboard ---------- */
+  .dash-head{padding:32px 0 6px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+  .dash-head h2{font-size:26px;}
+  .dash-head p{color:var(--ink-soft); font-size:14px; margin-top:6px;}
+  .dash-actions{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+  .view-mode{display:flex; align-items:center; gap:8px; background:var(--surface-alt); border-radius:9px; padding:6px 10px;}
+  .view-mode label{font-size:12px; font-weight:600; color:var(--ink-soft);}
+  .view-mode select{border:1px solid var(--line); border-radius:6px; padding:6px 8px; font-size:13px; background:var(--surface);}
+
+  .cascade-canvas{overflow-x:auto; margin-top:8px; padding-bottom:8px;}
+  .cascade-inner{position:relative; width:max-content; min-width:100%;}
+  .connector-svg{position:absolute; top:0; left:0; pointer-events:none; overflow:visible; z-index:0;}
+  .swimlane{margin-top:26px; position:relative; z-index:1;}
+  .swimlane:first-child{margin-top:6px;}
+  .swimlane-head{display:flex; align-items:baseline; gap:10px; margin-bottom:12px;}
+  .swimlane-head h3{font-size:15px;}
+  .swimlane-head .count{font-size:12.5px; color:var(--ink-soft);}
+  .swimlane-head .auto-arrange{margin-left:auto;}
+  .swimlane-dot{width:9px; height:9px; border-radius:50%; flex:none;}
+  .lane-track{display:flex; gap:14px; padding:4px 4px 14px; position:relative;}
+  .goal-card{flex:0 0 270px; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:15px 16px; display:flex; flex-direction:column; gap:9px; transition:box-shadow .15s ease, border-color .15s ease; border-left:5px solid var(--line); position:relative;}
+  .goal-card.related{border-color:var(--accent-deep); box-shadow:0 0 0 2px var(--accent-soft) inset;}
+  .goal-card.dragging{opacity:.4;}
+  .drag-handle{cursor:grab; color:var(--ink-soft); font-size:13px; letter-spacing:1px; padding:2px 4px; border-radius:5px; flex:none; user-select:none;}
+  .drag-handle:hover{background:var(--surface-alt);}
+  .drag-handle:active{cursor:grabbing;}
+  .goal-card .card-top{display:flex; align-items:center; justify-content:space-between; gap:8px;}
+  .goal-card .card-top-left{display:flex; align-items:center; gap:7px; min-width:0;}
+  .goal-card .card-name{font-size:14.5px; font-weight:600; outline:none;}
+  .goal-card .card-name[contenteditable="true"]:focus{box-shadow:0 0 0 2px var(--accent-soft); border-radius:5px; padding:2px 4px; margin:-2px -4px;}
+  .goal-card .card-outcomes{font-size:12.5px; color:var(--ink-soft); outline:none; min-height:32px;}
+  .goal-card .card-outcomes[contenteditable="true"]:focus{box-shadow:0 0 0 2px var(--accent-soft); border-radius:5px; padding:2px 4px; margin:-2px -4px;}
+  .goal-card .card-dates{display:flex; gap:8px;}
+  .goal-card .card-dates input{flex:1; font-size:11.5px; border:1px solid var(--line); border-radius:6px; padding:5px 6px; background:var(--bg); color:var(--ink-soft);}
+  .goal-card .card-owner input{width:100%; font-size:12.5px; border:1px solid var(--line); border-radius:6px; padding:6px 8px; background:var(--bg); color:var(--ink); color-scheme:light;}
+  .goal-card .card-align select{width:100%; font-size:12px; border:1px solid var(--line); border-radius:6px; padding:6px 8px; background:var(--bg); color:var(--ink-soft);}
+  .goal-card .field-label{font-size:10.5px; text-transform:uppercase; letter-spacing:.03em; color:var(--ink-soft); font-weight:700; margin-bottom:3px;}
+  .goal-card .card-foot{font-size:11.5px; color:var(--ink-soft); display:flex; justify-content:space-between; align-items:center; gap:6px;}
+  .empty-lane{color:var(--ink-soft); font-size:13.5px; font-style:italic; border:1px dashed var(--line); border-radius:12px; padding:22px; text-align:center; flex:1;}
+  .hint-bar{margin-top:22px; font-size:12.5px; color:var(--ink-soft); background:var(--surface-alt); border-radius:9px; padding:10px 14px;}
+
+  .pill{display:inline-block; font-size:11px; font-weight:700; letter-spacing:.02em; text-transform:uppercase; padding:2px 8px; border-radius:99px; color:#fff; flex:none;}
+  .pill-d{background:var(--accent-deep);}
+  .pill-f{background:var(--accent-soft); color:var(--ink);}
+
+  .icon-btn{border:none; background:transparent; color:var(--ink-soft); font-size:15px; line-height:1; padding:4px 6px; border-radius:6px; flex:none;}
+  .icon-btn:hover{background:var(--line); color:var(--error);}
+  [hidden]{display:none !important;}
+</style>
+
+<div class="topbar" id="topbar" hidden>
+  <div class="brand"><span class="brand-mark"></span>Goal Cascade</div>
+  <div class="nav-pills">
+    <button class="nav-pill" id="pill-company" onclick="goTo('company')">Company Goals</button>
+    <button class="nav-pill" id="pill-department" onclick="goTo('department')">Department Goals</button>
+    <button class="nav-pill" id="pill-function" onclick="goTo('function')">Function Goals</button>
+    <button class="nav-pill" id="pill-dashboard" onclick="goTo('dashboard')">Dashboard</button>
+  </div>
+</div>
+
+<!-- ===================== LANDING ===================== -->
+<section class="view" id="view-landing">
+  <div class="hero">
+    <div class="eyebrow">Strategic Alignment</div>
+    <h1>The Goal Cascading Tool</h1>
+    <p class="lede">This tool connects organizational priorities across three levels: Company Strategic Goals, Department Goals, and Business Function Goals — so every team can see how their work ladders up to company strategy.</p>
+
+    <div class="cascade-diagram">
+      <div class="tier t1"><div class="tier-label">Company Strategic Goals</div><div class="tier-desc">Define the organization's highest-level priorities and desired business outcomes.</div></div>
+      <div class="arrow-down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v14M6 13l6 6 6-6"/></svg>Align</div>
+      <div class="tier t2"><div class="tier-label">Department Goals</div><div class="tier-desc">Define how each department will contribute to achieving company strategic goals.</div></div>
+      <div class="arrow-down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v14M6 13l6 6 6-6"/></svg>Align</div>
+      <div class="tier t3"><div class="tier-label">Business Function Goals</div><div class="tier-desc">Define the specific outcomes each business function will deliver to support its department goals.</div></div>
+    </div>
+
+    <div class="explainer">
+      <p>The tool helps teams translate company strategy into clear, measurable goals throughout the organization. Departments align their goals to the company strategic goals they support, and business functions create goals that contribute to their department's priorities.</p>
+      <p>This structure creates a clear line of sight from company strategy → department priorities → business function execution, helping leaders understand how work across the organization contributes to broader business outcomes.</p>
+    </div>
+
+    <div style="margin-top:36px;"><button class="btn btn-primary" style="padding:13px 30px; font-size:15px;" onclick="goTo('company')">Get Started →</button></div>
+  </div>
+</section>
+
+<!-- ===================== COMPANY GOALS ===================== -->
+<section class="view" id="view-company" hidden>
+  <div class="entry-head">
+    <div class="eyebrow-row"><span class="step-dot" style="background:var(--accent)">1</span><span class="eyebrow" style="margin:0;">Step 1 of 3</span></div>
+    <h2>Company Strategic Goals</h2>
+    <p>Define the organization's highest-level priorities. Add one goal at a time.</p>
+  </div>
+
+  <div class="summary-panel">
+    <h3>Goals entered</h3>
+    <div id="summary-company"></div>
+  </div>
+
+  <div id="company-add-btn-wrap" style="margin-top:18px;">
+    <button class="btn btn-primary" onclick="startAddCompany()">+ Add a goal</button>
+  </div>
+
+  <div class="add-form" id="company-form" hidden>
+    <div class="add-form-head" id="company-form-head">New company strategic goal</div>
+    <div class="field"><label for="c-name">Goal Name</label><input type="text" id="c-name" placeholder="e.g., Customer Retention Growth, Employee Performance"></div>
+    <div class="field"><label for="c-outcomes">Success Measure</label><textarea id="c-outcomes" placeholder="e.g., Increase renewal rates from 90% to 95%"></textarea></div>
+    <div class="row-2">
+      <div class="field"><label for="c-start">Start date</label><input type="date" id="c-start"></div>
+      <div class="field"><label for="c-end">End date</label><input type="date" id="c-end"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" id="company-submit-btn" onclick="submitCompanyGoal()">Submit</button>
+      <button class="btn btn-ghost" onclick="hideCompanyForm()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-ghost" onclick="goTo('landing')">← Back to intro</button>
+    <button class="btn btn-primary" onclick="goTo('department')">Next: Department Goals →</button>
+  </div>
+</section>
+
+<!-- ===================== DEPARTMENT GOALS ===================== -->
+<section class="view" id="view-department" hidden>
+  <div class="entry-head">
+    <div class="eyebrow-row"><span class="step-dot" style="background:var(--accent-deep)">2</span><span class="eyebrow" style="margin:0;">Step 2 of 3</span></div>
+    <h2>Department Goals</h2>
+    <p>Define how each department contributes to company strategy.</p>
+  </div>
+
+  <div class="summary-panel">
+    <h3>Goals entered</h3>
+    <div id="summary-department"></div>
+  </div>
+
+  <div class="picker-bar">
+    <div class="field">
+      <label for="d-dept-select">Department</label>
+      <select id="d-dept-select"><option value="">Choose a department…</option></select>
+    </div>
+    <div class="add-btn-wrap"><button class="btn btn-primary" onclick="startAddDept()">+ Add a goal</button></div>
+  </div>
+
+  <div class="add-form" id="department-form" hidden>
+    <div class="add-form-head" id="department-form-head">New department goal</div>
+    <div class="field"><label for="d-name">Goal Name</label><input type="text" id="d-name" placeholder="e.g., Customer Retention Growth, Employee Performance"></div>
+    <div class="field"><label for="d-outcomes">Success Measure</label><textarea id="d-outcomes" placeholder="e.g., Increase renewal rates from 90% to 95%"></textarea></div>
+    <div class="row-2">
+      <div class="field"><label for="d-start">Start date</label><input type="date" id="d-start"></div>
+      <div class="field"><label for="d-end">End date</label><input type="date" id="d-end"></div>
+    </div>
+    <div class="field"><label for="d-align">Aligns with company goal</label><select id="d-align"><option value="">Add a company goal first</option></select></div>
+    <div class="form-actions">
+      <button class="btn btn-primary" id="department-submit-btn" onclick="submitDeptGoal()">Submit</button>
+      <button class="btn btn-ghost" onclick="hideDeptForm()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-ghost" onclick="goTo('company')">← Back</button>
+    <button class="btn btn-primary" onclick="goTo('function')">Next: Business Function Goals →</button>
+  </div>
+</section>
+
+<!-- ===================== FUNCTION GOALS ===================== -->
+<section class="view" id="view-function" hidden>
+  <div class="entry-head">
+    <div class="eyebrow-row"><span class="step-dot" style="background:var(--accent-soft); color:var(--ink);">3</span><span class="eyebrow" style="margin:0;">Step 3 of 3</span></div>
+    <h2>Business Function Goals</h2>
+    <p>Define the specific outcomes each business function will deliver.</p>
+  </div>
+
+  <div class="summary-panel">
+    <h3>Goals entered</h3>
+    <div id="summary-function"></div>
+  </div>
+
+  <div class="picker-bar">
+    <div class="field">
+      <label for="f-dept-select">Department</label>
+      <select id="f-dept-select" onchange="onFuncDeptChange()"><option value="">Choose a department…</option></select>
+    </div>
+    <div class="field">
+      <label for="f-func-select">Business function</label>
+      <select id="f-func-select"><option value="">Choose a department first</option></select>
+    </div>
+    <div class="add-btn-wrap"><button class="btn btn-primary" onclick="startAddFunc()">+ Add a goal</button></div>
+  </div>
+
+  <div class="add-form" id="function-form" hidden>
+    <div class="add-form-head" id="function-form-head">New business function goal</div>
+    <div class="field"><label for="f-name">Goal Name</label><input type="text" id="f-name" placeholder="e.g., Customer Retention Growth, Employee Performance"></div>
+    <div class="field"><label for="f-outcomes">Success Measure</label><textarea id="f-outcomes" placeholder="e.g., Increase renewal rates from 90% to 95%"></textarea></div>
+    <div class="row-2">
+      <div class="field"><label for="f-start">Start date</label><input type="date" id="f-start"></div>
+      <div class="field"><label for="f-end">End date</label><input type="date" id="f-end"></div>
+    </div>
+    <div class="field"><label for="f-align">Aligns with department goal</label><select id="f-align"><option value="">Choose a department first</option></select></div>
+    <div class="form-actions">
+      <button class="btn btn-primary" id="function-submit-btn" onclick="submitFuncGoal()">Submit</button>
+      <button class="btn btn-ghost" onclick="hideFuncForm()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-ghost" onclick="goTo('department')">← Back</button>
+    <button class="btn btn-primary" onclick="goTo('dashboard')">Go to Dashboard →</button>
+  </div>
+</section>
+
+<!-- ===================== DASHBOARD ===================== -->
+<section class="view" id="view-dashboard" hidden>
+  <div class="dash-head">
+    <div><h2>Cascade dashboard</h2><p>Click any goal to edit it. Changes save back to your entries automatically.</p></div>
+    <div class="dash-actions">
+      <div class="view-mode">
+        <label for="dash-view">View</label>
+        <select id="dash-view" onchange="renderDashboard()"><option value="">All departments</option></select>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="download-xlsx-btn" onclick="handleDownloadExcel()">⬇ Download Excel</button>
+      <button class="btn btn-ghost" onclick="goTo('function')">← Edit in form</button>
+    </div>
+  </div>
+
+  <div class="cascade-canvas" id="cascade-canvas">
+    <div class="cascade-inner" id="cascade-inner">
+      <svg class="connector-svg" id="connector-svg"></svg>
+
+      <div class="swimlane">
+        <div class="swimlane-head"><span class="swimlane-dot" style="background:var(--accent)"></span><h3>Company Strategic Goals</h3><span class="count" id="count-company"></span></div>
+        <div class="lane-track" id="lane-company"></div>
+      </div>
+      <div class="swimlane">
+        <div class="swimlane-head"><span class="swimlane-dot" style="background:var(--accent-deep)"></span><h3>Department Goals</h3><span class="count" id="count-dept"></span><button class="btn btn-ghost btn-sm auto-arrange" onclick="autoArrange('dept')">Auto-arrange</button></div>
+        <div class="lane-track" id="lane-dept"></div>
+      </div>
+      <div class="swimlane">
+        <div class="swimlane-head"><span class="swimlane-dot" style="background:var(--accent-soft)"></span><h3>Business Function Goals</h3><span class="count" id="count-func"></span><button class="btn btn-ghost btn-sm auto-arrange" onclick="autoArrange('func')">Auto-arrange</button></div>
+        <div class="lane-track" id="lane-func"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hint-bar">Tip: drag a goal by its <strong>⠿</strong> handle to reorder it within its row, or click "Auto-arrange" to line goals up under their parent automatically. Each company goal has its own color, carried down through the connector lines and the department and function goals aligned to it.</div>
+</section>
+
+<script>
+(function(){
+  "use strict";
+
+  var DEPARTMENTS = {
+    "Product": ["Product Management","Product Strategy","Product Operations","UX/UI Design","User Research"],
+    "Engineering / Technology": ["Software Engineering","Platform Engineering","DevOps/SRE","Architecture","QA","Data Engineering","AI/ML","Engineering Operations"],
+    "Sales": ["Enterprise Sales","Commercial/SMB Sales","Account Management","Sales Development","Solutions Engineering","Sales Operations"],
+    "Marketing": ["Product Marketing","Demand Generation","Growth Marketing","Brand","Content","Communications/PR","Events","Marketing Operations"],
+    "Customer Success / Experience": ["Customer Success","Customer Support","Professional Services","Implementation","Customer Education","Customer Operations"],
+    "People / HR": ["HR Business Partners","Talent Acquisition","Talent Management","Learning & Development","Organizational Development/Effectiveness","Total Rewards","People Operations","People Analytics"],
+    "Finance": ["FP&A","Accounting","Treasury","Tax","Payroll","Investor Relations","Finance Operations"],
+    "Legal": ["Corporate Legal","Commercial Legal","Employment Law","Privacy","Compliance","Contracts","Legal Operations"],
+    "IT": ["Enterprise Applications","IT Infrastructure","Help Desk/End-User Computing","Identity & Access Management","IT Operations"],
+    "Security": ["Cybersecurity","Product Security","Cloud Security","Governance/Risk/Compliance","Security Operations"],
+    "Operations": ["Business Operations","Strategy & Operations","Program Management","Process Improvement","Vendor Management"],
+    "Strategy / Corporate Development": ["Corporate Strategy","M&A","Strategic Partnerships","Business Development","Market Intelligence"],
+    "Revenue / GTM": ["Revenue Operations","Sales Operations","Marketing Operations","Customer Operations","GTM Strategy","Revenue Enablement"]
+  };
+
+  var COMPANY_COLORS = ['#2F6F63','#176480','#6B4C7A','#A67C3D','#55637A','#4B7A4F','#8A4B6B','#3D7A94'];
+
+  var state = { company: [], departments: [], functions: [] };
+  var seq = { c:0, d:0, f:0 };
+  var editing = { company: null, dept: null, func: null };
+
+  function uid(prefix){ seq[prefix]++; return prefix + seq[prefix]; }
+  function esc(s){ var d=document.createElement('div'); d.textContent = s==null?'':s; return d.innerHTML; }
+  function truncate(s, n){ if(!s) return ''; return s.length>n ? s.slice(0,n).trim()+'…' : s; }
+  function fmtDate(s){
+    if(!s) return '—';
+    var parts = s.split('-'); if(parts.length!==3) return s;
+    var d = new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1, parseInt(parts[2],10));
+    return d.toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'});
+  }
+  function dateRange(a,b){
+    if(!a && !b) return '—';
+    return fmtDate(a) + ' → ' + fmtDate(b);
+  }
+
+  function save(){ try{ localStorage.setItem('goal-cascade-state', JSON.stringify({state:state, seq:seq})); }catch(e){} }
+  function load(){
+    try{
+      var raw = localStorage.getItem('goal-cascade-state');
+      if(!raw) return;
+      var parsed = JSON.parse(raw);
+      if(parsed && parsed.state){ state = parsed.state; seq = parsed.seq || seq; }
+    }catch(e){}
+  }
+
+  function nextCompanyColor(){ return COMPANY_COLORS[state.company.length % COMPANY_COLORS.length]; }
+  function colorForDept(g){ var c = state.company.find(function(x){return x.id===g.companyId;}); return c ? c.color : null; }
+  function colorForFunc(g){ var d = state.departments.find(function(x){return x.id===g.deptGoalId;}); return d ? colorForDept(d) || d.color : null; }
+
+  // ---------------- navigation ----------------
+  function goTo(view){
+    ['landing','company','department','function','dashboard'].forEach(function(v){
+      document.getElementById('view-'+v).hidden = (v!==view);
+    });
+    document.getElementById('topbar').hidden = (view==='landing');
+    ['company','department','function','dashboard'].forEach(function(v){
+      var pill = document.getElementById('pill-'+v);
+      if(pill) pill.classList.toggle('active', v===view);
+    });
+    if(view==='company') renderCompanySummary();
+    if(view==='department') renderDeptPage();
+    if(view==='function') renderFuncPage();
+    if(view==='dashboard') renderDashboard();
+    window.scrollTo({top:0});
+  }
+  window.goTo = goTo;
+
+  function fillDeptSelect(sel, withPlaceholder){
+    Object.keys(DEPARTMENTS).forEach(function(dep){
+      var opt = document.createElement('option'); opt.value = dep; opt.textContent = dep; sel.appendChild(opt);
+    });
+  }
+  fillDeptSelect(document.getElementById('d-dept-select'));
+  fillDeptSelect(document.getElementById('f-dept-select'));
+
+  // ---------------- company form ----------------
+  function showCompanyForm(){ document.getElementById('company-form').hidden = false; document.getElementById('company-form').scrollIntoView({block:'center'}); }
+  function hideCompanyForm(){
+    document.getElementById('company-form').hidden = true;
+    editing.company = null;
+    updateCompanyFormMode();
+    ['c-name','c-outcomes','c-start','c-end'].forEach(function(id){ document.getElementById(id).value=''; });
+  }
+  window.showCompanyForm = showCompanyForm; window.hideCompanyForm = hideCompanyForm;
+
+  function updateCompanyFormMode(){
+    document.getElementById('company-form-head').textContent = editing.company ? 'Edit company strategic goal' : 'New company strategic goal';
+    document.getElementById('company-submit-btn').textContent = editing.company ? 'Save changes' : 'Submit';
+  }
+
+  function startAddCompany(){
+    editing.company = null;
+    ['c-name','c-outcomes','c-start','c-end'].forEach(function(id){ document.getElementById(id).value=''; });
+    updateCompanyFormMode();
+    showCompanyForm();
+  }
+  window.startAddCompany = startAddCompany;
+
+  function editCompanyGoal(id){
+    var g = state.company.find(function(x){return x.id===id;});
+    if(!g) return;
+    editing.company = id;
+    document.getElementById('c-name').value = g.name;
+    document.getElementById('c-outcomes').value = g.outcomes||'';
+    document.getElementById('c-start').value = g.start||'';
+    document.getElementById('c-end').value = g.end||'';
+    updateCompanyFormMode();
+    showCompanyForm();
+  }
+  window.editCompanyGoal = editCompanyGoal;
+
+  function submitCompanyGoal(){
+    var name = document.getElementById('c-name').value.trim();
+    if(!name){ document.getElementById('c-name').focus(); return; }
+    var outcomes = document.getElementById('c-outcomes').value.trim();
+    var start = document.getElementById('c-start').value;
+    var end = document.getElementById('c-end').value;
+    if(editing.company){
+      var g = state.company.find(function(x){return x.id===editing.company;});
+      if(g){ g.name=name; g.outcomes=outcomes; g.start=start; g.end=end; }
+    } else {
+      state.company.push({ id: uid('c'), name: name, outcomes: outcomes, start: start, end: end, owner: '', color: nextCompanyColor() });
+    }
+    save(); hideCompanyForm(); refreshAllViews();
+  }
+  window.submitCompanyGoal = submitCompanyGoal;
+
+  function renderCompanySummary(){
+    var el = document.getElementById('summary-company');
+    if(state.company.length===0){ el.innerHTML = '<div class="empty-note">No company goals yet — click "Add a goal" to start.</div>'; refreshCompanyAlignSelect(); return; }
+    var rows = state.company.map(function(g){
+      return '<tr>' +
+        '<td class="col-name"><span class="dot" style="background:'+g.color+'"></span>'+esc(g.name)+'</td>' +
+        '<td class="col-outcomes">'+esc(g.outcomes||'—')+'</td>' +
+        '<td class="col-dates">'+dateRange(g.start,g.end)+'</td>' +
+        '<td style="white-space:nowrap;"><button class="icon-btn" title="Edit" onclick="editCompanyGoal(\''+g.id+'\')">✎</button><button class="icon-btn" title="Remove" onclick="removeGoal(\'company\',\''+g.id+'\')">✕</button></td>' +
+      '</tr>';
+    }).join('');
+    el.innerHTML = '<div class="table-scroll"><table class="summary-table"><thead><tr><th>Goal Name</th><th>Success Measure</th><th>Timeline</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+    refreshCompanyAlignSelect();
+  }
+
+  function refreshCompanyAlignSelect(){
+    var sel = document.getElementById('d-align'); var current = sel.value;
+    if(state.company.length===0){ sel.innerHTML = '<option value="">Add a company goal first</option>'; return; }
+    sel.innerHTML = '<option value="">Choose a company goal…</option>' + state.company.map(function(g){
+      return '<option value="'+g.id+'">'+esc(truncate(g.name,70))+'</option>';
+    }).join('');
+    if([].slice.call(sel.options).some(function(o){return o.value===current;})) sel.value = current;
+  }
+
+  // ---------------- department form ----------------
+  function showDeptForm(){
+    var dep = document.getElementById('d-dept-select').value;
+    if(!dep){ document.getElementById('d-dept-select').focus(); return; }
+    document.getElementById('department-form').hidden = false;
+    document.getElementById('department-form').scrollIntoView({block:'center'});
+  }
+  function hideDeptForm(){
+    document.getElementById('department-form').hidden = true;
+    editing.dept = null;
+    updateDeptFormMode();
+    ['d-name','d-outcomes','d-start','d-end'].forEach(function(id){ document.getElementById(id).value=''; });
+    document.getElementById('d-align').value = '';
+  }
+  window.showDeptForm = showDeptForm; window.hideDeptForm = hideDeptForm;
+
+  function updateDeptFormMode(){
+    document.getElementById('department-form-head').textContent = editing.dept ? 'Edit department goal' : 'New department goal';
+    document.getElementById('department-submit-btn').textContent = editing.dept ? 'Save changes' : 'Submit';
+  }
+
+  function startAddDept(){
+    editing.dept = null;
+    ['d-name','d-outcomes','d-start','d-end'].forEach(function(id){ document.getElementById(id).value=''; });
+    document.getElementById('d-align').value = '';
+    updateDeptFormMode();
+    showDeptForm();
+  }
+  window.startAddDept = startAddDept;
+
+  function editDeptGoal(id){
+    var g = state.departments.find(function(x){return x.id===id;});
+    if(!g) return;
+    editing.dept = id;
+    document.getElementById('d-dept-select').value = g.dept;
+    document.getElementById('d-name').value = g.name;
+    document.getElementById('d-outcomes').value = g.outcomes||'';
+    document.getElementById('d-start').value = g.start||'';
+    document.getElementById('d-end').value = g.end||'';
+    refreshCompanyAlignSelect();
+    document.getElementById('d-align').value = g.companyId || '';
+    updateDeptFormMode();
+    showDeptForm();
+  }
+  window.editDeptGoal = editDeptGoal;
+
+  function submitDeptGoal(){
+    var dep = document.getElementById('d-dept-select').value;
+    var name = document.getElementById('d-name').value.trim();
+    if(!dep || !name){ document.getElementById(dep?'d-name':'d-dept-select').focus(); return; }
+    var outcomes = document.getElementById('d-outcomes').value.trim();
+    var start = document.getElementById('d-start').value;
+    var end = document.getElementById('d-end').value;
+    var companyId = document.getElementById('d-align').value || null;
+    if(editing.dept){
+      var g = state.departments.find(function(x){return x.id===editing.dept;});
+      if(g){ g.dept=dep; g.name=name; g.outcomes=outcomes; g.start=start; g.end=end; g.companyId=companyId; }
+    } else {
+      state.departments.push({ id: uid('d'), dept: dep, name: name, outcomes: outcomes, start: start, end: end, owner: '', companyId: companyId });
+    }
+    save(); hideDeptForm(); refreshAllViews();
+  }
+  window.submitDeptGoal = submitDeptGoal;
+
+  function renderDeptPage(){
+    refreshCompanyAlignSelect();
+    var el = document.getElementById('summary-department');
+    if(state.departments.length===0){ el.innerHTML = '<div class="empty-note">No department goals yet — choose a department above and click "Add a goal".</div>'; return; }
+    var rows = state.departments.map(function(g){
+      var parent = state.company.find(function(c){return c.id===g.companyId;});
+      var align = parent ? '<span class="align-tag"><span class="dot" style="background:'+parent.color+'"></span>'+esc(truncate(parent.name,44))+'</span>' : '<span class="align-tag"><em>No alignment</em></span>';
+      return '<tr>' +
+        '<td><span class="pill pill-d">'+esc(g.dept)+'</span></td>' +
+        '<td class="col-name">'+esc(g.name)+'</td>' +
+        '<td class="col-outcomes">'+esc(g.outcomes||'—')+'</td>' +
+        '<td class="col-dates">'+dateRange(g.start,g.end)+'</td>' +
+        '<td>'+align+'</td>' +
+        '<td style="white-space:nowrap;"><button class="icon-btn" title="Edit" onclick="editDeptGoal(\''+g.id+'\')">✎</button><button class="icon-btn" title="Remove" onclick="removeGoal(\'dept\',\''+g.id+'\')">✕</button></td>' +
+      '</tr>';
+    }).join('');
+    el.innerHTML = '<div class="table-scroll"><table class="summary-table"><thead><tr><th>Dept</th><th>Goal Name</th><th>Success Measure</th><th>Timeline</th><th>Aligns to</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+  }
+
+  // ---------------- function form ----------------
+  function onFuncDeptChange(){
+    var dep = document.getElementById('f-dept-select').value;
+    var funcSel = document.getElementById('f-func-select');
+    funcSel.innerHTML = '';
+    if(!dep){ funcSel.innerHTML = '<option value="">Choose a department first</option>'; refreshDeptAlignSelect(); return; }
+    funcSel.innerHTML = '<option value="">Choose a business function…</option>' + DEPARTMENTS[dep].map(function(fn){ return '<option value="'+esc(fn)+'">'+esc(fn)+'</option>'; }).join('');
+    refreshDeptAlignSelect();
+  }
+  window.onFuncDeptChange = onFuncDeptChange;
+
+  function refreshDeptAlignSelect(){
+    var dep = document.getElementById('f-dept-select').value;
+    var sel = document.getElementById('f-align');
+    if(!dep){ sel.innerHTML = '<option value="">Choose a department first</option>'; return; }
+    var deptGoals = state.departments.filter(function(g){ return g.dept===dep; });
+    if(deptGoals.length===0){ sel.innerHTML = '<option value="">No department goals yet for '+esc(dep)+'</option>'; return; }
+    sel.innerHTML = '<option value="">Choose a department goal…</option>' + deptGoals.map(function(g){
+      return '<option value="'+g.id+'">'+esc(truncate(g.name,60))+'</option>';
+    }).join('');
+  }
+
+  function showFuncForm(){
+    var dep = document.getElementById('f-dept-select').value;
+    var fn = document.getElementById('f-func-select').value;
+    if(!dep){ document.getElementById('f-dept-select').focus(); return; }
+    if(!fn){ document.getElementById('f-func-select').focus(); return; }
+    document.getElementById('function-form').hidden = false;
+    document.getElementById('function-form').scrollIntoView({block:'center'});
+  }
+  function hideFuncForm(){
+    document.getElementById('function-form').hidden = true;
+    editing.func = null;
+    updateFuncFormMode();
+    ['f-name','f-outcomes','f-start','f-end'].forEach(function(id){ document.getElementById(id).value=''; });
+    document.getElementById('f-align').value = '';
+  }
+  window.showFuncForm = showFuncForm; window.hideFuncForm = hideFuncForm;
+
+  function updateFuncFormMode(){
+    document.getElementById('function-form-head').textContent = editing.func ? 'Edit business function goal' : 'New business function goal';
+    document.getElementById('function-submit-btn').textContent = editing.func ? 'Save changes' : 'Submit';
+  }
+
+  function startAddFunc(){
+    editing.func = null;
+    ['f-name','f-outcomes','f-start','f-end'].forEach(function(id){ document.getElementById(id).value=''; });
+    document.getElementById('f-align').value = '';
+    updateFuncFormMode();
+    showFuncForm();
+  }
+  window.startAddFunc = startAddFunc;
+
+  function editFuncGoal(id){
+    var g = state.functions.find(function(x){return x.id===id;});
+    if(!g) return;
+    editing.func = id;
+    document.getElementById('f-dept-select').value = g.dept;
+    onFuncDeptChange();
+    document.getElementById('f-func-select').value = g.func;
+    document.getElementById('f-align').value = g.deptGoalId || '';
+    document.getElementById('f-name').value = g.name;
+    document.getElementById('f-outcomes').value = g.outcomes||'';
+    document.getElementById('f-start').value = g.start||'';
+    document.getElementById('f-end').value = g.end||'';
+    updateFuncFormMode();
+    showFuncForm();
+  }
+  window.editFuncGoal = editFuncGoal;
+
+  function submitFuncGoal(){
+    var dep = document.getElementById('f-dept-select').value;
+    var fn = document.getElementById('f-func-select').value;
+    var name = document.getElementById('f-name').value.trim();
+    if(!dep || !fn || !name){ document.getElementById(!dep?'f-dept-select':(!fn?'f-func-select':'f-name')).focus(); return; }
+    var outcomes = document.getElementById('f-outcomes').value.trim();
+    var start = document.getElementById('f-start').value;
+    var end = document.getElementById('f-end').value;
+    var deptGoalId = document.getElementById('f-align').value || null;
+    if(editing.func){
+      var g = state.functions.find(function(x){return x.id===editing.func;});
+      if(g){ g.dept=dep; g.func=fn; g.name=name; g.outcomes=outcomes; g.start=start; g.end=end; g.deptGoalId=deptGoalId; }
+    } else {
+      state.functions.push({ id: uid('f'), dept: dep, func: fn, name: name, outcomes: outcomes, start: start, end: end, owner: '', deptGoalId: deptGoalId });
+    }
+    save(); hideFuncForm(); refreshAllViews();
+  }
+  window.submitFuncGoal = submitFuncGoal;
+
+  function renderFuncPage(){
+    onFuncDeptChange();
+    var curDep = document.getElementById('f-dept-select').value;
+    if(curDep){ document.getElementById('f-dept-select').value = curDep; onFuncDeptChange(); }
+    var el = document.getElementById('summary-function');
+    if(state.functions.length===0){ el.innerHTML = '<div class="empty-note">No business function goals yet — choose a department and function above, then click "Add a goal".</div>'; return; }
+    var rows = state.functions.map(function(g){
+      var parent = state.departments.find(function(d){return d.id===g.deptGoalId;});
+      var color = parent ? (colorForDept(parent) || null) : null;
+      var align = parent ? '<span class="align-tag">'+(color?'<span class="dot" style="background:'+color+'"></span>':'')+esc(truncate(parent.name,40))+'</span>' : '<span class="align-tag"><em>No alignment</em></span>';
+      return '<tr>' +
+        '<td><span class="pill pill-f">'+esc(g.func)+'</span><br><span style="font-size:11px;color:var(--ink-soft);">'+esc(g.dept)+'</span></td>' +
+        '<td class="col-name">'+esc(g.name)+'</td>' +
+        '<td class="col-outcomes">'+esc(g.outcomes||'—')+'</td>' +
+        '<td class="col-dates">'+dateRange(g.start,g.end)+'</td>' +
+        '<td>'+align+'</td>' +
+        '<td style="white-space:nowrap;"><button class="icon-btn" title="Edit" onclick="editFuncGoal(\''+g.id+'\')">✎</button><button class="icon-btn" title="Remove" onclick="removeGoal(\'func\',\''+g.id+'\')">✕</button></td>' +
+      '</tr>';
+    }).join('');
+    el.innerHTML = '<div class="table-scroll"><table class="summary-table"><thead><tr><th>Function</th><th>Goal Name</th><th>Success Measure</th><th>Timeline</th><th>Aligns to</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+  }
+
+  // ---------------- shared remove ----------------
+  function removeGoal(kind, id){
+    if(kind==='company'){
+      state.company = state.company.filter(function(g){return g.id!==id;});
+      state.departments.forEach(function(g){ if(g.companyId===id) g.companyId=null; });
+    } else if(kind==='dept'){
+      state.departments = state.departments.filter(function(g){return g.id!==id;});
+      state.functions.forEach(function(g){ if(g.deptGoalId===id) g.deptGoalId=null; });
+    } else if(kind==='func'){
+      state.functions = state.functions.filter(function(g){return g.id!==id;});
+    }
+    save(); refreshAllViews();
+  }
+  window.removeGoal = removeGoal;
+
+  function updateField(kind, id, field, value){
+    var list = kind==='company'?state.company:(kind==='dept'?state.departments:state.functions);
+    var g = list.find(function(x){return x.id===id;});
+    if(g) g[field] = value;
+    save();
+  }
+
+  function refreshAllViews(){
+    renderCompanySummary();
+    renderDeptPage();
+    renderFuncPage();
+    renderDashboard();
+  }
+
+  // ---------------- dashboard ----------------
+  function populateViewMode(){
+    var sel = document.getElementById('dash-view'); var current = sel.value;
+    var used = {};
+    state.departments.forEach(function(d){used[d.dept]=true;});
+    state.functions.forEach(function(f){used[f.dept]=true;});
+    var opts = '<option value="">All departments</option>' + Object.keys(DEPARTMENTS).filter(function(d){return used[d];}).map(function(d){
+      return '<option value="'+esc(d)+'">'+esc(d)+'</option>';
+    }).join('');
+    sel.innerHTML = opts;
+    if([].slice.call(sel.options).some(function(o){return o.value===current;})) sel.value = current;
+  }
+
+  function relatedIds(kind, id){
+    var out = {company:new Set(), dept:new Set(), func:new Set()};
+    out[kind].add(id);
+    if(kind==='company'){
+      state.departments.filter(function(d){return d.companyId===id;}).forEach(function(d){
+        out.dept.add(d.id);
+        state.functions.filter(function(f){return f.deptGoalId===d.id;}).forEach(function(f){out.func.add(f.id);});
+      });
+    } else if(kind==='dept'){
+      var d = state.departments.find(function(x){return x.id===id;});
+      if(d && d.companyId) out.company.add(d.companyId);
+      state.functions.filter(function(f){return f.deptGoalId===id;}).forEach(function(f){out.func.add(f.id);});
+    } else if(kind==='func'){
+      var f = state.functions.find(function(x){return x.id===id;});
+      if(f && f.deptGoalId){
+        out.dept.add(f.deptGoalId);
+        var d2 = state.departments.find(function(x){return x.id===f.deptGoalId;});
+        if(d2 && d2.companyId) out.company.add(d2.companyId);
+      }
+    }
+    return out;
+  }
+  function highlight(kind, id){
+    var rel = relatedIds(kind, id);
+    document.querySelectorAll('.goal-card').forEach(function(card){
+      var k = card.getAttribute('data-kind'), cid = card.getAttribute('data-id');
+      card.classList.toggle('related', rel[k] && rel[k].has(cid));
+    });
+  }
+  function clearHighlight(){ document.querySelectorAll('.goal-card.related').forEach(function(c){c.classList.remove('related');}); }
+
+  function ownerFooter(kind, id, owner){
+    return '<div class="card-owner"><div class="field-label">Owner</div><input type="text" placeholder="Assign an owner" value="'+esc(owner||'')+'" data-owner-kind="'+kind+'" data-owner-id="'+id+'"></div>';
+  }
+
+  function wireCommon(card, kind, id){
+    card.addEventListener('mouseenter', function(){ highlight(kind, id); });
+    card.addEventListener('mouseleave', clearHighlight);
+    var handle = card.querySelector('.drag-handle');
+    if(handle) setupPointerDrag(card, handle, kind);
+    var nameEl = card.querySelector('.card-name');
+    if(nameEl){
+      nameEl.addEventListener('blur', function(){
+        var val = nameEl.textContent.trim();
+        if(!val){ val = nameEl.getAttribute('data-orig'); nameEl.textContent = val; }
+        updateField(kind, id, 'name', val);
+        refreshDependents();
+      });
+      nameEl.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); nameEl.blur(); } });
+    }
+    var outEl = card.querySelector('.card-outcomes');
+    if(outEl){
+      outEl.addEventListener('blur', function(){ updateField(kind, id, 'outcomes', outEl.textContent.trim()); });
+    }
+    var startEl = card.querySelector('[data-field="start"]');
+    var endEl = card.querySelector('[data-field="end"]');
+    if(startEl) startEl.addEventListener('change', function(){ updateField(kind, id, 'start', startEl.value); refreshDependents(); });
+    if(endEl) endEl.addEventListener('change', function(){ updateField(kind, id, 'end', endEl.value); refreshDependents(); });
+    var ownerEl = card.querySelector('[data-owner-id="'+id+'"]');
+    if(ownerEl) ownerEl.addEventListener('blur', function(){ updateField(kind, id, 'owner', ownerEl.value.trim()); });
+    var alignEl = card.querySelector('select[data-realign]');
+    if(alignEl){
+      alignEl.addEventListener('change', function(){
+        if(kind==='dept'){ var g = state.departments.find(function(x){return x.id===id;}); g.companyId = alignEl.value || null; }
+        if(kind==='func'){ var g2 = state.functions.find(function(x){return x.id===id;}); g2.deptGoalId = alignEl.value || null; }
+        save(); renderDashboard();
+      });
+    }
+  }
+
+  function refreshDependents(){ save(); refreshAllViews(); }
+
+  function companyCard(g){
+    var childCount = state.departments.filter(function(d){return d.companyId===g.id;}).length;
+    var card = document.createElement('div');
+    card.className = 'goal-card'; card.setAttribute('data-kind','company'); card.setAttribute('data-id', g.id);
+    card.style.borderLeftColor = g.color;
+    card.innerHTML =
+      '<div class="card-top"><div class="card-top-left"><span class="drag-handle" title="Drag to reorder">⠿</span><span class="dot" style="background:'+g.color+'"></span><span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;color:var(--ink-soft);">Company</span></div><button class="icon-btn" title="Remove" onclick="removeGoal(\'company\',\''+g.id+'\')">✕</button></div>' +
+      '<div class="card-name" contenteditable="true" data-orig="'+esc(g.name)+'">'+esc(g.name)+'</div>' +
+      '<div class="card-outcomes" contenteditable="true">'+esc(g.outcomes)+'</div>' +
+      '<div class="card-dates"><input type="date" data-field="start" value="'+esc(g.start||'')+'"><input type="date" data-field="end" value="'+esc(g.end||'')+'"></div>' +
+      ownerFooter('company', g.id, g.owner) +
+      '<div class="card-foot"><span>'+childCount+' department goal'+(childCount===1?'':'s')+'</span></div>';
+    wireCommon(card, 'company', g.id);
+    return card;
+  }
+
+  function deptCard(g){
+    var childCount = state.functions.filter(function(f){return f.deptGoalId===g.id;}).length;
+    var color = colorForDept(g);
+    var card = document.createElement('div');
+    card.className = 'goal-card'; card.setAttribute('data-kind','dept'); card.setAttribute('data-id', g.id);
+    if(color) card.style.borderLeftColor = color;
+    var alignOptions = '<option value="">— no alignment —</option>' + state.company.map(function(c){
+      return '<option value="'+c.id+'"'+(c.id===g.companyId?' selected':'')+'>'+esc(truncate(c.name,50))+'</option>';
+    }).join('');
+    card.innerHTML =
+      '<div class="card-top"><div class="card-top-left"><span class="drag-handle" title="Drag to reorder">⠿</span>'+(color?'<span class="dot" style="background:'+color+'"></span>':'')+'<span class="pill pill-d">'+esc(g.dept)+'</span></div><button class="icon-btn" title="Remove" onclick="removeGoal(\'dept\',\''+g.id+'\')">✕</button></div>' +
+      '<div class="card-name" contenteditable="true" data-orig="'+esc(g.name)+'">'+esc(g.name)+'</div>' +
+      '<div class="card-outcomes" contenteditable="true">'+esc(g.outcomes)+'</div>' +
+      '<div class="card-dates"><input type="date" data-field="start" value="'+esc(g.start||'')+'"><input type="date" data-field="end" value="'+esc(g.end||'')+'"></div>' +
+      '<div class="card-align"><div class="field-label">Aligns with</div><select data-realign="dept">'+alignOptions+'</select></div>' +
+      ownerFooter('dept', g.id, g.owner) +
+      '<div class="card-foot"><span>'+childCount+' function goal'+(childCount===1?'':'s')+'</span></div>';
+    wireCommon(card, 'dept', g.id);
+    return card;
+  }
+
+  function funcCard(g){
+    var sameDept = state.departments.filter(function(d){return d.dept===g.dept;});
+    var color = colorForFunc(g);
+    var card = document.createElement('div');
+    card.className = 'goal-card'; card.setAttribute('data-kind','func'); card.setAttribute('data-id', g.id);
+    if(color) card.style.borderLeftColor = color;
+    var alignOptions = '<option value="">— no alignment —</option>' + sameDept.map(function(d){
+      return '<option value="'+d.id+'"'+(d.id===g.deptGoalId?' selected':'')+'>'+esc(truncate(d.name,50))+'</option>';
+    }).join('');
+    card.innerHTML =
+      '<div class="card-top"><div class="card-top-left"><span class="drag-handle" title="Drag to reorder">⠿</span>'+(color?'<span class="dot" style="background:'+color+'"></span>':'')+'<span class="pill pill-f">'+esc(g.func)+'</span></div><button class="icon-btn" title="Remove" onclick="removeGoal(\'func\',\''+g.id+'\')">✕</button></div>' +
+      '<div class="card-name" contenteditable="true" data-orig="'+esc(g.name)+'">'+esc(g.name)+'</div>' +
+      '<div class="card-outcomes" contenteditable="true">'+esc(g.outcomes)+'</div>' +
+      '<div class="card-dates"><input type="date" data-field="start" value="'+esc(g.start||'')+'"><input type="date" data-field="end" value="'+esc(g.end||'')+'"></div>' +
+      '<div class="card-align"><div class="field-label">Aligns with</div><select data-realign="func">'+alignOptions+'</select></div>' +
+      ownerFooter('func', g.id, g.owner) +
+      '<div class="card-foot"><span>'+esc(g.dept)+'</span></div>';
+    wireCommon(card, 'func', g.id);
+    return card;
+  }
+
+  // ---------------- drag-to-reorder (pointer events: works for mouse, touch, and pen) ----------------
+  function getDragAfterElement(track, x, dragging){
+    var els = [].slice.call(track.querySelectorAll('.goal-card')).filter(function(el){ return el!==dragging; });
+    var closest = {offset:-Infinity, element:null};
+    els.forEach(function(child){
+      var box = child.getBoundingClientRect();
+      var offset = x - box.left - box.width/2;
+      if(offset<0 && offset>closest.offset){ closest = {offset:offset, element:child}; }
+    });
+    return closest.element;
+  }
+
+  function commitOrder(track, kind){
+    var newOrderIds = [].slice.call(track.querySelectorAll('.goal-card')).map(function(c){return c.getAttribute('data-id');});
+    var arr = kind==='company'?state.company:(kind==='dept'?state.departments:state.functions);
+    arr.sort(function(a,b){
+      var ai = newOrderIds.indexOf(a.id), bi = newOrderIds.indexOf(b.id);
+      if(ai===-1 && bi===-1) return 0;
+      if(ai===-1) return -1;
+      if(bi===-1) return 1;
+      return ai-bi;
+    });
+    save();
+  }
+
+  function setupPointerDrag(card, handle, kind){
+    handle.style.touchAction = 'none';
+    var drag = null;
+
+    // Reordering the card mid-drag (insertBefore/appendChild) makes some browsers
+    // silently release pointer capture and drop the eventual pointerup, so the
+    // move/up listeners live on `document` for the duration of the drag instead
+    // of relying on capture to keep delivering events to the handle.
+    function onMove(e){
+      if(!drag || e.pointerId !== drag.pointerId) return;
+      var dx = e.clientX - drag.startX;
+      card.style.transform = 'translateX('+dx+'px)';
+      card.style.zIndex = 5;
+      var after = getDragAfterElement(drag.track, e.clientX, card);
+      if(after !== card.nextSibling && !(after===null && card===drag.track.lastElementChild)){
+        if(after==null) drag.track.appendChild(card); else drag.track.insertBefore(card, after);
+        drag.startX = e.clientX;
+        card.style.transform = 'translateX(0px)';
+      }
+      drawConnectors();
+    }
+    function onUp(e){
+      if(!drag || e.pointerId !== drag.pointerId) return;
+      var track = drag.track;
+      card.classList.remove('dragging');
+      document.body.classList.remove('dragging-active');
+      card.style.transform = '';
+      card.style.zIndex = '';
+      document.removeEventListener('pointermove', onMove, true);
+      document.removeEventListener('pointerup', onUp, true);
+      document.removeEventListener('pointercancel', onUp, true);
+      drag = null;
+      commitOrder(track, kind);
+      renderDashboard();
+    }
+    handle.addEventListener('pointerdown', function(e){
+      if(e.button != null && e.button !== 0) return;
+      e.preventDefault();
+      drag = { track: card.parentElement, startX: e.clientX, pointerId: e.pointerId };
+      card.classList.add('dragging');
+      document.body.classList.add('dragging-active');
+      document.addEventListener('pointermove', onMove, true);
+      document.addEventListener('pointerup', onUp, true);
+      document.addEventListener('pointercancel', onUp, true);
+    });
+  }
+
+  function autoArrange(kind){
+    if(kind==='dept'){
+      var companyIndex = {}; state.company.forEach(function(c,i){companyIndex[c.id]=i;});
+      state.departments.sort(function(a,b){
+        var ai = a.companyId && companyIndex[a.companyId]!=null ? companyIndex[a.companyId] : 999;
+        var bi = b.companyId && companyIndex[b.companyId]!=null ? companyIndex[b.companyId] : 999;
+        return ai-bi;
+      });
+    } else if(kind==='func'){
+      var deptIndex = {}; state.departments.forEach(function(d,i){deptIndex[d.id]=i;});
+      state.functions.sort(function(a,b){
+        var ai = a.deptGoalId && deptIndex[a.deptGoalId]!=null ? deptIndex[a.deptGoalId] : 999;
+        var bi = b.deptGoalId && deptIndex[b.deptGoalId]!=null ? deptIndex[b.deptGoalId] : 999;
+        return ai-bi;
+      });
+    }
+    save(); renderDashboard();
+  }
+  window.autoArrange = autoArrange;
+
+  // ---------------- connector lines ----------------
+  var UNALIGNED_LINE_COLOR = '#D6DCE3';
+  function localRect(el, refRect){
+    var r = el.getBoundingClientRect();
+    return {left:r.left-refRect.left, top:r.top-refRect.top, right:r.right-refRect.left, bottom:r.bottom-refRect.top, centerX:(r.left+r.right)/2-refRect.left};
+  }
+  function drawConnectors(){
+    var svg = document.getElementById('connector-svg');
+    var inner = document.getElementById('cascade-inner');
+    if(!svg || !inner || inner.offsetParent===null){ return; }
+    var w = inner.scrollWidth, h = inner.scrollHeight;
+    svg.setAttribute('width', w); svg.setAttribute('height', h);
+    svg.setAttribute('viewBox', '0 0 '+w+' '+h);
+    var refRect = inner.getBoundingClientRect();
+    var html = '';
+    function edge(parentEl, childEl, color){
+      var p = localRect(parentEl, refRect), c = localRect(childEl, refRect);
+      var x1 = p.centerX, y1 = p.bottom, x2 = c.centerX, y2 = c.top;
+      var midY = y1 + (y2-y1)/2;
+      return '<path d="M '+x1+' '+y1+' C '+x1+' '+midY+', '+x2+' '+midY+', '+x2+' '+y2+'" stroke="'+color+'" stroke-width="2" fill="none" opacity="0.55"/>' +
+             '<circle cx="'+x1+'" cy="'+y1+'" r="3" fill="'+color+'" opacity="0.8"/>' +
+             '<circle cx="'+x2+'" cy="'+y2+'" r="3" fill="'+color+'" opacity="0.8"/>';
+    }
+    document.querySelectorAll('#lane-dept .goal-card').forEach(function(depEl){
+      var g = state.departments.find(function(x){return x.id===depEl.getAttribute('data-id');});
+      if(!g || !g.companyId) return;
+      var parentEl = document.querySelector('#lane-company .goal-card[data-id="'+g.companyId+'"]');
+      if(!parentEl) return;
+      html += edge(parentEl, depEl, colorForDept(g) || UNALIGNED_LINE_COLOR);
+    });
+    document.querySelectorAll('#lane-func .goal-card').forEach(function(funcEl){
+      var g = state.functions.find(function(x){return x.id===funcEl.getAttribute('data-id');});
+      if(!g || !g.deptGoalId) return;
+      var parentEl = document.querySelector('#lane-dept .goal-card[data-id="'+g.deptGoalId+'"]');
+      if(!parentEl) return;
+      html += edge(parentEl, funcEl, colorForFunc(g) || UNALIGNED_LINE_COLOR);
+    });
+    svg.innerHTML = html;
+  }
+  window.addEventListener('resize', function(){ requestAnimationFrame(drawConnectors); });
+
+  function renderDashboard(){
+    populateViewMode();
+    var filterDep = document.getElementById('dash-view').value;
+
+    var companyList, deptList, funcList;
+    if(filterDep){
+      deptList = state.departments.filter(function(d){return d.dept===filterDep;});
+      funcList = state.functions.filter(function(f){return f.dept===filterDep;});
+      var ids = {}; deptList.forEach(function(d){ if(d.companyId) ids[d.companyId]=true; });
+      companyList = state.company.filter(function(c){return ids[c.id];});
+    } else {
+      companyList = state.company; deptList = state.departments; funcList = state.functions;
+    }
+
+    var laneC = document.getElementById('lane-company'), laneD = document.getElementById('lane-dept'), laneF = document.getElementById('lane-func');
+    laneC.innerHTML=''; laneD.innerHTML=''; laneF.innerHTML='';
+
+    document.getElementById('count-company').textContent = companyList.length ? companyList.length+' goal'+(companyList.length===1?'':'s') : '';
+    document.getElementById('count-dept').textContent = deptList.length ? deptList.length+' goal'+(deptList.length===1?'':'s') : '';
+    document.getElementById('count-func').textContent = funcList.length ? funcList.length+' goal'+(funcList.length===1?'':'s') : '';
+
+    if(companyList.length===0){ laneC.innerHTML = '<div class="empty-lane">No company strategic goals'+(filterDep?' align to '+esc(filterDep)+' yet':' yet — add some from the entry form')+'.</div>'; }
+    else companyList.forEach(function(g){ laneC.appendChild(companyCard(g)); });
+
+    if(deptList.length===0){ laneD.innerHTML = '<div class="empty-lane">No department goals'+(filterDep?' for '+esc(filterDep)+' yet':' yet')+'.</div>'; }
+    else deptList.forEach(function(g){ laneD.appendChild(deptCard(g)); });
+
+    if(funcList.length===0){ laneF.innerHTML = '<div class="empty-lane">No business function goals'+(filterDep?' for '+esc(filterDep)+' yet':' yet')+'.</div>'; }
+    else funcList.forEach(function(g){ laneF.appendChild(funcCard(g)); });
+
+    requestAnimationFrame(function(){ requestAnimationFrame(drawConnectors); });
+  }
+
+  window.renderDashboard = renderDashboard;
+
+  // ---------------- native date picker popup ----------------
+  function bindDatePickers(){
+    document.addEventListener('focus', function(e){
+      var t = e.target;
+      if(t && t.tagName==='INPUT' && t.type==='date' && typeof t.showPicker==='function'){
+        try{ t.showPicker(); }catch(err){}
+      }
+    }, true);
+    document.addEventListener('click', function(e){
+      var t = e.target;
+      if(t && t.tagName==='INPUT' && t.type==='date' && typeof t.showPicker==='function'){
+        try{ t.showPicker(); }catch(err){}
+      }
+    }, true);
+  }
+
+  // ---------------- Excel export ----------------
+  function ensureXLSXLoaded(){
+    return new Promise(function(resolve, reject){
+      if(window.XLSX){ resolve(); return; }
+      var s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+      s.onload = function(){ resolve(); };
+      s.onerror = function(){ reject(new Error('load-failed')); };
+      document.head.appendChild(s);
+    });
+  }
+
+  function buildWorkbook(){
+    var wb = XLSX.utils.book_new();
+
+    var companyRows = [['Goal Name','Success Measure','Start Date','End Date','Owner']].concat(
+      state.company.map(function(g){ return [g.name, g.outcomes||'', g.start||'', g.end||'', g.owner||'']; })
+    );
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(companyRows), 'Company Goals');
+
+    var deptRows = [['Department','Goal Name','Success Measure','Start Date','End Date','Owner','Aligns To (Company Goal)']].concat(
+      state.departments.map(function(g){
+        var parent = state.company.find(function(c){return c.id===g.companyId;});
+        return [g.dept, g.name, g.outcomes||'', g.start||'', g.end||'', g.owner||'', parent?parent.name:''];
+      })
+    );
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(deptRows), 'Department Goals');
+
+    var funcRows = [['Department','Business Function','Goal Name','Success Measure','Start Date','End Date','Owner','Aligns To (Department Goal)']].concat(
+      state.functions.map(function(g){
+        var parent = state.departments.find(function(d){return d.id===g.deptGoalId;});
+        return [g.dept, g.func, g.name, g.outcomes||'', g.start||'', g.end||'', g.owner||'', parent?parent.name:''];
+      })
+    );
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(funcRows), 'Business Function Goals');
+
+    return wb;
+  }
+
+  // Plain browser download: used when the page is running on an ordinary
+  // website (not inside the Claude artifact viewer), where window.claude
+  // doesn't exist and a normal <a download> blob link works fine.
+  function plainBrowserDownload(blob, filename){
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  }
+
+  function handleDownloadExcel(){
+    var btn = document.getElementById('download-xlsx-btn');
+    var original = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Preparing…';
+    function reset(){ btn.disabled = false; btn.textContent = original; }
+
+    var useCap = (window.claude && typeof window.claude.use === 'function') ? window.claude.use('downloads') : Promise.resolve(null);
+
+    Promise.all([ensureXLSXLoaded(), useCap]).then(function(results){
+      var downloads = results[1];
+      var wb = buildWorkbook();
+      var wbArray = XLSX.write(wb, {bookType:'xlsx', type:'array'});
+      var blob = new Blob([wbArray], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+
+      if(downloads){
+        // Running inside the Claude artifact viewer: hand the file to its save capability.
+        downloads.save({filename:'goal-cascade.xlsx', data: blob}).then(function(){
+          reset();
+        }).catch(function(err){
+          if(!err || err.code!=='declined'){ alert('Could not save the file'+(err&&err.code?' ('+err.code+')':'')+'.'); }
+          reset();
+        });
+      } else {
+        // Running on an ordinary website: trigger a normal browser download.
+        try{ plainBrowserDownload(blob, 'goal-cascade.xlsx'); }
+        catch(e){ alert('Could not start the download.'); }
+        reset();
+      }
+    }).catch(function(){
+      alert('Could not load the spreadsheet library. Check your connection and try again.');
+      reset();
+    });
+  }
+  window.handleDownloadExcel = handleDownloadExcel;
+
+  // ---------------- boot ----------------
+  bindDatePickers();
+  load();
+  goTo('landing');
+})();
+</script>
