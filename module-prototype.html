@@ -8,18 +8,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper: #F7F2E9;
-    --paper-raised: #FFFDF8;
-    --ink: #22261F;
-    --ink-soft: #5B5A4F;
-    --ink-faint: #9B9788;
-    --line: #E2DAC7;
-    --accent: #C4881F;
-    --accent-deep: #8A5D14;
-    --accent-pale: #F1DFB3;
-    --accent-wash: #FBF2DD;
-    --evergreen: #33453A;
-    --evergreen-pale: #E7ECE5;
+    --bg: #EEF1F4;
+    --surface: #FFFFFF;
+    --surface-alt: #E4E9EF;
+    --ink: #1B2430;
+    --ink-soft: #5B6675;
+    --ink-faint: #8B94A0;
+    --line: #D6DCE3;
+    --accent: #2F6F63;
+    --accent-hover: #26594F;
+    --accent-wash: #E7EFED;
+    --link: #176480;
+    --link-hover: #124F66;
+    --accent-soft: #82B3C1;
+    --accent-soft-wash: #E4EEF1;
+    --accent-soft-pale: #C7DDE3;
+    --error: #B3432B;
     --radius: 4px;
     --serif: "Fraunces", Georgia, serif;
     --sans: "Inter", -apple-system, sans-serif;
@@ -28,7 +32,7 @@
   *{ box-sizing: border-box; }
   html,body{ margin:0; padding:0; }
   body{
-    background: var(--paper);
+    background: var(--bg);
     color: var(--ink);
     font-family: var(--sans);
     line-height: 1.55;
@@ -51,7 +55,7 @@
     font-family: var(--mono);
     font-size: 11px;
     letter-spacing: 0.12em;
-    color: var(--accent-deep);
+    color: var(--accent);
     text-transform: uppercase;
     font-weight: 600;
     margin-bottom: 8px;
@@ -103,22 +107,24 @@
   .msg.user .msg-bubble{
     display:inline-block;
     background: var(--ink);
-    color: var(--paper);
+    color: var(--surface);
     padding: 10px 16px;
     border-radius: var(--radius);
     font-size: 14px;
     max-width: 88%;
     text-align: left;
   }
-  .msg.assistant .msg-label{ color: var(--accent-deep); }
+  .msg.assistant .msg-label{ color: var(--accent); }
   .msg.assistant .msg-bubble{
-    background: var(--paper-raised);
+    background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius);
     padding: 18px 16px;
   }
   .msg.assistant .msg-bubble p{ font-size: 14.5px; color: var(--ink-soft); margin: 0 0 12px; }
   .msg.assistant .msg-bubble p:last-child{ margin-bottom: 0; }
+  .msg.assistant .msg-bubble a{ color: var(--link); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+  .msg.assistant .msg-bubble a:hover{ color: var(--link-hover); }
 
   .typing-dots{
     display:inline-flex;
@@ -140,7 +146,7 @@
     display:flex;
     gap: 8px;
     border: 1px solid var(--line);
-    background: var(--paper-raised);
+    background: var(--surface);
     border-radius: var(--radius);
     padding: 6px 6px 6px 14px;
     align-items: center;
@@ -161,8 +167,8 @@
     font-family: var(--mono);
     font-size: 12px;
     letter-spacing: 0.03em;
-    background: var(--ink);
-    color: var(--paper);
+    background: var(--accent);
+    color: var(--surface);
     border: none;
     padding: 13px 18px;
     min-height: 44px;
@@ -171,14 +177,14 @@
     transition: background 0.2s;
     flex: none;
   }
-  .send-btn:hover{ background: var(--evergreen); }
+  .send-btn:hover{ background: var(--accent-hover); }
   .input-hint{
     font-family: var(--mono);
     font-size: 11px;
     color: var(--ink-faint);
     margin-top: 9px;
   }
-  .input-hint b{ color: var(--accent-deep); font-weight: 600; }
+  .input-hint b{ color: var(--accent); font-weight: 600; }
   #inputArea.hidden{ display:none; }
 
   .end-note{
@@ -203,16 +209,16 @@
   .ov-list li::before{
     content: "✓";
     position: absolute; left: 0; top: 0;
-    color: var(--accent-deep);
+    color: var(--link);
     font-weight: 700;
     font-size: 13px;
   }
   .note{
-    background: var(--evergreen-pale);
-    border-left: 3px solid var(--evergreen);
+    background: var(--accent-wash);
+    border-left: 3px solid var(--accent);
     padding: 12px 16px;
     font-size: 13.5px;
-    color: #2B382E;
+    color: var(--ink);
     font-style: italic;
     margin: 14px 0 16px;
   }
@@ -221,14 +227,14 @@
     color: var(--ink);
     margin-top: 4px;
   }
-  .prompt-line b{ color: var(--accent-deep); font-family: var(--mono); font-size: 13px; }
+  .prompt-line b{ color: var(--accent); font-family: var(--mono); font-size: 13px; }
 
   /* ---------- steps ---------- */
   .steps-intro{ font-size: 14px; color: var(--ink-soft); margin: 0 0 16px; }
   .step-card{
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    background: #FFFFFF;
+    background: var(--surface);
     margin-bottom: 12px;
     overflow: hidden;
   }
@@ -242,15 +248,15 @@
     user-select: none;
     transition: background 0.2s;
   }
-  .step-head:hover{ background: #FCF8EF; }
-  .step-card.reviewed .step-head{ background: var(--accent-wash); }
+  .step-head:hover{ background: var(--surface-alt); }
+  .step-card.reviewed .step-head{ background: var(--accent-soft-wash); }
 
   .step-num{
     font-family: var(--mono);
     font-size: 11px;
-    color: var(--accent-deep);
-    border: 1px solid var(--accent-pale);
-    background: #fff;
+    color: var(--link);
+    border: 1px solid var(--accent-soft-pale);
+    background: var(--surface);
     width: 26px; height: 26px;
     display:flex; align-items:center; justify-content:center;
     border-radius: 50%;
@@ -259,9 +265,9 @@
     transition: all 0.25s;
   }
   .step-card.reviewed .step-num{
-    background: var(--accent-deep);
-    color: #fff;
-    border-color: var(--accent-deep);
+    background: var(--accent);
+    color: var(--surface);
+    border-color: var(--accent);
   }
   .step-title{ font-family: var(--serif); font-size: 15.5px; font-weight: 500; flex: 1; min-width: 0; line-height: 1.3; }
   .step-status{
@@ -274,7 +280,7 @@
     text-align: right;
     max-width: 60px;
   }
-  .step-card.reviewed .step-status{ color: var(--accent-deep); }
+  .step-card.reviewed .step-status{ color: var(--accent); }
   .chevron{ flex: none; color: var(--ink-faint); transition: transform 0.25s; font-size: 12px; }
   .step-card.open .chevron{ transform: rotate(180deg); }
 
@@ -282,23 +288,25 @@
   .step-body-inner{ padding: 4px 14px 18px 14px; border-top: 1px solid var(--line); padding-top: 14px; margin: 0 14px; }
   .step-body-inner h4{
     font-family: var(--sans); font-size: 12.5px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.04em; color: var(--evergreen); margin: 16px 0 8px;
+    text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink); margin: 16px 0 8px;
   }
   .step-body-inner h4:first-child{ margin-top: 0; }
   .step-body-inner p{ font-size: 14px; color: var(--ink); margin: 0 0 10px; }
   .step-body-inner ul{ margin: 0 0 10px; padding-left: 20px; }
   .step-body-inner ul li{ font-size: 13.5px; margin-bottom: 6px; color: var(--ink); }
-  .step-body-inner ul li::marker{ color: var(--accent-deep); }
+  .step-body-inner ul li::marker{ color: var(--link); }
 
   .reaction-grid{ display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 10px 0 6px; }
-  .reaction-card{ background: #FBF8F1; border: 1px solid var(--line); border-top: 2px solid var(--accent); padding: 10px 12px; border-radius: var(--radius); }
-  .reaction-card b{ display:block; font-size: 11.5px; color: var(--evergreen); margin-bottom: 6px; }
+  .reaction-card{ background: var(--surface-alt); border: 1px solid var(--line); border-top: 2px solid var(--accent); padding: 10px 12px; border-radius: var(--radius); }
+  .reaction-card b{ display:block; font-size: 11.5px; color: var(--ink); margin-bottom: 6px; }
   .reaction-card ul{ padding-left: 14px; margin: 0; }
+  .reaction-card ul li::marker{ color: var(--link); }
   .reaction-card li{ font-size: 12px; margin-bottom: 4px; }
   @media (max-width: 560px){ .reaction-grid{ grid-template-columns: 1fr; } }
 
-  .resource{ background: var(--evergreen-pale); border-left: 3px solid var(--evergreen); padding: 12px 16px; margin-top: 14px; font-size: 13.5px; }
-  .resource a{ color: var(--evergreen); font-weight: 600; }
+  .resource{ background: var(--accent-wash); border-left: 3px solid var(--accent); padding: 12px 16px; margin-top: 14px; font-size: 13.5px; color: var(--ink-soft); }
+  .resource a{ color: var(--link); font-weight: 600; }
+  .resource a:hover{ color: var(--link-hover); }
 
   /* ---------- mobile refinements ---------- */
   @media (max-width: 480px){
@@ -340,6 +348,8 @@
 
 <script>
 const PLANNING_GUIDE_URL = "https://docs.google.com/document/d/1u7dUUpPPsVed1Jn-rW1lgaFUc2h3ZOExsTnnxUI07gY/copy";
+const AI_ASSISTANT_URL = "https://tools.crizolp.com/review-conversation-planner.html";
+const MODULE_URL = "https://digitallearning.crizolp.com/";
 
 const STEP_DATA = [
   {
@@ -393,7 +403,7 @@ const STEP_DATA = [
         <div class="reaction-card"><b>When inviting their perspective, they may:</b><ul><li>Arrive unprepared</li><li>Arrive overly prepared with extensive documentation</li><li>Focus on behaviors rather than results</li><li>Hesitate to discuss their performance</li></ul></div>
         <div class="reaction-card"><b>When you share feedback, they may:</b><ul><li>Become argumentative</li><li>Interrupt or talk over you</li><li>Shift blame for shortcomings</li><li>Become defensive</li><li>Disengage from the conversation</li></ul></div>
       </div>
-      <div class="resource">📎 The Performance Review Conversation Planning Guide will help you plan and prepare for this step of the process: <a href="${PLANNING_GUIDE_URL}" target="_blank" rel="noopener">Planning Guide</a></div>
+      <div class="resource">📎 The Performance Review Conversation Planning Guide helps you prepare for this step of the process. You can download the guide in <a href="${PLANNING_GUIDE_URL}" target="_blank" rel="noopener">Google Docs</a> or use the <a href="${AI_ASSISTANT_URL}" target="_blank" rel="noopener">AI assistant</a> to walk through the planning questions step by step. When you're finished, you can download your completed plan as a Word document or PDF. Both options will help you prepare for your next performance review conversation.</div>
     `
   },
   {
@@ -529,7 +539,7 @@ function handleSend(){
         stage = 'overview';
         inputHint.innerHTML = 'Try typing: <b>Ready</b>';
       } else {
-        addAssistantMessage(`<p>I can help with that. To begin, type: <b style="font-family:var(--mono); color:var(--accent-deep);">Performance Review Conversation Training</b></p>`);
+        addAssistantMessage(`<p>I can help with that. To begin, type: <b style="font-family:var(--mono); color:var(--accent);">Performance Review Conversation Training</b></p>`);
       }
     } else if(stage === 'overview'){
       if(lower === 'ready'){
@@ -544,7 +554,7 @@ function handleSend(){
           }, 650);
         }, 400);
       } else {
-        addAssistantMessage(`<p>Whenever you're ready to continue, type <b style="font-family:var(--mono); color:var(--accent-deep);">Ready</b>.</p>`);
+        addAssistantMessage(`<p>Whenever you're ready to continue, type <b style="font-family:var(--mono); color:var(--accent);">Ready</b>.</p>`);
       }
     }
   }, 650);
@@ -552,16 +562,16 @@ function handleSend(){
 
 function showTrainingOverview(){
   addAssistantMessage(`
-    <p>Performance reviews are one of the most powerful tools a manager can use, yet they're often underutilized. They have become more focused on filling out forms and checking boxes than having meaningful conversations.</p>
-    <p>When this happens, managers and team members miss opportunities to strengthen relationships and explore development opportunities. On the other hand, if done correctly, performance reviews can engage and motivate team members to maximize and align their efforts.</p>
-    <p>This module will equip you with the skills and tools to conduct collaborative performance reviews that can enhance learning, productivity, and collaboration throughout the year.</p>
+    <p>Performance reviews are among the most valuable tools a manager has, but they're often reduced to forms and checklists rather than real conversations.</p>
+    <p>When that happens, managers and team members miss opportunities to build stronger relationships and support growth. When done well, performance reviews can motivate, align efforts, and drive better results.</p>
+    <p>This is an overview of the <a href="${MODULE_URL}" target="_blank" rel="noopener">Conducting Performance Reviews</a> digital learning module. It provides the skills and tools you need to lead collaborative, effective performance reviews that support learning, productivity, and teamwork throughout the year.</p>
     <p>At the end of this Module, you will be able to:</p>
     <ul class="ov-list">
-      <li>Prepare for focused, collaborative reviews</li>
-      <li>Share clear, targeted feedback</li>
-      <li>Address and resolve performance issues</li>
-      <li>Follow the key steps of an effective review</li>
-      <li>Boost motivation, learning, and collaboration throughout the year</li>
+      <li>Prepare for effective, collaborative reviews</li>
+      <li>Share clear, focused feedback</li>
+      <li>Address and resolve performance disconnects</li>
+      <li>Use a framework to help keep conversations on track</li>
+      <li>Strengthen motivation, learning, and collaboration year-round</li>
     </ul>
     <div class="note">Note: This process focuses solely on preparing for the performance review conversation and does not address performance ratings. For guidance on performance ratings, please consult your HRBP.</div>
     <div class="prompt-line">When you're ready, we'll begin and walk through the training content step by step. Type <b>Ready</b> when you'd like to start.</div>
