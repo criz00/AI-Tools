@@ -1,523 +1,314 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Learning Outline Builder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --ink:#141F2B;
-    --ink-soft:#1D2C3C;
-    --ink-line:#2C3E52;
-    --paper:#F1EFE8;
-    --paper-card:#FBFAF6;
-    --line:#D8D4C8;
-    --text-dark:#1B2430;
-    --text-mute:#6B7280;
-    --amber:#C97E2E;
-    --amber-soft:#F3E2C9;
-    --success:#4F7A5D;
-    --danger:#B3564A;
-    --rail-inactive:#3C4E62;
-    --rail-active:#D68A3D;
+/* ===== Talent Workspace UI (talent-ui.css) ===== */
+/* Layout: one-screen app — question chat panel left, live outline document right; at 800px a segmented switch toggles between them. */
+:root{
+  --font-sans:Inter, system-ui, -apple-system, sans-serif;
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:22px;--space-6:28px;--space-7:32px;--space-8:56px;
+  --radius-sm:8px;--radius-md:10px;--radius-lg:12px;--radius-xl:14px;--radius-pill:999px;
+  --bg:#F7F8FA;--surface:#FFFFFF;--surface-alt:#F1F3F5;--ink:#111827;--ink-soft:#5B6472;--line:#E5E7EB;--line-strong:#8A9099;
+  --accent:#0F766E;--accent-hover:#0B5F58;--on-accent:#FFFFFF;--accent-soft:#E6F4F2;--focus-ring:rgba(15,118,110,0.25);
+  --info:#1D4ED8;--info-soft:#EEF3FF;--warning:#B54708;--warning-soft:#FEF3E2;--error:#B42318;--error-soft:#FEECEB;
+  --shadow-sm:0 1px 2px rgba(16,24,40,0.05);
+  --shadow-card:0 1px 2px rgba(16,24,40,0.04), 0 6px 20px -4px rgba(16,24,40,0.07);
+  --shadow-lift:0 2px 4px rgba(16,24,40,0.06), 0 10px 28px -6px rgba(16,24,40,0.12);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1113;--surface:#171B1F;--surface-alt:#1F2429;--ink:#ECEEF0;--ink-soft:#9AA3AD;--line:#2A3036;--line-strong:#6B747E;
+    --accent:#3CC4B4;--accent-hover:#62D3C6;--on-accent:#04201C;--accent-soft:rgba(60,196,180,0.13);--focus-ring:rgba(60,196,180,0.3);
+    --info:#8AB4F8;--info-soft:rgba(138,180,248,0.13);--warning:#F5B45C;--warning-soft:rgba(245,180,92,0.13);--error:#F28B82;--error-soft:rgba(242,139,130,0.13);
+    --shadow-sm:0 1px 2px rgba(0,0,0,0.4);
+    --shadow-card:0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -6px rgba(0,0,0,0.5);
+    --shadow-lift:0 2px 4px rgba(0,0,0,0.45), 0 12px 30px -6px rgba(0,0,0,0.6);
+    color-scheme:dark;
   }
-  *{box-sizing:border-box;}
-  html,body{height:100%;}
-  body{
-    margin:0;
-    font-family:'IBM Plex Sans', sans-serif;
-    background:var(--paper);
-    color:var(--text-dark);
-    overflow:hidden;
-  }
-  .app{
-    display:grid;
-    grid-template-columns:minmax(320px,420px) 1fr;
-    height:100vh;
-  }
-  @media (max-width:860px){
-    .app{grid-template-columns:1fr; grid-template-rows:52vh 48vh;}
-  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1113;--surface:#171B1F;--surface-alt:#1F2429;--ink:#ECEEF0;--ink-soft:#9AA3AD;--line:#2A3036;--line-strong:#6B747E;
+  --accent:#3CC4B4;--accent-hover:#62D3C6;--on-accent:#04201C;--accent-soft:rgba(60,196,180,0.13);--focus-ring:rgba(60,196,180,0.3);
+  --info:#8AB4F8;--info-soft:rgba(138,180,248,0.13);--warning:#F5B45C;--warning-soft:rgba(245,180,92,0.13);--error:#F28B82;--error-soft:rgba(242,139,130,0.13);
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.4);
+  --shadow-card:0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -6px rgba(0,0,0,0.5);
+  --shadow-lift:0 2px 4px rgba(0,0,0,0.45), 0 12px 30px -6px rgba(0,0,0,0.6);
+  color-scheme:dark;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-sans);-webkit-font-smoothing:antialiased;overflow:hidden;}
+.tw h1,.tw h2,.tw h3{font-weight:650;letter-spacing:-.022em;margin:0;}
 
-  /* ---------- LEFT: CHAT ---------- */
-  .chat-panel{
-    background:var(--ink);
-    display:flex;
-    color:#EDEFF2;
-    min-height:0;
-  }
-  .rail{
-    width:38px;
-    flex-shrink:0;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:0;
-    padding:24px 0;
-    border-right:1px solid var(--ink-line);
-  }
-  .rail-track{
-    position:relative;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    height:100%;
-    justify-content:space-between;
-  }
-  .rail-dot{
-    width:9px;height:9px;border-radius:50%;
-    background:var(--rail-inactive);
-    position:relative;
-    transition:background .3s ease, box-shadow .3s ease;
-  }
-  .rail-dot.active{
-    background:var(--rail-active);
-    box-shadow:0 0 0 4px rgba(214,138,61,0.18);
-  }
-  .rail-dot.done{ background:#5C7A63; }
-  .rail-label{
-    position:absolute;
-    left:16px;
-    top:50%;
-    transform:translateY(-50%);
-    font-family:'IBM Plex Mono',monospace;
-    font-size:9.5px;
-    letter-spacing:.06em;
-    color:var(--text-mute);
-    white-space:nowrap;
-    opacity:0;
-    pointer-events:none;
-    transition:opacity .2s ease;
-  }
-  .rail-item{position:relative; display:flex; align-items:center;}
-  .rail-item:hover .rail-label{opacity:1;}
-  .rail-line{
-    width:1px; flex:1; background:var(--ink-line); margin:2px 0;
-  }
+.app{display:grid;grid-template-columns:minmax(340px,440px) minmax(0,1fr);height:100%;}
 
-  .chat-main{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    min-width:0;
-  }
-  .chat-header{
-    padding:18px 22px 14px;
-    border-bottom:1px solid var(--ink-line);
-    flex-shrink:0;
-  }
-  .chat-header .eyebrow{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:10.5px;
-    letter-spacing:.12em;
-    text-transform:uppercase;
-    color:var(--rail-active);
-  }
-  .chat-header h1{
-    font-family:'Fraunces',serif;
-    font-weight:500;
-    font-size:20px;
-    margin:4px 0 0;
-    color:#F5F3EE;
-  }
-  .chat-log{
-    flex:1;
-    overflow-y:auto;
-    padding:18px 22px;
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-  }
-  .chat-log::-webkit-scrollbar{width:8px;}
-  .chat-log::-webkit-scrollbar-thumb{background:var(--ink-line); border-radius:4px;}
+/* ---------- Shared bits ---------- */
+.eyebrow{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;}
+.icon-btn{width:38px;height:38px;border-radius:var(--radius-md);border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--shadow-sm);transition:background .15s,color .15s;}
+.icon-btn:hover{background:var(--surface-alt);color:var(--ink);}
+.icon-btn:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus-ring);}
+.btn{font:600 14px var(--font-sans);border-radius:var(--radius-md);padding:9px 16px;min-height:40px;border:1px solid transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:background .15s, box-shadow .15s, transform .15s, border-color .15s, color .15s;}
+.btn-primary{background:var(--accent);color:var(--on-accent);box-shadow:var(--shadow-sm);}
+.btn-primary:hover:not(:disabled){background:var(--accent-hover);transform:translateY(-1px);box-shadow:var(--shadow-lift);}
+.btn-secondary{background:var(--surface);color:var(--ink);border-color:var(--line-strong);box-shadow:var(--shadow-sm);}
+.btn-secondary:hover:not(:disabled){background:var(--surface-alt);}
+.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;}
+.btn:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus-ring);}
 
-  .msg{
-    max-width:92%;
-    font-size:14px;
-    line-height:1.55;
-    animation:rise .28s ease both;
-  }
-  @keyframes rise{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
-  .msg.bot{ align-self:flex-start; }
-  .msg .bubble{
-    background:var(--ink-soft);
-    border:1px solid var(--ink-line);
-    padding:10px 13px;
-    border-radius:3px 10px 10px 10px;
-    color:#E7E9EE;
-  }
-  .msg .bubble strong{ color:#F6D9A8; font-weight:600;}
-  .msg.user{ align-self:flex-end; }
-  .msg.user .bubble{
-    background:var(--amber);
-    border:1px solid var(--amber);
-    color:#231604;
-    border-radius:10px 3px 10px 10px;
-    font-weight:500;
-  }
-  .field-tag{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:9.5px;
-    letter-spacing:.08em;
-    text-transform:uppercase;
-    color:var(--rail-active);
-    margin-bottom:5px;
-    display:block;
-  }
+/* ---------- Mobile switch ---------- */
+.view-switch{display:none;}
 
-  .choice-row{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    align-self:flex-start;
-    max-width:92%;
-    animation:rise .28s ease both;
-  }
-  .choice-btn{
-    background:transparent;
-    border:1px solid var(--amber);
-    color:#F6D9A8;
-    padding:8px 14px;
-    border-radius:20px;
-    font-size:13px;
-    cursor:pointer;
-    font-family:'IBM Plex Sans',sans-serif;
-    transition:background .15s ease, color .15s ease, transform .15s ease;
-  }
-  .choice-btn:hover{ background:var(--amber); color:#221503; transform:translateY(-1px); }
-  .choice-btn:active{ transform:translateY(0); }
+/* ---------- LEFT: CHAT ---------- */
+.chat-panel{background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0;min-width:0;}
+.chat-header{padding:22px 24px 16px;border-bottom:1px solid var(--line);flex-shrink:0;}
+.chat-header h1{font-size:21px;line-height:1.2;margin-top:8px !important;text-wrap:balance;}
 
-  .chat-input-row{
-    flex-shrink:0;
-    border-top:1px solid var(--ink-line);
-    padding:14px 22px 18px;
-    display:flex;
-    gap:8px;
-    align-items:flex-end;
-  }
-  .chat-input-row textarea{
-    flex:1;
-    resize:none;
-    background:var(--ink-soft);
-    border:1px solid var(--ink-line);
-    color:#EDEFF2;
-    font-family:'IBM Plex Sans',sans-serif;
-    font-size:14px;
-    padding:10px 12px;
-    border-radius:8px;
-    outline:none;
-    max-height:110px;
-    line-height:1.4;
-  }
-  .chat-input-row textarea:focus{ border-color:var(--amber); }
-  .chat-input-row textarea:disabled{ opacity:.45; }
-  .chat-input-row .hint{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:10px;
-    color:var(--text-mute);
-    margin-top:6px;
-  }
-  .send-btn{
-    background:var(--amber);
-    border:none;
-    color:#221503;
-    width:40px;height:40px;
-    border-radius:8px;
-    cursor:pointer;
-    display:flex;align-items:center;justify-content:center;
-    flex-shrink:0;
-    transition:transform .15s ease, background .15s ease;
-  }
-  .send-btn:hover{ transform:translateY(-1px); background:#DB9440; }
-  .send-btn:active{ transform:translateY(0); }
-  .send-btn:disabled{ opacity:.4; cursor:not-allowed; transform:none; }
-  .list-hint{ font-size:11.5px; color:#B9BDC6; margin-top:4px; font-style:italic; }
+/* Level stepper (Course → Assessment) */
+.levels{display:flex;align-items:flex-start;margin-top:18px;}
+.rail-item{display:flex;flex-direction:column;align-items:center;gap:6px;flex:0 0 auto;width:52px;}
+.rail-dot{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line-strong);background:var(--surface);color:var(--ink-soft);font-size:11px;font-weight:600;font-variant-numeric:tabular-nums;display:flex;align-items:center;justify-content:center;transition:background .25s,border-color .25s,color .25s,box-shadow .25s;}
+.rail-dot.active{background:var(--accent);border-color:var(--accent);color:var(--on-accent);box-shadow:0 0 0 4px var(--focus-ring);}
+.rail-dot.done{background:var(--accent-soft);border-color:transparent;color:var(--accent);}
+.rail-label{font-size:11px;color:var(--ink-soft);font-weight:500;white-space:nowrap;}
+.rail-item.is-active .rail-label{color:var(--ink);font-weight:600;}
+.rail-line{flex:1;height:1.5px;background:var(--line);margin-top:10px;min-width:4px;}
+.rail-line.done{background:var(--accent);opacity:.45;}
 
-  /* ---------- RIGHT: DOCUMENT ---------- */
-  .doc-panel{
-    background:var(--paper);
-    overflow-y:auto;
-    padding:36px 44px 80px;
-    position:relative;
-  }
-  .doc-panel::-webkit-scrollbar{width:9px;}
-  .doc-panel::-webkit-scrollbar-thumb{background:#CFCABB; border-radius:4px;}
+.chat-log{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:14px;background:var(--bg);min-height:0;}
+.msg{max-width:92%;font-size:14.5px;line-height:1.55;animation:rise .28s ease-out both;}
+@keyframes rise{from{opacity:.001;transform:translateY(6px);}to{opacity:1;transform:none;}}
+.msg.bot{align-self:flex-start;}
+.msg .bubble{background:var(--surface);border:1px solid var(--line);padding:12px 15px;border-radius:4px var(--radius-xl) var(--radius-xl) var(--radius-xl);color:var(--ink);box-shadow:var(--shadow-sm);}
+.msg .bubble strong{color:var(--ink);font-weight:650;}
+.msg.user{align-self:flex-end;}
+.msg.user .bubble{background:var(--accent);border-color:var(--accent);color:var(--on-accent);border-radius:var(--radius-xl) 4px var(--radius-xl) var(--radius-xl);font-weight:500;}
+.field-tag{display:inline-flex;align-items:center;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);border-radius:var(--radius-pill);padding:3px 10px;margin-bottom:8px;}
 
-  .doc-topbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:baseline;
-    margin-bottom:22px;
-    padding-bottom:14px;
-    border-bottom:2px solid var(--text-dark);
-  }
-  .doc-topbar .eyebrow{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:10.5px;
-    letter-spacing:.12em;
-    text-transform:uppercase;
-    color:var(--text-mute);
-  }
-  .doc-topbar h2{
-    font-family:'Fraunces',serif;
-    font-weight:600;
-    font-size:26px;
-    margin:2px 0 0;
-  }
-  .doc-topbar .rev{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:10.5px;
-    color:var(--text-mute);
-  }
+.choice-row{display:flex;flex-wrap:wrap;gap:8px;align-self:flex-start;max-width:92%;animation:rise .28s ease-out both;}
+.choice-btn{background:var(--surface);border:1px solid var(--accent);color:var(--accent);padding:8px 15px;min-height:40px;border-radius:var(--radius-pill);font:600 13.5px var(--font-sans);cursor:pointer;text-align:left;transition:background .15s,color .15s,transform .15s;}
+.choice-btn:hover{background:var(--accent);color:var(--on-accent);transform:translateY(-1px);}
+.choice-btn:active{transform:none;}
+.choice-btn.primary{background:var(--accent);color:var(--on-accent);padding:10px 28px;min-height:44px;font-size:14px;box-shadow:var(--shadow-sm);}
+.choice-btn.primary:hover{background:var(--accent-hover);box-shadow:var(--shadow-lift);}
+.choice-btn:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus-ring);}
 
-  .card{
-    background:var(--paper-card);
-    border:1px solid var(--line);
-    border-radius:6px;
-    margin-bottom:18px;
-    overflow:hidden;
-    animation:cardIn .35s ease both;
-  }
-  @keyframes cardIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
-  .card-head{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:11px;
-    letter-spacing:.1em;
-    text-transform:uppercase;
-    color:#8A7451;
-    background:var(--amber-soft);
-    padding:8px 16px;
-    border-bottom:1px solid var(--line);
-  }
-  .card-body{ padding:16px 18px; }
-  .field{ margin-bottom:12px; }
-  .field:last-child{ margin-bottom:0; }
-  .field-label-row{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:8px;
-    margin-bottom:3px;
-  }
-  .field-label{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:10px;
-    letter-spacing:.06em;
-    text-transform:uppercase;
-    color:var(--text-mute);
-  }
-  .field-value{
-    font-size:14.5px;
-    line-height:1.5;
-    color:var(--text-dark);
-  }
-  .field-value.empty{ color:#B3AE9F; font-style:italic; }
-  ul.tags{ margin:0; padding-left:18px; }
-  ul.tags li{ margin-bottom:2px; }
+.chat-input-row{flex-shrink:0;border-top:1px solid var(--line);padding:14px 24px calc(18px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:flex-end;background:var(--surface);}
+.input-wrap{flex:1;min-width:0;}
+.chat-input-row textarea{width:100%;display:block;resize:none;min-height:44px;max-height:120px;background:var(--surface);border:1px solid var(--line-strong);color:var(--ink);font:400 14.5px var(--font-sans);line-height:1.45;padding:11px 14px;border-radius:var(--radius-md);outline:none;transition:border-color .15s, box-shadow .15s;}
+.chat-input-row textarea:hover{border-color:var(--ink-soft);}
+.chat-input-row textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--focus-ring);}
+.chat-input-row textarea::placeholder{color:var(--ink-soft);opacity:1;}
+.chat-input-row textarea:disabled{opacity:.5;background:var(--surface-alt);}
+.list-hint{font-size:12.5px;color:var(--ink-soft);margin-top:6px;}
+.send-btn{background:var(--accent);border:none;color:var(--on-accent);width:44px;height:44px;border-radius:var(--radius-md);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--shadow-sm);transition:transform .15s, background .15s, box-shadow .15s;}
+.send-btn:hover:not(:disabled){background:var(--accent-hover);transform:translateY(-1px);box-shadow:var(--shadow-lift);}
+.send-btn:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus-ring);}
+.send-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
 
-  .edit-icon{
-    background:none;
-    border:none;
-    color:var(--text-mute);
-    cursor:pointer;
-    padding:2px;
-    display:flex;
-    align-items:center;
-    opacity:.55;
-    flex-shrink:0;
-    transition:opacity .15s ease, color .15s ease;
-  }
-  .edit-icon:hover{ opacity:1; color:var(--amber); }
+/* ---------- RIGHT: DOCUMENT ---------- */
+.doc-side{display:flex;flex-direction:column;min-height:0;min-width:0;}
+.doc-toolbar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 40px;border-bottom:1px solid var(--line);background:var(--bg);}
+.doc-toolbar .label{font-size:13px;font-weight:600;color:var(--ink-soft);}
+.doc-toolbar .tools{display:flex;gap:8px;align-items:center;}
+.doc-panel{flex:1;overflow-y:auto;padding:32px 40px 80px;min-height:0;}
+.doc-inner{max-width:820px;margin:0 auto;}
 
-  .heading-row{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    margin-bottom:4px;
-  }
-  .heading-row .edit-icon{ opacity:.4; }
-  .heading-row:hover .edit-icon{ opacity:1; }
+.doc-topbar{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:24px;}
+.doc-topbar h2{font-size:30px;line-height:1.15;text-wrap:balance;}
+.doc-topbar .rev{font-size:12.5px;color:var(--ink-soft);font-variant-numeric:tabular-nums;white-space:nowrap;padding-bottom:6px;}
 
-  .edit-input, .edit-textarea{
-    width:100%;
-    font-family:'IBM Plex Sans',sans-serif;
-    font-size:14px;
-    padding:8px 10px;
-    border:1px solid var(--amber);
-    border-radius:6px;
-    outline:none;
-    box-sizing:border-box;
-    background:#fff;
-  }
-  .edit-textarea{ min-height:64px; resize:vertical; }
-  .edit-actions{ display:flex; gap:8px; margin-top:8px; }
-  .edit-save-btn{
-    background:var(--amber);
-    color:#221503;
-    border:none;
-    padding:6px 14px;
-    border-radius:6px;
-    font-size:12.5px;
-    font-weight:600;
-    cursor:pointer;
-  }
-  .edit-save-btn:hover{ background:#DB9440; }
-  .edit-cancel-btn{
-    background:none;
-    border:1px solid var(--line);
-    color:var(--text-mute);
-    padding:6px 14px;
-    border-radius:6px;
-    font-size:12.5px;
-    cursor:pointer;
-  }
-  .edit-cancel-btn:hover{ background:#F0EEE7; }
-  .edit-list-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:8px;
-    padding:5px 0;
-    border-bottom:1px dashed var(--line);
-    font-size:13.5px;
-  }
-  .edit-remove-btn{
-    background:none;
-    border:none;
-    color:var(--danger);
-    cursor:pointer;
-    font-size:13px;
-    flex-shrink:0;
-  }
-  .edit-list-add{ display:flex; gap:6px; margin-top:8px; }
-  .edit-mini-btn{
-    background:var(--text-dark);
-    color:#fff;
-    border:none;
-    padding:6px 12px;
-    border-radius:6px;
-    font-size:12px;
-    cursor:pointer;
-    white-space:nowrap;
-  }
-  .edit-mini-btn:hover{ background:#2A3B4E; }
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-xl);margin-bottom:20px;box-shadow:var(--shadow-card);color:var(--ink);animation:rise .32s ease-out both;}
+.card-head{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:650;letter-spacing:-.01em;color:var(--ink);padding:18px 26px 16px;border-bottom:1px solid var(--line);}
+.card-head::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+.card-body{padding:22px 26px 26px;}
+.field{margin-bottom:18px;}
+.field:last-child{margin-bottom:0;}
+.field-label-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;}
+.field-label{font-size:12.5px;font-weight:600;color:var(--ink-soft);}
+.field-value{font-size:14.5px;line-height:1.55;color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere;}
+.field-value.empty{color:var(--line-strong);}
+ul.tags{margin:0;padding-left:20px;font-size:14.5px;line-height:1.55;}
+ul.tags li{margin-bottom:3px;overflow-wrap:anywhere;}
+ul.tags li::marker{color:var(--accent);}
 
-  .lesson-card{
-    border:1px dashed var(--line);
-    border-radius:5px;
-    margin-top:12px;
-    padding:12px 14px;
-    background:#FEFEFC;
-  }
-  .lesson-card .lesson-name{
-    font-family:'Fraunces',serif;
-    font-weight:600;
-    font-size:18px;
-  }
-  .module-name-head{
-    font-family:'Fraunces',serif;
-    font-weight:600;
-    font-size:24px;
-    margin:0;
-  }
+.edit-icon{background:none;border:none;border-radius:var(--radius-sm);color:var(--ink-soft);cursor:pointer;padding:6px;display:flex;align-items:center;flex-shrink:0;opacity:.7;transition:opacity .15s,color .15s,background .15s;}
+.edit-icon:hover{opacity:1;color:var(--accent);background:var(--accent-soft);}
+.edit-icon:focus-visible{outline:none;opacity:1;box-shadow:0 0 0 4px var(--focus-ring);}
 
-  .empty-doc{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    color:var(--text-mute);
-    padding:80px 20px;
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12.5px;
-    letter-spacing:.04em;
-  }
-  .download-btn{
-    position:fixed;
-    top:20px;
-    right:28px;
-    z-index:20;
-    display:flex;
-    align-items:center;
-    gap:7px;
-    background:var(--text-dark);
-    color:#F5F3EE;
-    border:none;
-    padding:9px 16px;
-    border-radius:20px;
-    font-family:'IBM Plex Mono',monospace;
-    font-size:11.5px;
-    letter-spacing:.03em;
-    cursor:pointer;
-    box-shadow:0 3px 10px rgba(20,31,43,0.18);
-    transition:transform .15s ease, background .15s ease;
-  }
-  .download-btn:hover{ transform:translateY(-1px); background:#243447; }
-  .download-btn:active{ transform:translateY(0); }
-  @media (max-width:860px){
-    .download-btn{ top:auto; bottom:calc(48% + 14px); right:16px; }
-  }
-  .doc-footer{
-    margin-top:26px;
-    padding-top:14px;
-    border-top:1px solid var(--line);
-    font-family:'IBM Plex Mono',monospace;
-    font-size:11px;
-    color:var(--text-mute);
-    letter-spacing:.03em;
-  }
-  .empty-doc .big{
-    font-family:'Fraunces',serif;
-    font-size:22px;
-    color:var(--text-dark);
-    margin-bottom:10px;
-    letter-spacing:0;
-  }
+.heading-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;min-width:0;}
+.heading-row > :first-child{min-width:0;overflow-wrap:anywhere;}
+
+.edit-input, .edit-textarea{width:100%;font:400 14.5px var(--font-sans);color:var(--ink);padding:10px 13px;border:1px solid var(--accent);border-radius:var(--radius-md);outline:none;background:var(--surface);box-shadow:0 0 0 4px var(--focus-ring);}
+.edit-textarea{min-height:80px;resize:vertical;line-height:1.55;}
+.edit-actions{display:flex;gap:8px;margin-top:12px;}
+.edit-save-btn{background:var(--accent);color:var(--on-accent);border:none;padding:8px 16px;min-height:36px;border-radius:var(--radius-md);font:600 13px var(--font-sans);cursor:pointer;transition:background .15s;}
+.edit-save-btn:hover{background:var(--accent-hover);}
+.edit-cancel-btn{background:var(--surface);border:1px solid var(--line-strong);color:var(--ink);padding:8px 16px;min-height:36px;border-radius:var(--radius-md);font:600 13px var(--font-sans);cursor:pointer;transition:background .15s;}
+.edit-cancel-btn:hover{background:var(--surface-alt);}
+.edit-save-btn:focus-visible,.edit-cancel-btn:focus-visible,.edit-mini-btn:focus-visible,.edit-remove-btn:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus-ring);}
+.edit-list-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px;}
+.edit-list-row span{min-width:0;overflow-wrap:anywhere;}
+.edit-remove-btn{background:none;border:none;border-radius:var(--radius-sm);color:var(--ink-soft);cursor:pointer;font-size:13px;padding:4px 8px;flex-shrink:0;transition:background .15s,color .15s;}
+.edit-remove-btn:hover{color:var(--error);background:var(--error-soft);}
+.edit-list-add{display:flex;gap:8px;margin-top:10px;}
+.edit-list-add .edit-input{box-shadow:none;border-color:var(--line-strong);}
+.edit-list-add .edit-input:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--focus-ring);}
+.edit-mini-btn{background:var(--surface);color:var(--ink);border:1px solid var(--line-strong);padding:8px 14px;border-radius:var(--radius-md);font:600 13px var(--font-sans);cursor:pointer;white-space:nowrap;transition:background .15s;}
+.edit-mini-btn:hover{background:var(--surface-alt);}
+
+.lesson-card{border:1px solid var(--line);border-radius:var(--radius-lg);margin:4px 0 18px;padding:16px 18px;background:var(--surface-alt);}
+.lesson-card .lesson-name{font-weight:650;font-size:15.5px;letter-spacing:-.01em;}
+.lesson-card .field{margin-bottom:14px;}
+.lesson-card .field:last-child{margin-bottom:0;}
+.module-name-head{font-weight:650;font-size:20px;letter-spacing:-.018em;margin:0;line-height:1.3;}
+.module-head-wrap{margin-bottom:16px;}
+
+.empty-doc{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--ink-soft);border:1.5px dashed var(--line);border-radius:var(--radius-xl);padding:64px 26px;font-size:14px;line-height:1.6;margin-top:8px;}
+.empty-doc .big{font-size:20px;font-weight:650;letter-spacing:-.018em;color:var(--ink);margin-bottom:8px;}
+.empty-doc .glyph{width:44px;height:44px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
+
+.doc-footer{margin-top:28px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-soft);}
+
+/* ---------- Phone ---------- */
+@media (max-width:800px){
+  .app{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);}
+  .view-switch{display:flex;gap:4px;padding:4px;margin:10px 16px;background:var(--surface-alt);border:1px solid var(--line);border-radius:var(--radius-lg);}
+  .view-switch button{flex:1;font:600 14px var(--font-sans);color:var(--ink-soft);background:transparent;border:none;border-radius:var(--radius-md);min-height:44px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+  .view-switch button.active{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-sm), inset 0 0 0 1px var(--line);}
+  .view-switch button:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus-ring);}
+  .view-switch .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);display:none;}
+  .view-switch .dot.on{display:inline-block;}
+  .chat-panel,.doc-side{grid-row:2;grid-column:1;border-right:none;}
+  .app[data-view="chat"] .doc-side{display:none;}
+  .app[data-view="doc"] .chat-panel{display:none;}
+  .chat-header{padding:14px 16px 12px;}
+  .chat-header h1{font-size:18px;}
+  .levels{margin-top:12px;}
+  .rail-item{width:auto;min-width:40px;}
+  .rail-label{font-size:10.5px;}
+  .chat-log{padding:16px;}
+  .chat-input-row{padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));}
+  .chat-input-row textarea{font-size:16px;min-height:48px;}
+  .send-btn{width:48px;height:48px;}
+  .choice-btn{min-height:44px;}
+  .doc-toolbar{padding:10px 16px;}
+  .doc-toolbar .label{display:none;}
+  .doc-toolbar{justify-content:flex-end;}
+  .doc-panel{padding:20px 16px 64px;}
+  .doc-topbar{flex-direction:column;align-items:flex-start;gap:4px;}
+  .doc-topbar h2{font-size:24px;}
+  .doc-topbar .rev{padding-bottom:0;}
+  .card-head{padding:16px 18px 14px;}
+  .card-body{padding:18px 18px 20px;}
+  .lesson-card{padding:14px;}
+  .edit-input,.edit-textarea{font-size:16px;}
+  .edit-list-add{flex-wrap:wrap;}
+}
+@media (max-width:420px){
+  .rail-label{display:none;}
+  .rail-item.is-active .rail-label{display:block;}
+  .rail-item{min-width:24px;}
+}
+@media (prefers-reduced-motion:reduce){
+  *, *::before, *::after{animation:none !important;transition:none !important;}
+}
 </style>
 </head>
-<body>
-<div class="app">
+<body class="tw">
+<div class="app" id="app" data-view="chat">
+
+  <div class="view-switch" role="tablist" aria-label="Switch view">
+    <button type="button" role="tab" id="viewChatBtn" class="active" aria-selected="true">Questions</button>
+    <button type="button" role="tab" id="viewDocBtn" aria-selected="false">Outline <span class="dot" id="docDot"></span></button>
+  </div>
 
   <div class="chat-panel">
-    <div class="rail">
-      <div class="rail-track" id="railTrack"></div>
+    <div class="chat-header">
+      <span class="eyebrow">Draft in progress</span>
+      <h1>Learning Outline Builder</h1>
+      <div class="levels" id="railTrack" aria-label="Outline level"></div>
     </div>
-    <div class="chat-main">
-      <div class="chat-header">
-        <span class="eyebrow">Draft in progress</span>
-        <h1>Learning Outline Builder</h1>
+    <div class="chat-log" id="chatLog" aria-live="polite"></div>
+    <div class="chat-input-row">
+      <div class="input-wrap">
+        <textarea id="inputBox" rows="1" placeholder="Type your answer…" aria-label="Your answer"></textarea>
+        <div class="list-hint" id="listHint" style="display:none;">Separate multiple items with commas.</div>
       </div>
-      <div class="chat-log" id="chatLog"></div>
-      <div class="chat-input-row">
-        <div style="flex:1;">
-          <textarea id="inputBox" rows="1" placeholder="Type your answer…"></textarea>
-          <div class="list-hint" id="listHint" style="display:none;">Separate multiple items with commas.</div>
-        </div>
-        <button class="send-btn" id="sendBtn" title="Send">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 12L20 4L13 20L11 13L4 12Z" fill="currentColor"/></svg>
-        </button>
-      </div>
+      <button class="send-btn" id="sendBtn" title="Send" aria-label="Send">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+      </button>
     </div>
   </div>
 
-  <div class="doc-panel" id="docPanel">
-    <div class="empty-doc" id="emptyDoc">
-      <div class="big">Your outline will build here</div>
-      <div>Answer the questions on the left — this document<br/>fills in live and stays fully editable when you're done.</div>
+  <div class="doc-side">
+    <div class="doc-toolbar">
+      <span class="label">Live outline</span>
+      <div class="tools">
+        <button class="btn btn-primary" id="downloadBtn" style="display:none;" title="Download as an editable Word document">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M6.5 10.5L12 16l5.5-5.5"/><path d="M5 21h14"/></svg>
+          Download as Word
+        </button>
+        <button type="button" class="icon-btn" id="themeToggle" aria-label="Switch theme"></button>
+      </div>
+    </div>
+    <div class="doc-panel" id="docPanel">
+      <div class="doc-inner" id="docContent">
+        <div class="empty-doc" id="emptyDoc">
+          <div class="glyph"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg></div>
+          <div class="big">Your outline will build here</div>
+          <div>Answer the questions on the left — this document<br>fills in live and stays fully editable when you're done.</div>
+        </div>
+      </div>
     </div>
   </div>
-  <button class="download-btn" id="downloadBtn" style="display:none;" title="Download as an editable Word document">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M6.5 10.5L12 16l5.5-5.5"/><path d="M5 21h14"/></svg>
-    Download as Word
-  </button>
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/docx@9.5.1/dist/index.umd.cjs"></script>
 <script>
+/* ---------------- THEME TOGGLE ---------------- */
+const ICON_SUN = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const ICON_MOON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+function isDark(){
+  const t = document.documentElement.getAttribute('data-theme');
+  if(t) return t === 'dark';
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+function paintThemeButton(){
+  const b = document.getElementById('themeToggle');
+  const dark = isDark();
+  b.innerHTML = dark ? ICON_SUN : ICON_MOON;
+  b.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+  b.title = b.getAttribute('aria-label');
+}
+document.getElementById('themeToggle').addEventListener('click', ()=>{
+  document.documentElement.setAttribute('data-theme', isDark() ? 'light' : 'dark');
+  paintThemeButton();
+});
+if(window.matchMedia){ try{ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', paintThemeButton); }catch(e){} }
+paintThemeButton();
+
+/* ---------------- PHONE VIEW SWITCH ---------------- */
+const appEl = document.getElementById('app');
+const viewChatBtn = document.getElementById('viewChatBtn');
+const viewDocBtn = document.getElementById('viewDocBtn');
+const docDot = document.getElementById('docDot');
+function setView(v){
+  appEl.setAttribute('data-view', v);
+  viewChatBtn.classList.toggle('active', v==='chat'); viewChatBtn.setAttribute('aria-selected', v==='chat');
+  viewDocBtn.classList.toggle('active', v==='doc'); viewDocBtn.setAttribute('aria-selected', v==='doc');
+  if(v==='doc') docDot.classList.remove('on');
+}
+viewChatBtn.addEventListener('click', ()=> setView('chat'));
+viewDocBtn.addEventListener('click', ()=> setView('doc'));
+
 /* ---------------- DATA MODEL ---------------- */
 const data = {
   author:'', name:'', purpose:'', audience:'', duration:'', delivery:'', prerequisites:'',
@@ -529,7 +320,7 @@ const data = {
 const LEVELS = ['Course','Module','Lesson','Topic','Activity','Assessment'];
 let activeLevel = 0;
 
-const EDIT_SVG = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`;
+const EDIT_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`;
 
 /* ---------------- STEP SCRIPT ---------------- */
 let step = 'welcome';
@@ -543,7 +334,7 @@ function splitList(text){
 }
 
 function botSay(html){ addMsg('bot', html); }
-function fieldTag(label){ return `<span class="field-tag">${label}</span>`; }
+function fieldTag(label){ return `<span class="field-tag">${label}</span><br>`; }
 
 function startSequence(){
   botSay(fieldTag('Welcome') + `I'm here to help you build a learning outline. I'll ask a series of questions, working through each level of the course in turn:<br><br>
@@ -554,7 +345,8 @@ function startSequence(){
   <strong>Topic</strong> — an individual idea within a lesson<br>
   <strong>Activity</strong> — practice that reinforces learning<br>
   <strong>Assessment</strong> — how you measure learning<br><br>
-  Type <strong>Start</strong> to begin.`);
+  Select <strong>Start</strong> to begin.`);
+  showChoices([{label:'Start', value:'start', primary:true}]);
 }
 
 /* ---- Course-level questions ---- */
@@ -692,7 +484,7 @@ function handleAnswer(raw, displayText){
         data.createdAt = new Date().toLocaleDateString('en-US',{month:'long', day:'numeric', year:'numeric'});
         step='author'; askAuthor();
       }
-      else botSay('Type <strong>Start</strong> to begin.');
+      else { botSay('Select <strong>Start</strong> to begin.'); showChoices([{label:'Start', value:'start', primary:true}]); }
       return;
     case 'author': data.author=text; step='name'; askName(); return;
     case 'name': data.name=text; step='purpose'; askPurpose(); return;
@@ -792,7 +584,7 @@ inputBox.addEventListener('keydown', e=>{
 });
 inputBox.addEventListener('input', ()=>{
   inputBox.style.height='auto';
-  inputBox.style.height = Math.min(inputBox.scrollHeight,110)+'px';
+  inputBox.style.height = Math.min(inputBox.scrollHeight,120)+'px';
 });
 
 function showChoices(options){
@@ -800,7 +592,7 @@ function showChoices(options){
   row.className = 'choice-row';
   options.forEach(opt=>{
     const btn = document.createElement('button');
-    btn.className = 'choice-btn';
+    btn.className = 'choice-btn' + (opt.primary ? ' primary' : '');
     btn.textContent = opt.label;
     btn.addEventListener('click', ()=>{
       row.remove();
@@ -819,29 +611,38 @@ function showChoices(options){
   inputBox.placeholder = 'Choose an option above…';
 }
 
-/* ---------------- UI: RAIL ---------------- */
+/* ---------------- UI: LEVEL STEPPER ---------------- */
 const railTrack = document.getElementById('railTrack');
 function buildRail(){
   railTrack.innerHTML='';
   LEVELS.forEach((lvl,i)=>{
     const item = document.createElement('div');
     item.className='rail-item';
-    item.innerHTML = `<div class="rail-dot" id="dot-${i}"></div><div class="rail-label">${lvl}</div>`;
+    item.id='item-'+i;
+    item.innerHTML = `<div class="rail-dot" id="dot-${i}">${i+1}</div><div class="rail-label">${lvl}</div>`;
     railTrack.appendChild(item);
     if(i<LEVELS.length-1){
       const line = document.createElement('div');
       line.className='rail-line';
+      line.id='line-'+i;
       railTrack.appendChild(line);
     }
   });
 }
+let levelStarted = false;
 function setLevel(i){
   activeLevel = i;
+  levelStarted = true;
+  railTrack.classList.add('has-label');
   LEVELS.forEach((lvl,idx)=>{
     const dot = document.getElementById('dot-'+idx);
+    const item = document.getElementById('item-'+idx);
+    const line = document.getElementById('line-'+idx);
     if(!dot) return;
     dot.classList.toggle('active', idx===i);
     dot.classList.toggle('done', idx<i);
+    item.classList.toggle('is-active', idx===i);
+    if(line) line.classList.toggle('done', idx<i);
   });
 }
 buildRail();
@@ -854,10 +655,11 @@ function pathSet(path, value){
   obj[path[path.length-1]] = value;
 }
 function editIconHtml(path, isList){
-  return `<button class="edit-icon" data-path='${JSON.stringify(path)}' data-list="${isList?1:0}" title="Edit">${EDIT_SVG}</button>`;
+  return `<button class="edit-icon" data-path='${JSON.stringify(path)}' data-list="${isList?1:0}" title="Edit" aria-label="Edit">${EDIT_SVG}</button>`;
 }
 
 const docPanel = document.getElementById('docPanel');
+const docContent = document.getElementById('docContent');
 docPanel.addEventListener('click', e=>{
   const btn = e.target.closest('.edit-icon');
   if(!btn) return;
@@ -888,7 +690,7 @@ function openEditor(container, path, isList){
       items.forEach((it, idx)=>{
         const row = document.createElement('div');
         row.className='edit-list-row';
-        row.innerHTML = `<span>${escapeHtml(it)}</span><button class="edit-remove-btn" data-idx="${idx}">✕</button>`;
+        row.innerHTML = `<span>${escapeHtml(it)}</span><button class="edit-remove-btn" data-idx="${idx}" aria-label="Remove">✕</button>`;
         listEl.appendChild(row);
       });
       listEl.querySelectorAll('.edit-remove-btn').forEach(b=> b.addEventListener('click', ()=>{
@@ -896,7 +698,7 @@ function openEditor(container, path, isList){
       }));
       container.querySelector('#editListAddBtn').addEventListener('click', ()=>{
         const inp = container.querySelector('#editListNew');
-        if(inp.value.trim()){ items.push(inp.value.trim()); inp.value=''; render(); }
+        if(inp.value.trim()){ items.push(inp.value.trim()); inp.value=''; render(); container.querySelector('#editListNew').focus(); }
       });
       container.querySelector('#editListNew').addEventListener('keydown', ev=>{
         if(ev.key==='Enter'){ ev.preventDefault(); container.querySelector('#editListAddBtn').click(); }
@@ -945,9 +747,12 @@ function fieldHtml(label, value, isList, path){
   </div>`;
 }
 
+let lastDocHtml = '';
 function renderDoc(){
   const hasStarted = data.author || data.name || data.purpose || data.modules.length;
   if(!hasStarted){
+    docContent.innerHTML = '';
+    docContent.appendChild(emptyDoc);
     emptyDoc.style.display='flex';
     downloadBtn.style.display='none';
     return;
@@ -955,8 +760,8 @@ function renderDoc(){
   emptyDoc.style.display='none';
 
   let html = `<div class="doc-topbar">
-      <div>
-        <div class="eyebrow">Learning Outline · Draft</div>
+      <div style="min-width:0;">
+        <div class="eyebrow" style="margin-bottom:10px;">Learning Outline · Draft</div>
         <div class="heading-row" data-editable>
           <h2>${data.name ? escapeHtml(data.name) : 'Untitled Course'}</h2>
           ${editIconHtml(['name'], false)}
@@ -977,7 +782,7 @@ function renderDoc(){
 
   data.modules.forEach((m, mi)=>{
     html += `<div class="card"><div class="card-head">Module ${mi+1}</div><div class="card-body">
-      <div class="heading-row" data-editable>
+      <div class="heading-row module-head-wrap" data-editable>
         <p class="module-name-head">${m.name ? escapeHtml(m.name) : '—'}</p>
         ${editIconHtml(['modules', mi, 'name'], false)}
       </div>
@@ -1011,34 +816,41 @@ function renderDoc(){
 
   html += `<div class="doc-footer">Outline created ${data.createdAt || '—'}</div>`;
 
-  docPanel.innerHTML = html;
-  docPanel.appendChild(emptyDoc);
-  downloadBtn.style.display = 'flex';
+  docContent.innerHTML = html;
+  docContent.appendChild(emptyDoc);
+  downloadBtn.style.display = 'inline-flex';
+  if(html !== lastDocHtml && appEl.getAttribute('data-view')==='chat') docDot.classList.add('on');
+  lastDocHtml = html;
 }
 
 /* ---------------- WORD EXPORT ---------------- */
 function escW(s){ return (s||'').replace(/[&<>]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+const W_LABEL = 'width:24%;background:#E6F4F2;border:1px solid #D1D5DB;padding:8px 10px;font-weight:bold;font-size:11pt;color:#111827;vertical-align:top;';
+const W_VALUE = 'width:76%;border:1px solid #D1D5DB;padding:8px 10px;font-size:11pt;color:#111827;vertical-align:top;';
+const W_FONT = "Inter,'Segoe UI',Calibri,Arial,sans-serif";
 function rowW(label, value){
   const v = value && value.trim() ? escW(value) : '—';
   return `<tr>
-    <td style="width:24%;background:#F3E2C9;border:1px solid #C9C4B4;padding:8px 10px;font-weight:bold;font-size:11pt;vertical-align:top;">${escW(label)}</td>
-    <td style="width:76%;border:1px solid #C9C4B4;padding:8px 10px;font-size:11pt;vertical-align:top;">${v}</td>
+    <td style="${W_LABEL}">${escW(label)}</td>
+    <td style="${W_VALUE}">${v}</td>
   </tr>`;
 }
 function listRowW(label, arr){
   const v = (arr && arr.length) ? ('<ul style="margin:0;padding-left:18px;">'+arr.map(a=>`<li>${escW(a)}</li>`).join('')+'</ul>') : '—';
   return `<tr>
-    <td style="width:24%;background:#F3E2C9;border:1px solid #C9C4B4;padding:8px 10px;font-weight:bold;font-size:11pt;vertical-align:top;">${escW(label)}</td>
-    <td style="width:76%;border:1px solid #C9C4B4;padding:8px 10px;font-size:11pt;vertical-align:top;">${v}</td>
+    <td style="${W_LABEL}">${escW(label)}</td>
+    <td style="${W_VALUE}">${v}</td>
   </tr>`;
 }
 
 function buildWordHtml(){
-  let body = `<h1 style="font-family:Georgia,serif;font-size:22pt;margin-bottom:2pt;">${escW(data.name)||'Untitled Course'}</h1>
-  <p style="font-family:Calibri,sans-serif;font-size:9pt;color:#666;margin-top:0;">Learning Outline &nbsp;·&nbsp; Created ${escW(data.createdAt)}</p>
+  const H2 = `font-family:${W_FONT};font-size:14pt;color:#0F766E;margin-top:22pt;`;
+  const TBL = `border-collapse:collapse;width:100%;font-family:${W_FONT};`;
+  let body = `<h1 style="font-family:${W_FONT};font-size:22pt;color:#111827;margin-bottom:2pt;">${escW(data.name)||'Untitled Course'}</h1>
+  <p style="font-family:${W_FONT};font-size:9pt;color:#5B6472;margin-top:0;">Learning Outline &nbsp;·&nbsp; Created ${escW(data.createdAt)}</p>
 
-  <h2 style="font-family:Georgia,serif;font-size:14pt;margin-top:20pt;">Course Information</h2>
-  <table style="border-collapse:collapse;width:100%;font-family:Calibri,sans-serif;">
+  <h2 style="${H2}margin-top:20pt;">Course Information</h2>
+  <table style="${TBL}">
     ${rowW('Author', data.author)}
     ${rowW('Purpose', data.purpose)}
     ${rowW('Target Audience', data.audience)}
@@ -1049,36 +861,36 @@ function buildWordHtml(){
   </table>`;
 
   data.modules.forEach((m, mi)=>{
-    body += `<h2 style="font-family:Georgia,serif;font-size:14pt;margin-top:22pt;">Module ${mi+1}: ${escW(m.name)||'—'}</h2>
-    <table style="border-collapse:collapse;width:100%;font-family:Calibri,sans-serif;">
+    body += `<h2 style="${H2}">Module ${mi+1}: ${escW(m.name)||'—'}</h2>
+    <table style="${TBL}">
       ${rowW('Purpose', m.purpose)}
       ${rowW('Duration', m.duration)}
       ${listRowW('Module Learning Objectives', m.objectives)}
     </table>`;
 
     m.lessons.forEach((l, li)=>{
-      body += `<h3 style="font-family:Georgia,serif;font-size:12pt;margin-top:14pt;">Lesson ${mi+1}.${li+1}: ${escW(l.name)||'—'}</h3>
-      <table style="border-collapse:collapse;width:100%;font-family:Calibri,sans-serif;">
+      body += `<h3 style="font-family:${W_FONT};font-size:12pt;color:#111827;margin-top:14pt;">Lesson ${mi+1}.${li+1}: ${escW(l.name)||'—'}</h3>
+      <table style="${TBL}">
         ${rowW('Objective', l.objective)}
         ${listRowW('Topics', l.topics)}
         ${listRowW('Activities', l.activities)}
       </table>`;
     });
 
-    body += `<table style="border-collapse:collapse;width:100%;font-family:Calibri,sans-serif;margin-top:8pt;">
+    body += `<table style="${TBL}margin-top:8pt;">
       ${rowW('Assessment', m.assessment)}
     </table>`;
   });
 
   if(data.capstone || data.finalAssessment){
-    body += `<h2 style="font-family:Georgia,serif;font-size:14pt;margin-top:22pt;">Course Wrap-Up</h2>
-    <table style="border-collapse:collapse;width:100%;font-family:Calibri,sans-serif;">
+    body += `<h2 style="${H2}">Course Wrap-Up</h2>
+    <table style="${TBL}">
       ${rowW('Capstone', data.capstone)}
       ${rowW('Final Assessment', data.finalAssessment)}
     </table>`;
   }
 
-  body += `<p style="font-family:Calibri,sans-serif;font-size:9pt;color:#666;margin-top:24pt;border-top:1px solid #ccc;padding-top:8pt;">Outline created ${escW(data.createdAt)}</p>`;
+  body += `<p style="font-family:${W_FONT};font-size:9pt;color:#5B6472;margin-top:24pt;border-top:1px solid #E5E7EB;padding-top:8pt;">Outline created ${escW(data.createdAt)}</p>`;
 
   return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
   <head><meta charset="utf-8"><title>${escW(data.name)||'Learning Outline'}</title>
@@ -1086,14 +898,114 @@ function buildWordHtml(){
   </head><body>${body}</body></html>`;
 }
 
-function downloadWord(){
+/* Real .docx for the published viewer (built with the docx library) */
+function buildDocx(){
+  const D = window.docx;
+  const FONT = 'Calibri', ACCENT = '0F766E', INK = '111827', SOFT = '5B6472', LINE = 'D1D5DB', LABEL_BG = 'E6F4F2';
+  const border = {style:D.BorderStyle.SINGLE, size:4, color:LINE};
+  const borders = {top:border, bottom:border, left:border, right:border};
+  const W_TOTAL = 9360, W_L = 2246, W_R = W_TOTAL - W_L;
+  const cellMargins = {top:100, bottom:100, left:140, right:140};
+  const run = (t, o={}) => new D.TextRun({text:t, font:FONT, size:22, color:INK, ...o});
+  const valueParas = (value) => [new D.Paragraph({children:[run(value && value.trim() ? value : '—')]})];
+  const listParas = (arr) => (arr && arr.length)
+    ? arr.map(a => new D.Paragraph({bullet:{level:0}, children:[run(a)]}))
+    : [new D.Paragraph({children:[run('—')]})];
+  const row = (label, paras) => new D.TableRow({cantSplit:true, children:[
+    new D.TableCell({width:{size:W_L, type:D.WidthType.DXA}, borders, margins:cellMargins,
+      shading:{type:D.ShadingType.CLEAR, color:'auto', fill:LABEL_BG},
+      children:[new D.Paragraph({children:[run(label,{bold:true})]})]}),
+    new D.TableCell({width:{size:W_R, type:D.WidthType.DXA}, borders, margins:cellMargins, children:paras})
+  ]});
+  const table = (rows) => new D.Table({width:{size:W_TOTAL, type:D.WidthType.DXA}, columnWidths:[W_L, W_R], rows});
+  const h = (text, size, color, before) => new D.Paragraph({keepNext:true, spacing:{before, after:120},
+    children:[new D.TextRun({text, font:FONT, size, bold:true, color})]});
+  const small = (text, before) => new D.Paragraph({spacing:{before:before||0, after:120},
+    children:[new D.TextRun({text, font:FONT, size:18, color:SOFT})]});
+
+  const kids = [
+    h(data.name || 'Untitled Course', 44, INK, 0),
+    small(`Learning Outline  ·  Created ${data.createdAt || ''}`),
+    h('Course Information', 28, ACCENT, 400),
+    table([
+      row('Author', valueParas(data.author)),
+      row('Purpose', valueParas(data.purpose)),
+      row('Target Audience', valueParas(data.audience)),
+      row('Duration', valueParas(data.duration)),
+      row('Delivery Methods', valueParas(data.delivery)),
+      row('Prerequisites', valueParas(data.prerequisites)),
+      row('Course Learning Objectives', listParas(data.objectives))
+    ])
+  ];
+  data.modules.forEach((m, mi)=>{
+    kids.push(h(`Module ${mi+1}: ${m.name || '—'}`, 28, ACCENT, 440));
+    kids.push(table([
+      row('Purpose', valueParas(m.purpose)),
+      row('Duration', valueParas(m.duration)),
+      row('Module Learning Objectives', listParas(m.objectives))
+    ]));
+    m.lessons.forEach((l, li)=>{
+      kids.push(h(`Lesson ${mi+1}.${li+1}: ${l.name || '—'}`, 24, INK, 280));
+      kids.push(table([
+        row('Objective', valueParas(l.objective)),
+        row('Topics', listParas(l.topics)),
+        row('Activities', listParas(l.activities))
+      ]));
+    });
+    kids.push(new D.Paragraph({spacing:{before:160, after:0}, children:[]}));
+    kids.push(table([row('Assessment', valueParas(m.assessment))]));
+  });
+  if(data.capstone || data.finalAssessment){
+    kids.push(h('Course Wrap-Up', 28, ACCENT, 440));
+    kids.push(table([
+      row('Capstone', valueParas(data.capstone)),
+      row('Final Assessment', valueParas(data.finalAssessment))
+    ]));
+  }
+  kids.push(small(`Outline created ${data.createdAt || ''}`, 480));
+
+  return new D.Document({
+    styles:{default:{document:{run:{font:FONT, size:22}}}},
+    sections:[{properties:{page:{size:{width:12240, height:15840}, margin:{top:1440, right:1440, bottom:1440, left:1440}}}, children:kids}]
+  });
+}
+
+let downloadsApi;
+const downloadsReady = (window.claude && typeof window.claude.use === 'function')
+  ? window.claude.use('downloads').then(d => { downloadsApi = d; return d; }).catch(()=> null)
+  : Promise.resolve(null);
+
+async function downloadWord(){
+  const safeName = (data.name || 'learning-outline').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'learning-outline';
+  const dl = downloadsApi !== undefined ? downloadsApi : (window.claude ? await downloadsReady : null);
+  if(dl && window.docx){
+    const original = downloadBtn.innerHTML;
+    downloadBtn.disabled = true;
+    try{
+      const blob = await window.docx.Packer.toBlob(buildDocx());
+      await dl.save({filename:`${safeName}.docx`, data:blob});
+    }catch(err){
+      const code = err && err.code;
+      if(code && code !== 'declined' && code !== 'rate_limited'){
+        botSay('The Word download isn’t available in this view. Open the tool from its saved HTML file to download your outline.');
+      }
+    }finally{
+      downloadBtn.disabled = false;
+      downloadBtn.innerHTML = original;
+    }
+    return;
+  }
+  downloadWordLegacy(safeName);
+}
+
+/* Standalone file: original Word-compatible .doc download */
+function downloadWordLegacy(safeName){
   const html = buildWordHtml();
-  const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+  const blob = new Blob(['﻿', html], { type: 'application/msword' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  const safeName = (data.name || 'learning-outline').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
   a.href = url;
-  a.download = `${safeName || 'learning-outline'}.doc`;
+  a.download = `${safeName}.doc`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -1103,7 +1015,7 @@ downloadBtn.addEventListener('click', downloadWord);
 
 /* ---------------- INIT ---------------- */
 startSequence();
-inputBox.focus();
+if(window.matchMedia && !window.matchMedia('(max-width:800px)').matches) inputBox.focus();
 </script>
 </body>
 </html>
