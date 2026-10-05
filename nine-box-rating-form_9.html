@@ -2,112 +2,283 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>9-box rating form</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&display=swap" rel="stylesheet">
 <style>
+/* ===== Talent Workspace UI (talent-ui.css) ===== */
+/* Layout: brand row, page header, then three stacked cards (evidence form, draft placement, summary) in one 860px column. */
 :root{
-  --paper:#F5F4EF; --ink:#1E2420; --ink-soft:#666D63; --line:#DAD7CC;
-  --flag:#A83F2C; --flag-bg:#F5E4E0;
-  --good:#3F6B4A; --good-bg:#E4EBE3;
-  --surface:#FFFFFF;
-  --c-yellow:#FDF3C7; --c-green:#A9D18E; --c-brightgreen:#00E600; --c-orange:#F6B26B; --c-pink:#F4B6C2;
-  --axis:#8A8A85; --dot:#2455B0;
-  font-family:'IBM Plex Sans',sans-serif; color:var(--ink);
+  --font-sans:Inter, system-ui, -apple-system, sans-serif;
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:22px;--space-6:28px;--space-7:32px;--space-8:56px;
+  --radius-sm:8px;--radius-md:10px;--radius-lg:12px;--radius-xl:14px;--radius-pill:999px;
+  --bg:#F7F8FA;--surface:#FFFFFF;--surface-alt:#F1F3F5;--ink:#111827;--ink-soft:#5B6472;--line:#E5E7EB;--line-strong:#8A9099;
+  --accent:#0F766E;--accent-hover:#0B5F58;--on-accent:#FFFFFF;--accent-soft:#E6F4F2;--focus-ring:rgba(15,118,110,0.25);
+  --info:#1D4ED8;--info-soft:#EEF3FF;--warning:#B54708;--warning-soft:#FEF3E2;--error:#B42318;--error-soft:#FEECEB;
+  --shadow-sm:0 1px 2px rgba(16,24,40,0.05);
+  --shadow-card:0 1px 2px rgba(16,24,40,0.04), 0 6px 20px -4px rgba(16,24,40,0.07);
+  --shadow-lift:0 2px 4px rgba(16,24,40,0.06), 0 10px 28px -6px rgba(16,24,40,0.12);
+  /* Tool tokens: placement marker */
+  --dot:#2455B0;--dot-ring:#FFFFFF;--on-dot:#FFFFFF;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1113;--surface:#171B1F;--surface-alt:#1F2429;--ink:#ECEEF0;--ink-soft:#9AA3AD;--line:#2A3036;--line-strong:#6B747E;
+    --accent:#3CC4B4;--accent-hover:#62D3C6;--on-accent:#04201C;--accent-soft:rgba(60,196,180,0.13);--focus-ring:rgba(60,196,180,0.3);
+    --info:#8AB4F8;--info-soft:rgba(138,180,248,0.13);--warning:#F5B45C;--warning-soft:rgba(245,180,92,0.13);--error:#F28B82;--error-soft:rgba(242,139,130,0.13);
+    --shadow-sm:0 1px 2px rgba(0,0,0,0.4);
+    --shadow-card:0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -6px rgba(0,0,0,0.5);
+    --shadow-lift:0 2px 4px rgba(0,0,0,0.45), 0 12px 30px -6px rgba(0,0,0,0.6);
+    --dot:#3B6FD4;--dot-ring:#ECEEF0;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1113;--surface:#171B1F;--surface-alt:#1F2429;--ink:#ECEEF0;--ink-soft:#9AA3AD;--line:#2A3036;--line-strong:#6B747E;
+  --accent:#3CC4B4;--accent-hover:#62D3C6;--on-accent:#04201C;--accent-soft:rgba(60,196,180,0.13);--focus-ring:rgba(60,196,180,0.3);
+  --info:#8AB4F8;--info-soft:rgba(138,180,248,0.13);--warning:#F5B45C;--warning-soft:rgba(245,180,92,0.13);--error:#F28B82;--error-soft:rgba(242,139,130,0.13);
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.4);
+  --shadow-card:0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -6px rgba(0,0,0,0.5);
+  --shadow-lift:0 2px 4px rgba(0,0,0,0.45), 0 12px 30px -6px rgba(0,0,0,0.6);
+  --dot:#3B6FD4;--dot-ring:#ECEEF0;
+  color-scheme:dark;
+}
+/* Nine-box tiers, derived from the status tokens: lowest box (error) through top box (info) */
+:root{
+  --box-1:color-mix(in srgb, var(--error) 14%, var(--surface));
+  --box-2:color-mix(in srgb, var(--warning) 16%, var(--surface));
+  --box-3:var(--surface-alt);
+  --box-4:color-mix(in srgb, var(--info) 14%, var(--surface));
+  --box-5:color-mix(in srgb, var(--info) 30%, var(--surface));
 }
 *{box-sizing:border-box;}
-.disp{font-family:'Fraunces',serif;}
-.mono{font-family:'IBM Plex Mono',monospace;}
-button{font-family:inherit;cursor:pointer;}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;}
-.seg button{border:none;background:var(--surface);padding:7px 13px;font-size:13px;color:var(--ink-soft);border-right:1px solid var(--line);}
-.seg button:last-child{border-right:none;}
-.seg button.active{background:var(--ink);color:var(--paper);}
-textarea{width:100%;font-family:inherit;font-size:13px;border:1px solid var(--line);border-radius:6px;padding:8px 10px;resize:vertical;background:var(--surface);color:var(--ink);}
-input[type=text]{width:100%;font-family:inherit;font-size:14px;border:none;border-bottom:1px solid var(--line);padding:6px 2px;background:transparent;color:var(--ink);}
-input[type=text]:focus,textarea:focus{outline:none;border-color:var(--ink-soft);}
-label.lab{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:6px;}
-@media (max-width: 680px){
-  body{padding:14px;}
+body{margin:0;}
+.tw, body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);-webkit-font-smoothing:antialiased;}
+.tw h1,.tw h2,.tw h3{font-weight:650;letter-spacing:-.022em;margin:0;}
+.eyebrow{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;}
+.page-title{font-size:32px;line-height:1.15;font-weight:650;letter-spacing:-.022em;margin:0 0 10px;text-wrap:balance;}
+.page-desc{color:var(--ink-soft);font-size:15.5px;line-height:1.6;max-width:620px;margin:0;}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-xl);padding:var(--space-7);margin-bottom:20px;box-shadow:var(--shadow-card);color:var(--ink);}
+.field{margin-bottom:var(--space-5);}
+.field:last-child{margin-bottom:0;}
+.field label,.field .label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:var(--space-2);}
+.hint{font-size:12.5px;color:var(--ink-soft);margin-top:6px;line-height:1.45;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.tw input[type=text], .tw textarea{
+  width:100%;min-height:44px;font:400 14.5px var(--font-sans);color:var(--ink);
+  background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius-md);
+  padding:11px 14px;outline:none;transition:border-color .15s, box-shadow .15s;}
+.tw input:hover, .tw textarea:hover{border-color:var(--ink-soft);}
+.tw input:focus, .tw textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--focus-ring);}
+.tw ::placeholder{color:var(--ink-soft);opacity:1;}
+.tw textarea{resize:vertical;min-height:80px;line-height:1.55;}
+.section-title{font-size:15px;font-weight:650;letter-spacing:-.01em;margin:0 0 14px;}
+.section-title .gen{font-weight:400;color:var(--ink-soft);}
+
+/* ===== Page shell ===== */
+.shell{max-width:860px;margin:0 auto;padding-inline:32px;padding-block:28px 80px;}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:var(--space-7);}
+.brand-tile{width:32px;height:32px;border-radius:var(--radius-md);background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.brand-name{flex:1;min-width:0;font-size:14px;font-weight:650;letter-spacing:-.01em;}
+.icon-btn{width:34px;height:34px;border-radius:var(--radius-md);border:none;background:transparent;color:var(--ink-soft);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s,color .15s;}
+.icon-btn:hover{background:var(--surface-alt);color:var(--ink);}
+.icon-btn:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus-ring);}
+.page-head{margin-bottom:var(--space-6);}
+
+/* ===== Segmented rating control ===== */
+.seg{display:inline-flex;gap:4px;padding:4px;background:var(--surface-alt);border-radius:var(--radius-md);margin-bottom:10px;max-width:100%;}
+.seg button{border:none;background:transparent;font:600 13.5px var(--font-sans);color:var(--ink-soft);padding:8px 16px;min-height:36px;border-radius:var(--radius-sm);cursor:pointer;transition:background .15s,color .15s,box-shadow .15s;}
+.seg button:hover{color:var(--ink);}
+.seg button.active{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-sm), inset 0 0 0 1px var(--line);}
+.seg button:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus-ring);}
+
+/* ===== Evidence check ===== */
+#ai-panel{display:flex;flex-direction:column;gap:8px;margin-top:var(--space-2);}
+.flag{display:flex;gap:10px;border-radius:var(--radius-md);padding:12px 14px;font-size:13.5px;line-height:1.5;}
+.flag svg{flex-shrink:0;margin-top:2px;}
+.flag b{font-weight:650;}
+.flag .msg{color:var(--ink-soft);}
+.flag.warn{background:var(--error-soft);color:var(--error);}
+.flag.ok{background:var(--accent-soft);color:var(--accent);font-weight:600;}
+
+/* ===== Grid with axes ===== */
+.axis-row{display:flex;gap:12px;align-items:stretch;}
+.pot-axis{display:flex;gap:8px;align-items:stretch;}
+.axis-title{font-size:12px;font-weight:600;color:var(--ink-soft);letter-spacing:.02em;}
+.pot-axis .axis-title{writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;}
+.axis-bar{display:flex;gap:3px;}
+.axis-bar.vertical{flex-direction:column;width:24px;}
+.axis-seg{flex:1;background:var(--surface-alt);color:var(--ink-soft);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;border-radius:6px;}
+.axis-bar.vertical .axis-seg{writing-mode:vertical-rl;transform:rotate(180deg);}
+.axis-bar.horizontal .axis-seg{padding:6px 0;}
+.axis-arrow{color:var(--line-strong);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.axis-bar.vertical .axis-arrow{height:18px;}
+.axis-bar.horizontal .axis-arrow{width:18px;}
+.grid-col{flex:1;min-width:0;}
+.perf-title{text-align:center;margin-top:8px;}
+#mini-grid{position:relative;width:100%;max-width:100%;aspect-ratio:1.35;}
+.cell{position:absolute;border:3px solid var(--surface);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;pointer-events:none;}
+.cell span{font-size:12.5px;color:var(--ink-soft);line-height:1.45;font-weight:600;}
+.cell.current span{color:var(--ink);}
+.dot{position:absolute;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;background:var(--dot);border:2px solid var(--dot-ring);box-shadow:0 0 0 3px var(--accent), 0 1px 3px rgba(16,24,40,0.3);display:flex;align-items:center;justify-content:center;transition:left .25s cubic-bezier(.2,.8,.2,1), top .25s cubic-bezier(.2,.8,.2,1);}
+.dot span{font-size:10.5px;font-weight:650;color:var(--on-dot);letter-spacing:.01em;pointer-events:none;}
+#mini-grid{cursor:pointer;touch-action:none;}
+.dot{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;z-index:2;}
+.dot.dragging{cursor:grabbing;transition:none;transform:translate(-50%,-50%) scale(1.12);box-shadow:0 0 0 3px var(--accent), var(--shadow-lift);}
+.dot:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent), 0 0 0 7px var(--focus-ring);}
+.cell.drop{box-shadow:inset 0 0 0 2px var(--accent);}
+.grid-hint{font-size:12.5px;color:var(--ink-soft);margin:-8px 0 14px;}
+
+/* Definitions */
+.defs{margin-top:28px;border-top:1px solid var(--line);padding-top:22px;}
+.def-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.def{border-radius:var(--radius-md);padding:12px 13px;}
+.def.current{box-shadow:inset 0 0 0 2px var(--accent);}
+.def-title{font-size:12.5px;font-weight:650;color:var(--ink);margin-bottom:4px;line-height:1.35;}
+.def-text{font-size:12px;color:var(--ink);opacity:.82;line-height:1.5;}
+
+/* Summary */
+#summary-text{font-size:15px;line-height:1.65;max-width:66ch;}
+#summary-text.filled{font-style:italic;color:var(--ink);}
+#summary-text.empty{color:var(--ink-soft);}
+
+@media (max-width:800px){
+  .shell{padding-inline:16px;padding-block:16px 64px;}
+  .brand{margin-bottom:var(--space-5);}
+  .page-title{font-size:26px;}
+  .page-desc{font-size:14.5px;}
+  .card{padding:22px 18px;}
+  .row2{grid-template-columns:1fr;gap:0;}
+  .row2 .field{margin-bottom:var(--space-5);}
+  .tw input[type=text], .tw textarea{font-size:16px;min-height:48px;}
+  .seg{display:flex;width:100%;}
+  .seg button{flex:1;min-height:44px;padding:8px 6px;}
   .def-grid{grid-template-columns:1fr;}
-  .pot-axis{display:none;}
+  #mini-grid{aspect-ratio:1;}
+  .cell{padding:4px;border-width:2px;}
+  .cell span{font-size:10.5px;line-height:1.35;}
+  .axis-row{gap:6px;}
+  .pot-axis{gap:4px;}
+  .axis-bar.vertical{width:20px;}
+  .axis-seg{font-size:10px;}
+}
+@media (prefers-reduced-motion:reduce){
+  .tw *, .tw *::before, .tw *::after{animation:none !important;transition:none !important;}
 }
 </style>
 </head>
-<body style="background:var(--paper);margin:0;padding:22px;">
+<body>
+<div class="tw">
+<div class="shell">
 
-<div style="max-width:820px;margin:0 auto;">
-
-  <div style="margin-bottom:16px;">
-    <div class="disp" style="font-size:20px;font-weight:600;">9-box rating form</div>
-    <div style="font-size:12px;color:var(--ink-soft);">Prep a draft placement, with evidence, before calibration.</div>
+  <div class="brand">
+    <span class="brand-tile"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg></span>
+    <span class="brand-name">Talent Workspace</span>
+    <button type="button" class="icon-btn theme-toggle" aria-label="Switch theme"></button>
   </div>
 
-  <div style="background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:18px;">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
-      <div><label class="lab">Employee</label><input id="emp-name" type="text" placeholder="e.g. Priya Nandan"></div>
-      <div><label class="lab">Role</label><input type="text" placeholder="e.g. Senior backend engineer"></div>
+  <header class="page-head">
+    <span class="eyebrow">Calibration prep</span>
+    <h1 class="page-title">9-box rating form</h1>
+    <p class="page-desc">Prepare a draft placement with supporting evidence before calibration.</p>
+  </header>
+
+  <section class="card">
+    <div class="row2">
+      <div class="field"><label for="emp-name">Employee</label><input id="emp-name" type="text" placeholder="e.g. Priya Nandan"></div>
+      <div class="field"><label for="emp-role">Role</label><input id="emp-role" type="text" placeholder="e.g. Senior backend engineer"></div>
     </div>
 
-    <label class="lab">Performance — this review period</label>
-    <div class="seg" id="perf-seg" style="margin-bottom:10px;">
-      <button data-v="0">Below</button><button data-v="1" class="active">Meeting</button><button data-v="2">Exceeding</button>
+    <div class="field">
+      <span class="label" id="perf-label">Performance — this review period</span>
+      <div class="seg" id="perf-seg" role="group" aria-labelledby="perf-label">
+        <button type="button" data-v="0" aria-pressed="false">Low</button><button type="button" data-v="1" class="active" aria-pressed="true">Moderate</button><button type="button" data-v="2" aria-pressed="false">High</button>
+      </div>
+      <textarea id="perf-ev" rows="2" aria-label="Performance evidence" placeholder="What did they actually do? Cite specifics."></textarea>
+      <div id="perf-hint" class="hint"></div>
     </div>
-    <textarea id="perf-ev" rows="2" placeholder="What did they actually do? Cite specifics."></textarea>
-    <div id="perf-hint" style="font-size:11px;color:var(--ink-soft);margin-top:4px;"></div>
 
-    <div style="height:14px;"></div>
-
-    <label class="lab">Potential — readiness for bigger scope</label>
-    <div class="seg" id="pot-seg" style="margin-bottom:10px;">
-      <button data-v="0">Limited</button><button data-v="1">Emerging</button><button data-v="2" class="active">High</button>
+    <div class="field">
+      <span class="label" id="pot-label">Potential — readiness for bigger scope</span>
+      <div class="seg" id="pot-seg" role="group" aria-labelledby="pot-label">
+        <button type="button" data-v="0" aria-pressed="false">Low</button><button type="button" data-v="1" aria-pressed="false">Moderate</button><button type="button" data-v="2" class="active" aria-pressed="true">High</button>
+      </div>
+      <textarea id="pot-ev" rows="2" aria-label="Potential evidence" placeholder="What signals readiness or ceiling?"></textarea>
+      <div id="pot-hint" class="hint"></div>
     </div>
-    <textarea id="pot-ev" rows="2" placeholder="What signals readiness or ceiling?"></textarea>
-    <div id="pot-hint" style="font-size:11px;color:var(--ink-soft);margin-top:4px;"></div>
 
-    <div style="height:16px;"></div>
-    <div id="ai-panel"></div>
-  </div>
+    <div id="ai-panel" aria-live="polite"></div>
+  </section>
 
-  <div style="background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;margin-bottom:18px;">
-    <label class="lab">Draft placement</label>
-    <div style="display:flex;gap:12px;align-items:stretch;">
-      <div style="display:flex;align-items:stretch;gap:6px;" class="pot-axis">
-        <div class="mono" style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:13px;font-weight:500;color:var(--ink);letter-spacing:.03em;display:flex;align-items:center;justify-content:center;">Potential</div>
-        <div style="display:flex;flex-direction:column;align-items:center;width:34px;">
-          <div style="width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:14px solid var(--axis);"></div>
-          <div style="flex:1;width:20px;background:var(--axis);display:flex;flex-direction:column-reverse;border-radius:2px;">
-            <div style="flex:1;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;transform:rotate(180deg);color:#fff;font-size:11px;font-weight:500;">Low</div>
-            <div style="flex:1;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;transform:rotate(180deg);color:#fff;font-size:11px;font-weight:500;">Moderate</div>
-            <div style="flex:1;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;transform:rotate(180deg);color:#fff;font-size:11px;font-weight:500;">High</div>
-          </div>
+  <section class="card">
+    <h2 class="section-title">Draft placement</h2>
+    <p class="grid-hint">Drag the dot or tap a box to move the placement. The ratings above update to match.</p>
+    <div class="axis-row">
+      <div class="pot-axis" aria-hidden="true">
+        <div class="axis-title">Potential</div>
+        <div class="axis-bar vertical">
+          <div class="axis-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg></div>
+          <div class="axis-seg">High</div>
+          <div class="axis-seg">Moderate</div>
+          <div class="axis-seg">Low</div>
         </div>
       </div>
-      <div style="flex:1;">
-        <div id="mini-grid" style="position:relative;width:100%;aspect-ratio:1.35;border:1px solid var(--line);"></div>
-        <div style="display:flex;gap:0;margin-top:10px;">
-          <div style="flex:1;background:var(--axis);color:#fff;text-align:center;font-size:11px;font-weight:500;padding:6px 0;border-radius:2px 0 0 2px;">Low</div>
-          <div style="flex:1;background:var(--axis);color:#fff;text-align:center;font-size:11px;font-weight:500;padding:6px 0;">Moderate</div>
-          <div style="flex:1;background:var(--axis);color:#fff;text-align:center;font-size:11px;font-weight:500;padding:6px 0;position:relative;">High</div>
-          <div style="width:0;height:0;border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:14px solid var(--axis);align-self:center;"></div>
+      <div class="grid-col">
+        <div id="mini-grid" role="img"></div>
+        <div class="axis-bar horizontal" style="margin-top:8px;" aria-hidden="true">
+          <div class="axis-seg">Low</div>
+          <div class="axis-seg">Moderate</div>
+          <div class="axis-seg">High</div>
+          <div class="axis-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></div>
         </div>
-        <div class="mono" style="text-align:center;font-size:11px;color:var(--ink-soft);letter-spacing:.05em;margin-top:6px;">Performance</div>
+        <div class="axis-title perf-title" aria-hidden="true">Performance</div>
       </div>
     </div>
-    <div style="margin-top:16px;border-top:1px solid var(--line);padding-top:12px;">
-      <label class="lab">What each box means</label>
-      <div id="definitions" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;" class="def-grid"></div>
+    <div class="defs">
+      <h2 class="section-title">What each box means</h2>
+      <div id="definitions" class="def-grid"></div>
     </div>
-  </div>
+  </section>
 
-  <div style="background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;">
-    <label class="lab">Calibration summary <span style="color:var(--ink-soft);text-transform:none;">— generated</span></label>
-    <div id="summary-text" class="disp" style="font-size:14px;line-height:1.55;font-style:italic;"></div>
-  </div>
+  <section class="card">
+    <h2 class="section-title">Calibration summary <span class="gen">— generated</span></h2>
+    <div id="summary-text"></div>
+  </section>
 
+</div>
 </div>
 
 <script>
+const ICON_SUN = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const ICON_MOON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+const ICON_ALERT = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>';
+const ICON_CHECK = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+
+/* Theme toggle */
+function isDark(){
+  const t = document.documentElement.getAttribute('data-theme');
+  if(t) return t==='dark';
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+function paintThemeButtons(){
+  const dark = isDark();
+  document.querySelectorAll('.theme-toggle').forEach(b=>{
+    b.innerHTML = dark ? ICON_SUN : ICON_MOON;
+    b.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    b.title = b.getAttribute('aria-label');
+  });
+}
+document.querySelectorAll('.theme-toggle').forEach(b=> b.addEventListener('click', ()=>{
+  document.documentElement.setAttribute('data-theme', isDark() ? 'light' : 'dark');
+  paintThemeButtons();
+}));
+if(window.matchMedia){ try{ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', paintThemeButtons); }catch(e){} }
+paintThemeButtons();
+
+const esc = s => String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const potWord=["Low","Moderate","High"], perfWordAxis=["Low","Moderate","High"];
 const cellTitle = (p,q) => `${potWord[q]} Potential / ${perfWordAxis[p]} Performance`;
 const cellDef = (p,q)=>[
@@ -123,9 +294,9 @@ const cellDef = (p,q)=>[
 ][q][p];
 function colorFor(p,q){
   const map={
-    '2,0':'var(--c-yellow)','2,1':'var(--c-green)','2,2':'var(--c-brightgreen)',
-    '1,0':'var(--c-orange)','1,1':'var(--c-yellow)','1,2':'var(--c-green)',
-    '0,0':'var(--c-pink)','0,1':'var(--c-orange)','0,2':'var(--c-yellow)'
+    '2,0':'var(--box-3)','2,1':'var(--box-4)','2,2':'var(--box-5)',
+    '1,0':'var(--box-2)','1,1':'var(--box-3)','1,2':'var(--box-4)',
+    '0,0':'var(--box-1)','0,1':'var(--box-2)','0,2':'var(--box-3)'
   };
   return map[q+','+p];
 }
@@ -151,25 +322,97 @@ function renderMini(){
   grid.innerHTML='';
   for(let q=0;q<3;q++) for(let p=0;p<3;p++){
     const cell=document.createElement('div');
-    cell.style.cssText=`position:absolute;left:${p/3*100}%;top:${(2-q)/3*100}%;width:33.333%;height:33.333%;background:${colorFor(p,q)};border:1px solid var(--surface);display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;pointer-events:none;`;
-    cell.innerHTML=`<span style="font-size:13px;color:var(--ink);line-height:1.5;font-weight:500;">${potWord[q]} Potential<br>${perfWordAxis[p]} Performance</span>`;
+    cell.className='cell'+(p===perf&&q===pot?' current':'');
+    cell.style.cssText=`left:${p/3*100}%;top:${(2-q)/3*100}%;width:33.333%;height:33.333%;background:${colorFor(p,q)};`;
+    cell.innerHTML=`<span>${potWord[q]} Potential<br>${perfWordAxis[p]} Performance</span>`;
     grid.appendChild(cell);
   }
   const dot=document.createElement('div');
   const x=(perf+0.5)/3*100, y=100-(pot+0.5)/3*100;
   const name=document.getElementById('emp-name').value || 'You';
-  dot.style.cssText=`position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);width:24px;height:24px;border-radius:50%;background:var(--dot);border:2px solid #fff;box-shadow:0 0 0 2px rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;`;
-  dot.innerHTML=`<span style="font-size:9.5px;font-weight:500;color:#fff;">${initials(name)}</span>`;
+  dot.className='dot';
+  dot.tabIndex=0;
+  dot.setAttribute('role','button');
+  dot.setAttribute('aria-label',`Placement: ${cellTitle(perf,pot)}. Use arrow keys to move.`);
+  dot.style.left=x+'%'; dot.style.top=y+'%';
+  dot.innerHTML=`<span>${esc(initials(name))}</span>`;
+  attachDrag(dot, grid);
   grid.appendChild(dot);
+  grid.setAttribute('aria-label','Draft placement: '+cellTitle(perf,pot));
+  renderDefinitions();
 }
+
+/* Move the placement from the grid: drag the dot, tap a box, or use arrow keys on the dot */
+function cellAt(grid, clientX, clientY){
+  const r=grid.getBoundingClientRect();
+  const nx=Math.min(Math.max((clientX-r.left)/r.width,0),0.999);
+  const ny=Math.min(Math.max((clientY-r.top)/r.height,0),0.999);
+  return [Math.floor(nx*3), 2-Math.floor(ny*3)];
+}
+function syncSeg(id, v){
+  document.querySelectorAll(`#${id} button`).forEach(b=>{
+    const on = +b.dataset.v===v;
+    b.classList.toggle('active', on); b.setAttribute('aria-pressed', on?'true':'false');
+  });
+}
+function setPlacement(p, q, refocus){
+  if(p===perf && q===pot){ renderMini(); }
+  else {
+    perf=p; pot=q;
+    syncSeg('perf-seg', perf); syncSeg('pot-seg', pot);
+    renderMini(); renderAI(); updateHints();
+  }
+  if(refocus) document.querySelector('#mini-grid .dot').focus();
+}
+function markDrop(grid, p, q){
+  grid.querySelectorAll('.cell').forEach((c,i)=>{
+    const cq=Math.floor(i/3), cp=i%3;
+    c.classList.toggle('drop', cp===p && cq===q);
+  });
+}
+function attachDrag(dot, grid){
+  let dragging=false;
+  dot.addEventListener('pointerdown',ev=>{
+    dragging=true; dot.setPointerCapture(ev.pointerId); dot.classList.add('dragging');
+    ev.preventDefault();
+  });
+  dot.addEventListener('pointermove',ev=>{
+    if(!dragging) return;
+    const r=grid.getBoundingClientRect();
+    const px=Math.min(Math.max(ev.clientX-r.left,0),r.width);
+    const py=Math.min(Math.max(ev.clientY-r.top,0),r.height);
+    dot.style.left=px+'px'; dot.style.top=py+'px';
+    const [p,q]=cellAt(grid, ev.clientX, ev.clientY);
+    markDrop(grid, p, q);
+  });
+  dot.addEventListener('pointerup',ev=>{
+    if(!dragging) return;
+    dragging=false;
+    const [p,q]=cellAt(grid, ev.clientX, ev.clientY);
+    setPlacement(p, q, false);
+  });
+  dot.addEventListener('pointercancel',()=>{ dragging=false; renderMini(); });
+  dot.addEventListener('keydown',ev=>{
+    const moves={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,1],ArrowDown:[0,-1]};
+    const m=moves[ev.key]; if(!m) return;
+    ev.preventDefault();
+    const p=Math.min(Math.max(perf+m[0],0),2), q=Math.min(Math.max(pot+m[1],0),2);
+    setPlacement(p, q, true);
+  });
+}
+document.getElementById('mini-grid').addEventListener('click',ev=>{
+  if(ev.target.closest('.dot')) return;
+  const [p,q]=cellAt(ev.currentTarget, ev.clientX, ev.clientY);
+  setPlacement(p, q, false);
+});
 function renderDefinitions(){
   const box=document.getElementById('definitions');
   let html='';
   for(let q=2;q>=0;q--){
     for(let p=0;p<3;p++){
-      html+=`<div style="background:${colorFor(p,q)};border-radius:6px;padding:8px 9px;">
-        <div style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:3px;">${cellTitle(p,q)}</div>
-        <div style="font-size:11px;color:var(--ink);opacity:.8;line-height:1.4;">${cellDef(p,q)}</div>
+      html+=`<div class="def${p===perf&&q===pot?' current':''}" style="background:${colorFor(p,q)};">
+        <div class="def-title">${cellTitle(p,q)}</div>
+        <div class="def-text">${cellDef(p,q)}</div>
       </div>`;
     }
   }
@@ -183,30 +426,28 @@ function renderAI(){
   if(!perfEv.trim()){
     flags.push(["No performance evidence entered","Add at least one concrete example to support this rating before calibration."]);
   } else if(perf===2 && perfEv.trim().split(/\s+/).length<8){
-    flags.push(["Evidence-rating mismatch","\u201cExceeding\u201d is checked but the evidence is thin. Add a specific, measurable example before calibration."]);
+    flags.push(["Evidence-rating mismatch","“High” performance is checked but the evidence is thin. Add a specific, measurable example before calibration."]);
   }
   if(!potEv.trim()){
     flags.push(["No potential evidence entered","Add at least one concrete example to support this rating before calibration."]);
   } else if(pot===2 && !/lead|own|mentor|scope|architect/i.test(potEv)){
-    flags.push(["Potential evidence is generic","High potential usually shows up as stretch ownership, not just \u2018works hard.\u2019 Name a concrete stretch moment."]);
+    flags.push(["Potential evidence is generic","High potential usually shows up as stretch ownership, not just ‘works hard.’ Name a concrete stretch moment."]);
   }
   if(perf===0 || pot===0) flags.push(["Low rating — add a support plan","Placements below the midline should come with a stated development or exit conversation."]);
   const panel=document.getElementById('ai-panel');
   if(flags.length===0){
-    panel.innerHTML=`<div style="background:var(--good-bg);border:1px solid var(--good);border-radius:6px;padding:10px 12px;font-size:12.5px;color:var(--good);">Evidence supports this placement. No flags.</div>`;
+    panel.innerHTML=`<div class="flag ok">${ICON_CHECK}<div>Evidence supports this placement. No flags.</div></div>`;
   } else {
-    panel.innerHTML=flags.map(f=>`<div style="background:var(--flag-bg);border:1px solid var(--flag);border-radius:6px;padding:10px 12px;font-size:12.5px;color:var(--flag);margin-bottom:8px;"><b>${f[0]}</b><br><span style="color:var(--ink-soft);">${f[1]}</span></div>`).join('');
+    panel.innerHTML=flags.map(f=>`<div class="flag warn">${ICON_ALERT}<div><b>${f[0]}</b><br><span class="msg">${f[1]}</span></div></div>`).join('');
   }
   const name=(document.getElementById('emp-name').value || 'This employee').split(' ')[0];
   const summaryBox=document.getElementById('summary-text');
   if(!perfEv.trim() && !potEv.trim()){
-    summaryBox.style.fontStyle='normal';
-    summaryBox.style.color='var(--ink-soft)';
+    summaryBox.className='empty';
     summaryBox.textContent='Fill in the performance and potential evidence above to generate a summary.';
     return;
   }
-  summaryBox.style.fontStyle='italic';
-  summaryBox.style.color='var(--ink)';
+  summaryBox.className='filled';
   const perfWord=["fell short of","met","exceeded"][perf];
   const potWord2=["shows limited","is showing emerging","is showing high"][pot];
   const perfClause = perfEv.trim() ? perfEv.split('.')[0].toLowerCase() : 'no evidence entered yet';
@@ -215,18 +456,20 @@ function renderAI(){
     `${name} ${perfWord} expectations this period — ${perfClause}. ${name} ${potWord2} readiness for broader scope: ${potClause}. Suggested box: ${cellTitle(perf,pot)}.`;
 }
 
-document.querySelectorAll('#perf-seg button').forEach(b=>b.addEventListener('click',()=>{
-  document.querySelectorAll('#perf-seg button').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active'); perf=+b.dataset.v; renderMini(); renderAI(); updateHints();
-}));
-document.querySelectorAll('#pot-seg button').forEach(b=>b.addEventListener('click',()=>{
-  document.querySelectorAll('#pot-seg button').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active'); pot=+b.dataset.v; renderMini(); renderAI(); updateHints();
-}));
+function bindSeg(id, set){
+  const btns=document.querySelectorAll(`#${id} button`);
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    btns.forEach(x=>{ x.classList.remove('active'); x.setAttribute('aria-pressed','false'); });
+    b.classList.add('active'); b.setAttribute('aria-pressed','true');
+    set(+b.dataset.v); renderMini(); renderAI(); updateHints();
+  }));
+}
+bindSeg('perf-seg', v=>{ perf=v; });
+bindSeg('pot-seg', v=>{ pot=v; });
 document.getElementById('perf-ev').addEventListener('input',renderAI);
 document.getElementById('pot-ev').addEventListener('input',renderAI);
 document.getElementById('emp-name').addEventListener('input',()=>{ renderMini(); renderAI(); });
-renderMini(); renderDefinitions(); renderAI(); updateHints();
+renderMini(); renderAI(); updateHints();
 </script>
 </body>
 </html>
