@@ -5,17 +5,381 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Change Management Module</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.4/babel.min.js"></script>
 <style>
-  html, body { margin: 0; padding: 0; }
-  #root { min-height: 100vh; }
+/* ===== Talent Workspace UI (talent-ui.css) ===== */
+:root{
+  --font-sans:Inter, system-ui, -apple-system, sans-serif;
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:22px;--space-6:28px;--space-7:32px;--space-8:56px;
+  --radius-sm:8px;--radius-md:10px;--radius-lg:12px;--radius-xl:14px;--radius-pill:999px;
+  --bg:#F7F8FA;--surface:#FFFFFF;--surface-alt:#F1F3F5;--ink:#111827;--ink-soft:#5B6472;--line:#E5E7EB;--line-strong:#8A9099;
+  --accent:#0F766E;--accent-hover:#0B5F58;--on-accent:#FFFFFF;--accent-soft:#E6F4F2;--focus-ring:rgba(15,118,110,0.25);
+  --info:#1D4ED8;--info-soft:#EEF3FF;--warning:#B54708;--warning-soft:#FEF3E2;--error:#B42318;--error-soft:#FEECEB;
+  --shadow-sm:0 1px 2px rgba(16,24,40,0.05);
+  --shadow-card:0 1px 2px rgba(16,24,40,0.04), 0 6px 20px -4px rgba(16,24,40,0.07);
+  --shadow-lift:0 2px 4px rgba(16,24,40,0.06), 0 10px 28px -6px rgba(16,24,40,0.12);
+  --scrim:rgba(17,24,39,0.5);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1113;--surface:#171B1F;--surface-alt:#1F2429;--ink:#ECEEF0;--ink-soft:#9AA3AD;--line:#2A3036;--line-strong:#6B747E;
+    --accent:#3CC4B4;--accent-hover:#62D3C6;--on-accent:#04201C;--accent-soft:rgba(60,196,180,0.13);--focus-ring:rgba(60,196,180,0.3);
+    --info:#8AB4F8;--info-soft:rgba(138,180,248,0.13);--warning:#F5B45C;--warning-soft:rgba(245,180,92,0.13);--error:#F28B82;--error-soft:rgba(242,139,130,0.13);
+    --shadow-sm:0 1px 2px rgba(0,0,0,0.4);
+    --shadow-card:0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -6px rgba(0,0,0,0.5);
+    --shadow-lift:0 2px 4px rgba(0,0,0,0.45), 0 12px 30px -6px rgba(0,0,0,0.6);
+    --scrim:rgba(0,0,0,0.65);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1113;--surface:#171B1F;--surface-alt:#1F2429;--ink:#ECEEF0;--ink-soft:#9AA3AD;--line:#2A3036;--line-strong:#6B747E;
+  --accent:#3CC4B4;--accent-hover:#62D3C6;--on-accent:#04201C;--accent-soft:rgba(60,196,180,0.13);--focus-ring:rgba(60,196,180,0.3);
+  --info:#8AB4F8;--info-soft:rgba(138,180,248,0.13);--warning:#F5B45C;--warning-soft:rgba(245,180,92,0.13);--error:#F28B82;--error-soft:rgba(242,139,130,0.13);
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.4);
+  --shadow-card:0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -6px rgba(0,0,0,0.5);
+  --shadow-lift:0 2px 4px rgba(0,0,0,0.45), 0 12px 30px -6px rgba(0,0,0,0.6);
+  --scrim:rgba(0,0,0,0.65);
+  color-scheme:dark;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+.tw, body.tw{background:var(--bg);color:var(--ink);font-family:var(--font-sans);-webkit-font-smoothing:antialiased;}
+.tw h1,.tw h2,.tw h3{font-weight:650;letter-spacing:-.022em;margin:0;}
+.eyebrow{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;}
+.page-desc{color:var(--ink-soft);font-size:15.5px;line-height:1.6;max-width:620px;margin:0 0 36px;}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-xl);padding:var(--space-7);margin-bottom:20px;box-shadow:var(--shadow-card);color:var(--ink);}
+.field{margin-bottom:var(--space-5);}
+.field label,.field .field-label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:var(--space-2);line-height:1.45;}
+.hint{font-size:12.5px;color:var(--ink-soft);margin-top:6px;line-height:1.45;}
+.tw input[type=text], .tw input:not([type]), .tw input[type=number], .tw input[type=date], .tw select, .tw textarea{
+  width:100%;min-height:44px;font:400 14.5px var(--font-sans);color:var(--ink);
+  background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius-md);
+  padding:11px 14px;outline:none;transition:border-color .15s, box-shadow .15s;}
+.tw input:hover, .tw select:hover, .tw textarea:hover{border-color:var(--ink-soft);}
+.tw input:focus, .tw select:focus, .tw textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--focus-ring);}
+.tw ::placeholder{color:var(--ink-soft);opacity:1;}
+.tw textarea{resize:vertical;min-height:96px;line-height:1.55;}
+.tw select{appearance:none;cursor:pointer;padding-right:40px;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%238A9099' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat:no-repeat;background-position:right 15px center;}
+.tw input[type=date]{font-variant-numeric:tabular-nums;}
+.btn{font:600 14px var(--font-sans);border-radius:var(--radius-md);padding:11px 20px;min-height:44px;
+  border:1px solid transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  transition:background .15s, box-shadow .15s, transform .15s, border-color .15s, color .15s;}
+.btn-primary{background:var(--accent);color:var(--on-accent);box-shadow:var(--shadow-sm);}
+.btn-primary:hover:not(:disabled){background:var(--accent-hover);transform:translateY(-1px);box-shadow:var(--shadow-lift);}
+.btn-primary:active:not(:disabled){transform:none;}
+.btn-secondary{background:var(--surface);color:var(--ink);border-color:var(--line-strong);box-shadow:var(--shadow-sm);}
+.btn-secondary:hover:not(:disabled){background:var(--surface-alt);}
+.btn-text{background:transparent;color:var(--ink-soft);border:none;padding:8px 10px;}
+.btn-text:hover{color:var(--ink);background:var(--surface-alt);}
+.btn-danger{background:var(--error);color:var(--surface);box-shadow:var(--shadow-sm);}
+.btn-danger:hover{filter:brightness(.95);}
+.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;}
+.tw button:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus-ring);}
+.entry{border:1px solid var(--line);background:var(--surface);border-radius:var(--radius-lg);padding:18px 20px;box-shadow:var(--shadow-sm);transition:box-shadow .2s;color:var(--ink);}
+.entry:hover{box-shadow:var(--shadow-card);}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 10px 3px 8px;border-radius:var(--radius-pill);background:var(--surface-alt);color:var(--ink-soft);white-space:nowrap;}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.badge.high{background:var(--error-soft);color:var(--error);}
+.badge.medium{background:var(--warning-soft);color:var(--warning);}
+.badge.low, .badge.neutral{background:var(--surface-alt);color:var(--ink-soft);}
+.badge.info{background:var(--info-soft);color:var(--info);}
+.progress{padding:14px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm);}
+.progress-top{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:9px;}
+.progress-top span:first-child{color:var(--ink-soft);font-weight:500;}
+.progress-top span:last-child{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums;}
+.progress-track{height:6px;border-radius:var(--radius-pill);background:var(--surface-alt);overflow:hidden;}
+.progress-fill{height:100%;border-radius:var(--radius-pill);background:var(--accent);transition:width .5s cubic-bezier(.2,.8,.2,1);}
+.steps{list-style:none;margin:0;padding:0;}
+.step{display:flex;gap:4px;align-items:center;padding:0;border-radius:var(--radius-md);margin-bottom:2px;transition:background .15s, box-shadow .15s;}
+.step.clickable{cursor:pointer;}
+.step.clickable:hover{background:var(--surface-alt);}
+.step-num{width:24px;height:24px;border-radius:50%;flex-shrink:0;border:1.5px solid var(--line-strong);color:var(--ink-soft);font-size:11.5px;font-weight:600;display:flex;align-items:center;justify-content:center;}
+.step-label{font-size:13.5px;color:var(--ink-soft);line-height:1.35;}
+.step.active, .step.active.clickable:hover{background:var(--surface);box-shadow:var(--shadow-sm), inset 0 0 0 1px var(--line);}
+.step.active .step-num{background:var(--accent);border-color:var(--accent);color:var(--on-accent);}
+.step.active .step-label{color:var(--ink);font-weight:600;}
+.step.done .step-num{background:var(--accent-soft);border-color:transparent;color:var(--accent);}
+.step.done .step-label{color:var(--ink);}
+.step.active.done .step-num{background:var(--accent);color:var(--on-accent);}
+.mobile-toggle{display:flex;align-items:center;gap:12px;flex:1;min-width:0;background:none;border:none;border-radius:var(--radius-md);padding:6px 8px 10px;text-align:left;cursor:pointer;color:var(--ink);font-family:var(--font-sans);}
+.mb-text{flex:1;min-width:0;display:flex;flex-direction:column;}
+.mb-step{font-size:11.5px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;}
+.mb-label{font-size:15px;font-weight:600;letter-spacing:-.01em;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mb-chev{width:34px;height:34px;border-radius:var(--radius-md);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--surface-alt);color:var(--ink-soft);}
+.mb-chev svg{transition:transform .2s;}
+.mobile-toggle[aria-expanded="true"] .mb-chev svg{transform:rotate(180deg);}
+.mb-progress{height:3px;background:var(--surface-alt);}
+.mb-fill{height:100%;background:var(--accent);transition:width .5s cubic-bezier(.2,.8,.2,1);}
+
+/* ===== Tool layout: 280px sticky sidebar + main column up to 940px ===== */
+.shell{display:grid;grid-template-columns:280px minmax(0,940px);gap:48px;max-width:1280px;margin:0 auto;padding-inline:32px;}
+.sidebar{position:sticky;top:0;align-self:start;max-height:100vh;overflow-y:auto;padding-block:32px;display:flex;flex-direction:column;gap:20px;}
+.main{padding-top:var(--space-8);min-width:0;}
+.brand{display:flex;align-items:center;gap:10px;padding:0 4px 0 10px;}
+.brand-tile{width:32px;height:32px;border-radius:var(--radius-md);background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.brand-name{flex:1;min-width:0;font-size:14px;font-weight:650;letter-spacing:-.01em;line-height:1.3;}
+.icon-btn{width:34px;height:34px;border-radius:var(--radius-md);border:none;background:transparent;color:var(--ink-soft);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s,color .15s,border-color .15s;font-family:var(--font-sans);}
+.icon-btn:hover{background:var(--surface-alt);color:var(--ink);}
+.icon-btn.bordered{border:1px solid var(--line-strong);background:var(--surface);}
+.icon-btn.danger:hover{color:var(--error);background:var(--error-soft);border-color:var(--error);}
+
+/* Sidebar stepper */
+.step-main{display:flex;align-items:center;gap:12px;flex:1;min-width:0;background:none;border:none;padding:9px 10px;border-radius:var(--radius-md);cursor:pointer;text-align:left;font-family:var(--font-sans);}
+.req-toggle{width:30px;height:30px;margin-right:4px;border:none;background:transparent;border-radius:var(--radius-sm);color:var(--ink-soft);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.req-toggle:hover{background:var(--surface-alt);color:var(--ink);}
+.req-toggle svg{transition:transform .2s;}
+.req-toggle[aria-expanded="true"] svg{transform:rotate(180deg);}
+.req-panel{margin:4px 0 10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:12px 12px 10px;box-shadow:var(--shadow-sm);}
+.req-title{font-size:12.5px;font-weight:600;color:var(--ink);margin:0 4px 6px;line-height:1.4;}
+.req-item{display:flex;gap:8px;align-items:flex-start;width:100%;font:400 13px/1.45 var(--font-sans);color:var(--ink);background:transparent;border:none;padding:6px;border-radius:var(--radius-sm);cursor:pointer;text-align:left;}
+.req-item:hover:not(:disabled){background:var(--surface-alt);}
+.req-item:disabled{cursor:default;color:var(--ink-soft);}
+.req-item:disabled span:last-child{text-decoration:line-through;}
+.req-mark{width:16px;height:16px;border-radius:50%;flex-shrink:0;margin-top:1px;border:1.5px solid var(--line-strong);display:flex;align-items:center;justify-content:center;}
+.req-mark.done{background:var(--accent-soft);border-color:transparent;color:var(--accent);}
+.legend{display:flex;flex-wrap:wrap;gap:6px 10px;padding:0 10px;}
+.legend-title{width:100%;font-size:12px;font-weight:600;color:var(--ink-soft);}
+.legend-item{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-soft);}
+.legend-dot{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--line-strong);flex-shrink:0;}
+.legend-dot.active{background:var(--accent);border-color:var(--accent);}
+.legend-dot.done{background:var(--accent-soft);border-color:var(--accent);}
+.status-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-xl);box-shadow:var(--shadow-card);padding:16px;display:flex;flex-direction:column;gap:14px;}
+.status-badges{display:flex;flex-wrap:wrap;gap:6px;}
+.status-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.status-actions{display:flex;flex-direction:column;gap:2px;border-top:1px solid var(--line);padding-top:10px;margin:0 -6px;}
+.status-actions .btn{justify-content:flex-start;min-height:38px;font-weight:500;font-size:13.5px;width:100%;}
+.badge-label{font-weight:500;}
+.badge-value{color:var(--ink);}
+.save-ind{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-soft);min-height:18px;}
+.save-dot{width:6px;height:6px;border-radius:50%;background:var(--warning);}
+.save-ind svg{color:var(--accent);}
+
+/* Segmented controls */
+.seg{display:flex;gap:8px;flex-wrap:wrap;}
+.seg-btn{min-height:40px;padding:8px 18px;border-radius:var(--radius-pill);border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);font:500 13.5px var(--font-sans);cursor:pointer;transition:background .15s,border-color .15s,color .15s;}
+.seg-btn:hover{background:var(--surface-alt);}
+.seg-btn.selected{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600;}
+.seg-btn.selected.na{background:var(--surface-alt);border-color:var(--ink-soft);color:var(--ink);}
+.mode-toggle{display:inline-flex;border:1px solid var(--line-strong);border-radius:var(--radius-pill);padding:2px;gap:2px;background:var(--surface);}
+.mode-toggle button{border:none;background:transparent;color:var(--ink-soft);font:500 12.5px var(--font-sans);padding:6px 14px;border-radius:var(--radius-pill);cursor:pointer;text-transform:capitalize;}
+.mode-toggle button:hover{color:var(--ink);}
+.mode-toggle button.selected{background:var(--accent);color:var(--on-accent);font-weight:600;}
+
+/* Main column */
+.title-input{display:block;width:100%;font:650 32px/1.2 var(--font-sans) !important;letter-spacing:-.022em;color:var(--ink);background:transparent !important;border:none !important;border-radius:var(--radius-sm) !important;padding:2px 0 !important;margin:0 0 20px;min-height:0 !important;box-shadow:none;}
+.title-input:hover{background:transparent;}
+.title-input:focus{box-shadow:0 4px 0 -2px var(--accent) !important;}
+.note{display:flex;gap:10px;align-items:flex-start;background:var(--surface-alt);border-radius:var(--radius-md);padding:13px 16px;margin-bottom:20px;font-size:14px;line-height:1.55;color:var(--ink);}
+.note p{margin:0;}
+.note > svg{flex-shrink:0;margin-top:3px;color:var(--accent);}
+.note.warning{background:var(--warning-soft);}
+.note.warning > svg{color:var(--warning);}
+.note.info{background:var(--info-soft);}
+.note.info > svg{color:var(--info);}
+.note.small{font-size:13px;}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px;}
+.pill{min-height:36px;padding:7px 14px;border-radius:var(--radius-pill);border:1px solid var(--line-strong);background:var(--surface);color:var(--ink-soft);font:500 13px var(--font-sans);cursor:pointer;transition:background .15s,color .15s,border-color .15s;white-space:nowrap;}
+.pill:hover{background:var(--surface-alt);color:var(--ink);}
+.pill.done{background:var(--accent-soft);border-color:transparent;color:var(--accent);}
+.pill.active{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:600;}
+.screen{animation:fadeUp .32s ease-out both;}
+@keyframes fadeUp{from{opacity:.001;transform:translateY(6px);}to{opacity:1;transform:none;}}
+.card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+.card-help{color:var(--ink-soft);font-size:14.5px;line-height:1.6;margin:-2px 0 22px;max-width:640px;}
+.req-legend{font-size:12.5px;color:var(--ink-soft);margin:-4px 0 22px;}
+.req{color:var(--error);}
+.mini-label{font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:6px;line-height:1.4;}
+.mini-desc{font-size:12.5px;color:var(--ink-soft);margin:-2px 0 8px;line-height:1.45;}
+.italic-empty{font-size:14px;color:var(--ink-soft);margin:0 0 14px;}
+.stack{display:flex;flex-direction:column;gap:14px;}
+.stack-lg{display:flex;flex-direction:column;gap:16px;margin-bottom:16px;}
+.btn-sm{min-height:38px;padding:8px 14px;font-size:13.5px;}
+.spacer-8{height:8px;}.spacer-16{height:16px;}.spacer-24{height:24px;}
+
+/* Repeater */
+.rep-row{display:flex;gap:14px;align-items:flex-start;}
+.rep-fields{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px;flex:1;min-width:0;}
+.rep-fields .wide{grid-column:1 / -1;}
+.del-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;min-width:36px;padding:0;border-radius:var(--radius-md);border:1px solid var(--line-strong);background:var(--surface);color:var(--ink-soft);cursor:pointer;flex-shrink:0;font:600 12.5px var(--font-sans);white-space:nowrap;transition:background .15s,color .15s,border-color .15s;}
+.del-btn:hover{color:var(--error);border-color:var(--error);background:var(--error-soft);}
+.del-btn.confirming{padding:0 12px;background:var(--error);border-color:var(--error);color:var(--surface);}
+
+/* Start / stop / continue */
+.sscols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:24px;}
+.line-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+.line-row{display:flex;gap:6px;align-items:center;}
+
+/* Chips & checklist */
+.chips{display:flex;flex-wrap:wrap;gap:6px;}
+.chip{min-height:34px;padding:6px 12px;border-radius:var(--radius-pill);border:1px solid var(--line-strong);background:var(--surface);color:var(--ink-soft);font:500 13px var(--font-sans);cursor:pointer;}
+.chip:hover{background:var(--surface-alt);color:var(--ink);}
+.chip.selected{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600;}
+.check-list{display:flex;flex-direction:column;gap:10px;}
+.check-item{display:flex;align-items:center;gap:12px;text-align:left;min-height:48px;padding:12px 16px;border-radius:var(--radius-lg);border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);font:400 14px/1.45 var(--font-sans);cursor:pointer;box-shadow:var(--shadow-sm);transition:border-color .15s,background .15s;}
+.check-item:hover{border-color:var(--accent);}
+.check-item.selected{border-color:var(--accent);background:var(--accent-soft);}
+.check-box{width:20px;height:20px;border-radius:6px;flex-shrink:0;border:1.5px solid var(--line-strong);display:flex;align-items:center;justify-content:center;color:var(--on-accent);}
+.check-item.selected .check-box{background:var(--accent);border-color:var(--accent);}
+
+/* Impact level */
+.dims{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;}
+.group-name{font-weight:600;font-size:15px;letter-spacing:-.01em;}
+.group-effect{font-size:13px;color:var(--ink-soft);line-height:1.5;margin:4px 0 14px;max-width:640px;}
+
+/* Summary blocks */
+.sum-block{padding:14px 0;border-bottom:1px solid var(--line);}
+.sum-block:first-of-type{padding-top:0;}
+.sum-block:last-child{border-bottom:none;padding-bottom:0;}
+.sum-label{font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:4px;}
+.sum-text{font-size:14.5px;color:var(--ink);white-space:pre-line;line-height:1.55;}
+
+/* Readiness */
+.stmt{font-size:14.5px;color:var(--ink);margin-bottom:12px;line-height:1.5;}
+.scores{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.score-btn{width:40px;height:40px;border-radius:var(--radius-md);border:1px solid var(--line-strong);background:var(--surface);color:var(--ink-soft);font:600 14px var(--font-sans);cursor:pointer;font-variant-numeric:tabular-nums;transition:background .15s,border-color .15s,color .15s;}
+.score-btn:hover{background:var(--surface-alt);color:var(--ink);}
+.score-btn.selected{background:var(--accent);border-color:var(--accent);color:var(--on-accent);}
+.score-label{font-size:13px;color:var(--ink-soft);margin-left:6px;}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:24px;}
+.cat-tile{background:var(--surface-alt);border-radius:var(--radius-lg);padding:14px 16px;}
+.cat-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px;}
+.cat-score{font-size:22px;font-weight:650;letter-spacing:-.02em;font-variant-numeric:tabular-nums;}
+.cat-tile ul{margin:8px 0 0;padding-left:16px;display:flex;flex-direction:column;gap:3px;}
+.cat-tile li{font-size:12.5px;color:var(--ink-soft);line-height:1.45;}
+.t-high{color:var(--error);}.t-medium{color:var(--warning);}.t-info{color:var(--info);}.t-neutral,.t-low{color:var(--ink-soft);}
+.badge-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;}
+.pairing{display:flex;gap:40px;align-items:flex-start;flex-wrap:wrap;margin-top:6px;padding-left:24px;}
+.matrix{position:relative;width:240px;height:240px;flex-shrink:0;margin-bottom:26px;}
+.matrix-grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:3px;}
+.matrix-cell{background:var(--surface-alt);border-radius:6px;}
+.matrix-cell.hl{background:var(--accent-soft);box-shadow:inset 0 0 0 1.5px var(--accent);}
+.matrix-dot{position:absolute;width:16px;height:16px;border-radius:50%;background:var(--accent);border:2px solid var(--surface);box-shadow:0 0 0 2px var(--accent);transform:translate(-50%,-50%);}
+.axis{position:absolute;font-size:11px;font-weight:600;color:var(--ink-soft);letter-spacing:.06em;white-space:nowrap;}
+.axis.y{left:-10px;top:50%;transform:translate(-100%,-50%) rotate(-90deg);transform-origin:center;}
+.axis.x{bottom:-24px;left:50%;transform:translateX(-50%);}
+.pairing-text{flex:1;min-width:240px;padding-top:4px;}
+.pairing-text h3{font-size:16px;margin-bottom:6px !important;}
+.pairing-text p{font-size:14px;color:var(--ink-soft);line-height:1.6;margin:0;}
+
+/* Plan & actions */
+.context-strip{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.measure-row{display:flex;gap:10px;align-items:flex-end;}
+.measure-row > div{flex:1;min-width:0;}
+.action-title{font-size:15.5px;font-weight:600;letter-spacing:-.01em;line-height:1.4;}
+.read-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:14px 0 18px;}
+.read-field{background:var(--surface-alt);border-radius:var(--radius-md);padding:10px 12px;}
+.read-field .rf-label{font-size:11.5px;color:var(--ink-soft);font-weight:600;margin-bottom:3px;}
+.read-field .rf-value{font-size:14px;color:var(--ink);}
+.status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:16px;}
+
+/* Dashboard */
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;}
+.metric{background:var(--surface-alt);border-radius:var(--radius-lg);padding:16px 18px;display:flex;flex-direction:column;gap:4px;}
+.metric-label{font-size:12.5px;font-weight:600;color:var(--ink-soft);}
+.metric-value{font-size:20px;font-weight:650;letter-spacing:-.015em;line-height:1.25;}
+.metric-value.num{font-size:28px;font-variant-numeric:tabular-nums;}
+.table-wrap{overflow-x:auto;margin:0 -4px;}
+.table{width:100%;border-collapse:collapse;font-size:13.5px;}
+.table th{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line-strong);font-size:12.5px;font-weight:600;color:var(--ink-soft);}
+.table td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5;}
+.table tr:last-child td{border-bottom:none;}
+.dash-item.overdue{border-color:var(--error);background:var(--error-soft);}
+.dash-top{display:flex;justify-content:space-between;gap:10px;margin-bottom:6px;}
+.dash-title{font-size:14.5px;font-weight:600;}
+.dash-sec{font-size:12.5px;color:var(--ink-soft);white-space:nowrap;}
+.dash-meta{font-size:13px;color:var(--ink-soft);margin-bottom:10px;line-height:1.5;}
+.dash-note{font-size:13px;margin-top:8px;line-height:1.5;}
+.dash-note.soft{color:var(--ink-soft);margin-top:4px;}
+
+/* Sticky nav */
+.nav-bar{position:sticky;bottom:0;z-index:5;margin-top:12px;padding:14px 0 18px;background:linear-gradient(to bottom, transparent, var(--bg) 18px);}
+.nav-inner{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-xl);box-shadow:var(--shadow-card);padding:10px;}
+.caught-up{display:flex;align-items:center;gap:8px;color:var(--accent);font-weight:600;font-size:14px;padding-right:10px;}
+
+/* Overlays */
+.overlay{position:fixed;inset:0;background:var(--scrim);overflow-y:auto;z-index:100;}
+.overlay-inner{min-height:100%;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--radius-xl);box-shadow:var(--shadow-lift);padding:36px 40px;max-width:580px;width:100%;}
+.modal.small{max-width:400px;padding:26px 28px;}
+.modal.wide{max-width:780px;width:90vw;}
+.modal h1{font-size:26px;line-height:1.2;margin:0 0 12px !important;}
+.modal-desc{font-size:15px;color:var(--ink-soft);line-height:1.6;margin:0 0 22px;}
+.phase-list{display:flex;flex-direction:column;gap:12px;margin-bottom:22px;}
+.phase-row{display:flex;gap:12px;align-items:flex-start;}
+.phase-ic{width:30px;height:30px;border-radius:var(--radius-sm);background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.phase-name{font-size:14px;font-weight:600;}
+.phase-desc{font-size:13px;color:var(--ink-soft);line-height:1.45;}
+.mode-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.mode-card{text-align:left;padding:16px;border-radius:var(--radius-lg);border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);font-family:var(--font-sans);cursor:pointer;box-shadow:var(--shadow-sm);transition:border-color .15s,background .15s;}
+.mode-card:hover{border-color:var(--accent);}
+.mode-card.selected{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent);}
+.mode-card .mc-title{font-size:14px;font-weight:600;margin-bottom:4px;}
+.mode-card .mc-desc{font-size:12.5px;color:var(--ink-soft);line-height:1.45;}
+.confirm-body{display:flex;gap:12px;align-items:flex-start;margin-bottom:22px;font-size:15px;line-height:1.5;}
+.confirm-body svg{color:var(--warning);flex-shrink:0;margin-top:2px;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;}
+.sum-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:26px;flex-wrap:wrap;}
+.sum-head h1{margin:0 !important;}
+.sum-section{margin-bottom:28px;break-inside:avoid;}
+.sum-section-title{font-size:17px;font-weight:650;letter-spacing:-.01em;padding-bottom:10px;margin-bottom:14px;border-bottom:1px solid var(--line);}
+.sum-row{margin-bottom:12px;}
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:4px 16px;}
+.print-only{display:none;}
+
+/* Mobile header */
+.mobile-header{display:none;position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line);box-shadow:var(--shadow-sm);}
+.mh-row{display:flex;align-items:center;gap:4px;padding:8px 10px 0;}
+.mh-row .icon-btn{margin-bottom:4px;}
+.mb-menu{padding:8px 12px 14px;border-top:1px solid var(--line);max-height:calc(100vh - 80px);overflow-y:auto;display:flex;flex-direction:column;gap:14px;}
+
+@media (max-width:800px){
+  .shell{grid-template-columns:1fr;padding-inline:16px;gap:0;}
+  .sidebar{display:none;}
+  .mobile-header{display:block;}
+  .main{padding-top:24px;}
+  .title-input{font-size:24px !important;margin-bottom:16px;}
+  .card{padding:22px 18px;}
+  .tw input, .tw select, .tw textarea{font-size:16px;min-height:48px;}
+  .btn{min-height:48px;}
+  .row2,.rep-fields,.sscols,.mode-cards{grid-template-columns:1fr;}
+  .pills{flex-wrap:nowrap;overflow-x:auto;margin-inline:-16px;padding-inline:16px;padding-bottom:4px;scrollbar-width:none;}
+  .pills::-webkit-scrollbar{display:none;}
+  .pill{flex-shrink:0;}
+  .rep-row{flex-direction:column-reverse;}
+  .rep-row .del-btn{align-self:flex-end;}
+  .entry{padding:16px;}
+  .modal{padding:24px 20px;}
+  .modal.wide{width:100%;}
+  .nav-inner .btn{flex:1 1 auto;}
+  .pairing{gap:28px;}
+}
+@media (prefers-reduced-motion:reduce){
+  .tw *, .tw *::before, .tw *::after{animation:none !important;transition:none !important;}
+}
+@media print{
+  :root, :root[data-theme="dark"]{--bg:#FFFFFF;--surface:#FFFFFF;--surface-alt:#F1F3F5;--ink:#111827;--ink-soft:#5B6472;--line:#E5E7EB;--line-strong:#8A9099;--accent:#0F766E;--info:#1D4ED8;--warning:#B54708;--error:#B42318;}
+  body *{visibility:hidden;}
+  #cm-print-area, #cm-print-area *{visibility:visible;}
+  #cm-print-area{position:absolute;top:0;left:0;width:100%;}
+  .cm-no-print{display:none !important;}
+  .print-only{display:block !important;}
+  .overlay{background:none;position:static;}
+  .modal{box-shadow:none;border:none;}
+}
 </style>
 </head>
-<body>
+<body class="tw">
 <div id="root">
-  <div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;color:#5B6472;">
+  <div style="display:flex;align-items:center;justify-content:center;height:100vh;color:var(--ink-soft);font-size:14px;">
     Loading Change Management Module…
   </div>
 </div>
@@ -23,23 +387,29 @@
   window.addEventListener('error', function(e) {
     var el = document.getElementById('root');
     if (el && el.textContent.indexOf('Loading') !== -1) {
-      el.innerHTML = '<div style="max-width:500px;margin:60px auto;font-family:sans-serif;color:#C25848;padding:0 20px;">Something failed to load: ' + (e.message || 'unknown error') + '. If you are viewing this inside a sandboxed preview, try downloading the file and opening it directly in a browser.</div>';
+      el.innerHTML = '<div style="max-width:500px;margin:60px auto;color:var(--error);padding:0 20px;font-size:14px;line-height:1.55;">Something failed to load: ' + (e.message || 'unknown error') + '. If you are viewing this inside a sandboxed preview, try downloading the file and opening it directly in a browser.</div>';
     }
   });
 </script>
 <script type="text/babel" data-presets="react">
-/* Minimal inline icon set — replaces lucide-react for the standalone build */
-function Icon({ size = 16, color = "currentColor", style, children, viewBox = "0 0 24 24" }) {
+/* Inline line icons: 2px stroke, round caps and joins, currentColor */
+function Icon({ size = 16, style, className, children, strokeWidth = 2 }) {
   return (
-    <svg width={size} height={size} viewBox={viewBox} fill="none" stroke={color} strokeWidth="2"
-      strokeLinecap="round" strokeLinejoin="round" style={style}>
+    <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth}
+      strokeLinecap="round" strokeLinejoin="round" style={style} aria-hidden="true">
       {children}
     </svg>
   );
 }
 function ChevronRight(props) { return <Icon {...props}><polyline points="9 6 15 12 9 18" /></Icon>; }
 function ChevronLeft(props) { return <Icon {...props}><polyline points="15 6 9 12 15 18" /></Icon>; }
+function ChevronDown(props) { return <Icon {...props}><polyline points="6 9 12 15 18 9" /></Icon>; }
 function Plus(props) { return <Icon {...props}><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></Icon>; }
+function Check(props) { return <Icon strokeWidth={3} {...props}><path d="M5 12.5l4.5 4.5L19 7.5" /></Icon>; }
+function Sun(props) { return <Icon {...props}><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></Icon>; }
+function Moon(props) { return <Icon {...props}><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" /></Icon>; }
+function BarChart(props) { return <Icon strokeWidth={2.2} {...props}><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /></Icon>; }
+function HelpCircle(props) { return <Icon {...props}><circle cx="12" cy="12" r="9" /><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6" /><line x1="12" y1="17" x2="12.01" y2="17" /></Icon>; }
 function Trash2(props) {
   return (
     <Icon {...props}>
@@ -60,11 +430,7 @@ function Users(props) {
   );
 }
 function Target(props) {
-  return (
-    <Icon {...props}>
-      <circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1" />
-    </Icon>
-  );
+  return <Icon {...props}><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1" /></Icon>;
 }
 function ClipboardList(props) {
   return (
@@ -93,25 +459,13 @@ function AlertTriangle(props) {
   );
 }
 function CheckCircle2(props) {
-  return (
-    <Icon {...props}>
-      <circle cx="12" cy="12" r="9" /><polyline points="8.5 12.5 11 15 16 9" />
-    </Icon>
-  );
+  return <Icon {...props}><circle cx="12" cy="12" r="9" /><polyline points="8.5 12.5 11 15 16 9" /></Icon>;
 }
 function RotateCcw(props) {
-  return (
-    <Icon {...props}>
-      <polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
-    </Icon>
-  );
+  return <Icon {...props}><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></Icon>;
 }
 function Compass(props) {
-  return (
-    <Icon {...props}>
-      <circle cx="12" cy="12" r="9" /><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
-    </Icon>
-  );
+  return <Icon {...props}><circle cx="12" cy="12" r="9" /><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" /></Icon>;
 }
 function ListChecks(props) {
   return (
@@ -121,56 +475,39 @@ function ListChecks(props) {
     </Icon>
   );
 }
-const { useState, useEffect, useRef } = React;
+const { useState, useEffect, useRef, useId } = React;
 
 /* ---------------------------------------------------------------- */
-/* tokens                                                            */
+/* status tones (Talent Workspace: error = high/risk, warning =      */
+/* medium, info = ready, neutral = low)                              */
 /* ---------------------------------------------------------------- */
-
-const C = {
-  ink: "#1B2430",
-  inkSoft: "#5B6472",
-  paper: "#F6F3EB",
-  card: "#FFFFFF",
-  cardAlt: "#EFEAE0",
-  line: "#DED6C3",
-  teal: "#3F6B64",
-  tealDark: "#2C4E49",
-  tealSoft: "#E3ECE9",
-  amber: "#C0873F",
-  amberSoft: "#F6E9D4",
-  red: "#C25848",
-  redSoft: "#F6DCD8",
-};
 
 const RATING = {
-  1: { color: "#C0574A", label: "Strongly Disagree" },
-  2: { color: "#D6924A", label: "Disagree" },
-  3: { color: "#D3BB50", label: "Neutral" },
-  4: { color: "#8CB56C", label: "Agree" },
-  5: { color: "#4C8B54", label: "Strongly Agree" },
+  1: { label: "Strongly Disagree" },
+  2: { label: "Disagree" },
+  3: { label: "Neutral" },
+  4: { label: "Agree" },
+  5: { label: "Strongly Agree" },
 };
 
-const LEVEL_COLOR = { Low: "#8CB56C", Medium: "#D6924A", High: "#C0574A" };
+const IMPACT_TONE = { Low: "neutral", Medium: "medium", High: "high" };
+const READY_TONE = { Low: "high", Medium: "medium", High: "info" };
 const STATUS_OPTIONS = ["Not Started", "On Track", "At Risk", "Off Track", "Blocked", "Complete"];
-const STATUS_COLOR = {
-  "Not Started": "#5B6472",
-  "On Track": "#4C8B54",
-  "At Risk": "#D6924A",
-  "Off Track": "#C0574A",
-  Blocked: "#8B3A3A",
-  Complete: "#2C6E4F",
+const STATUS_TONE = {
+  "Not Started": "neutral",
+  "On Track": "info",
+  "At Risk": "medium",
+  "Off Track": "high",
+  Blocked: "high",
+  Complete: "info",
 };
 const TREND_OPTIONS = ["Improving", "Stable", "Declining", "Not Yet Determined"];
-const TREND_COLOR = {
-  Improving: "#4C8B54",
-  Stable: "#5B6472",
-  Declining: "#C0574A",
-  "Not Yet Determined": "#A8A192",
+const TREND_TONE = {
+  Improving: "info",
+  Stable: "neutral",
+  Declining: "high",
+  "Not Yet Determined": "neutral",
 };
-
-const FONT_IMPORT =
-  "@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
@@ -370,114 +707,96 @@ const PHASES = [
 ];
 
 /* ---------------------------------------------------------------- */
+/* theme                                                             */
+/* ---------------------------------------------------------------- */
+
+function isDark() {
+  const t = document.documentElement.getAttribute("data-theme");
+  if (t) return t === "dark";
+  return !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+}
+
+/* ---------------------------------------------------------------- */
 /* small primitives                                                  */
 /* ---------------------------------------------------------------- */
 
 function Eyebrow({ children }) {
-  return (
-    <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, letterSpacing: "0.12em", color: C.teal, textTransform: "uppercase", fontWeight: 500, marginBottom: 8 }}>
-      {children}
-    </div>
-  );
+  return <div className="eyebrow">{children}</div>;
 }
 
 /* Textarea that grows automatically as the person types, instead of relying
    on a manual drag-handle nobody notices. Still keeps resize:vertical as a
    fallback in case someone wants to shrink it back down. */
-function AutoTextarea({ value, onChange, placeholder, style, minHeight = 76 }) {
+function AutoTextarea({ value, onChange, placeholder, minHeight = 76, id }) {
   const ref = useRef(null);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     el.style.height = "auto";
-    el.style.height = Math.max(el.scrollHeight, minHeight) + "px";
+    el.style.height = Math.max(el.scrollHeight + 2, minHeight) + "px";
   }, [value, minHeight]);
   return (
     <textarea
+      id={id}
       ref={ref}
       value={value || ""}
       onChange={onChange}
       placeholder={placeholder || ""}
-      style={{ width: "100%", ...style, overflow: "hidden", resize: "vertical", minHeight, boxSizing: "border-box" }}
+      style={{ overflow: "hidden", minHeight }}
     />
   );
 }
 
-function Field({ label, value, onChange, placeholder, area, rows = 4, type = "text", help, required }) {
-  const shared = {
-    value: value || "",
-    onChange: (e) => onChange(e.target.value),
-    placeholder: placeholder || "",
-    style: {
-      width: "100%",
-      boxSizing: "border-box",
-      fontFamily: "'IBM Plex Sans', sans-serif",
-      fontSize: 14.5,
-      color: C.ink,
-      background: C.card,
-      border: `1px solid ${C.line}`,
-      borderRadius: 8,
-      padding: "12px 14px",
-      outline: "none",
-    },
-  };
+function Field({ label, value, onChange, placeholder, area, type = "text", help, required }) {
+  const id = useId();
   return (
-    <div style={{ marginBottom: 32 }}>
-      {label && <label style={{ display: "block", fontSize: 13.5, fontWeight: 500, color: C.ink, marginBottom: 6 }}>{label}{required && <span style={{ color: C.red }}> *</span>}</label>}
-      {help && <div style={{ fontSize: 12, color: C.inkSoft, marginBottom: 6, lineHeight: 1.4 }}>{help}</div>}
-      {area ? <AutoTextarea value={shared.value} onChange={shared.onChange} placeholder={shared.placeholder} style={shared.style} minHeight={96} /> : <input type={type} {...shared} />}
+    <div className="field">
+      {label && <label htmlFor={id}>{label}{required && <span className="req"> *</span>}</label>}
+      {help && <div className="hint" style={{ marginTop: -2, marginBottom: 8 }}>{help}</div>}
+      {area
+        ? <AutoTextarea id={id} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} minHeight={96} />
+        : <input id={id} type={type} value={value || ""} onChange={(e) => onChange(e.target.value)} placeholder={placeholder || ""} />}
+    </div>
+  );
+}
+
+function TriToggle({ value, onChange, labelId }) {
+  return (
+    <div className="seg" role="group" aria-labelledby={labelId}>
+      {["Yes", "No", "N/A"].map((opt) => {
+        const optVal = opt === "Yes" ? true : opt === "No" ? false : "na";
+        const active = value === optVal;
+        return (
+          <button
+            key={opt}
+            type="button"
+            aria-pressed={active}
+            onClick={() => onChange(optVal)}
+            className={"seg-btn" + (active ? (opt === "N/A" ? " selected na" : " selected") : "")}
+          >
+            {opt}
+          </button>
+        );
+      })}
     </div>
   );
 }
 
 function YesNo({ label, value, onChange, detailLabel = "Tell us more", area = true }) {
   const v = value || { yes: null, detail: "" };
+  const id = useId();
   return (
-    <div style={{ marginBottom: 32 }}>
-      <label style={{ display: "block", fontSize: 13.5, fontWeight: 500, color: C.ink, marginBottom: 8 }}>{label}</label>
-      <div style={{ display: "flex", gap: 8, marginBottom: v.yes === true ? 10 : 0 }}>
-        {["Yes", "No", "N/A"].map((opt) => {
-          const optVal = opt === "Yes" ? true : opt === "No" ? false : "na";
-          const active = v.yes === optVal;
-          return (
-            <button
-              key={opt}
-              onClick={() => onChange({ ...v, yes: optVal })}
-              style={{
-                fontFamily: "'IBM Plex Sans', sans-serif",
-                fontSize: 13.5,
-                fontWeight: 500,
-                padding: "7px 18px",
-                borderRadius: 999,
-                border: `1px solid ${active ? (opt === "N/A" ? C.inkSoft : C.teal) : C.line}`,
-                background: active ? (opt === "N/A" ? C.inkSoft : C.teal) : C.card,
-                color: active ? "#fff" : C.inkSoft,
-                cursor: "pointer",
-              }}
-            >
-              {opt}
-            </button>
-          );
-        })}
-      </div>
+    <div className="field">
+      <div className="field-label" id={id}>{label}</div>
+      <TriToggle value={v.yes} onChange={(yes) => onChange({ ...v, yes })} labelId={id} />
       {v.yes === true && (
-        area ? (
-          <AutoTextarea
-            value={v.detail}
-            onChange={(e) => onChange({ ...v, detail: e.target.value })}
-            placeholder={detailLabel}
-            minHeight={80}
-            style={{ width: "100%", fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 14, color: C.ink, background: C.card, border: `1px solid ${C.line}`, borderRadius: 8, padding: "12px 14px", outline: "none" }}
-          />
-        ) : (
-          <input
-            type="text"
-            value={v.detail}
-            onChange={(e) => onChange({ ...v, detail: e.target.value })}
-            placeholder={detailLabel}
-            style={{ width: "100%", fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 14, color: C.ink, background: C.card, border: `1px solid ${C.line}`, borderRadius: 8, padding: "12px 14px", outline: "none" }}
-          />
-        )
+        <div style={{ marginTop: 10 }}>
+          {area ? (
+            <AutoTextarea value={v.detail} onChange={(e) => onChange({ ...v, detail: e.target.value })} placeholder={detailLabel} minHeight={80} />
+          ) : (
+            <input type="text" value={v.detail} onChange={(e) => onChange({ ...v, detail: e.target.value })} placeholder={detailLabel} />
+          )}
+        </div>
       )}
     </div>
   );
@@ -487,34 +806,11 @@ function YesNo({ label, value, onChange, detailLabel = "Tell us more", area = tr
    (like a repeater) elsewhere on the screen, so no free-text detail field
    is needed here. */
 function YesNoSimple({ label, value, onChange }) {
+  const id = useId();
   return (
-    <div style={{ marginBottom: 24 }}>
-      <label style={{ display: "block", fontSize: 13.5, fontWeight: 500, color: C.ink, marginBottom: 8 }}>{label}</label>
-      <div style={{ display: "flex", gap: 8 }}>
-        {["Yes", "No", "N/A"].map((opt) => {
-          const optVal = opt === "Yes" ? true : opt === "No" ? false : "na";
-          const active = value === optVal;
-          return (
-            <button
-              key={opt}
-              onClick={() => onChange(optVal)}
-              style={{
-                fontFamily: "'IBM Plex Sans', sans-serif",
-                fontSize: 13.5,
-                fontWeight: 500,
-                padding: "7px 18px",
-                borderRadius: 999,
-                border: `1px solid ${active ? (opt === "N/A" ? C.inkSoft : C.teal) : C.line}`,
-                background: active ? (opt === "N/A" ? C.inkSoft : C.teal) : C.card,
-                color: active ? "#fff" : C.inkSoft,
-                cursor: "pointer",
-              }}
-            >
-              {opt}
-            </button>
-          );
-        })}
-      </div>
+    <div className="field">
+      <div className="field-label" id={id}>{label}</div>
+      <TriToggle value={value} onChange={onChange} labelId={id} />
     </div>
   );
 }
@@ -534,79 +830,43 @@ function LineList({ label, items, onChange, placeholder }) {
 
   return (
     <div>
-      <div style={{ fontSize: 11, fontWeight: 600, color: C.inkSoft, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.04em" }}>{label}</div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 8 }}>
+      <div className="mini-label">{label}</div>
+      <div className="line-list">
         {list.map((item) => (
-          <div key={item.id} style={{ display: "flex", gap: 6 }}>
+          <div key={item.id} className="line-row">
             <input
+              type="text"
+              aria-label={label}
               value={item.text}
               onChange={(e) => set(item.id, e.target.value)}
               placeholder={placeholder}
-              style={{ flex: 1, fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 13.5, color: C.ink, background: C.card, border: `1px solid ${C.line}`, borderRadius: 7, padding: "8px 10px", outline: "none" }}
             />
             {list.length > 1 && (
-              <IconBtn onClick={() => remove(item.id)} danger><Trash2 size={13} /></IconBtn>
+              <IconBtn onClick={() => remove(item.id)} danger label="Remove"><Trash2 size={15} /></IconBtn>
             )}
           </div>
         ))}
       </div>
-      <GhostBtn onClick={add}><Plus size={14} /> Add another</GhostBtn>
+      <GhostBtn small onClick={add}><Plus size={14} /> Add another</GhostBtn>
     </div>
   );
 }
 
-function Card({ children, style }) {
-  return (
-    <div className="cm-card" style={{ background: C.card, border: `1px solid ${C.line}`, borderRadius: 14, padding: "30px 32px", ...style }}>
-      {children}
-    </div>
-  );
+function Card({ children }) {
+  return <div className="card">{children}</div>;
 }
 
 function PrimaryBtn({ children, onClick, disabled }) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      style={{
-        display: "inline-flex", alignItems: "center", gap: 6,
-        fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: 500, fontSize: 14.5,
-        padding: "10px 20px", borderRadius: 9, border: "none",
-        background: disabled ? C.line : C.teal, color: "#fff",
-        cursor: disabled ? "not-allowed" : "pointer",
-      }}
-    >
-      {children}
-    </button>
-  );
+  return <button type="button" className="btn btn-primary" onClick={onClick} disabled={disabled}>{children}</button>;
 }
 
-function GhostBtn({ children, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        display: "inline-flex", alignItems: "center", gap: 6,
-        fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: 500, fontSize: 14.5,
-        padding: "10px 16px", borderRadius: 9, border: `1px solid ${C.line}`,
-        background: "transparent", color: C.ink, cursor: "pointer",
-      }}
-    >
-      {children}
-    </button>
-  );
+function GhostBtn({ children, onClick, small }) {
+  return <button type="button" className={"btn btn-secondary" + (small ? " btn-sm" : "")} onClick={onClick}>{children}</button>;
 }
 
-function IconBtn({ onClick, children, danger }) {
+function IconBtn({ onClick, children, danger, label }) {
   return (
-    <button
-      onClick={onClick}
-      style={{
-        display: "inline-flex", alignItems: "center", justifyContent: "center",
-        width: 30, height: 30, borderRadius: 7, border: `1px solid ${C.line}`,
-        background: C.card, color: danger ? C.red : C.inkSoft, cursor: "pointer", flexShrink: 0,
-      }}
-    >
+    <button type="button" onClick={onClick} aria-label={label} title={label} className={"icon-btn bordered" + (danger ? " danger" : "")}>
       {children}
     </button>
   );
@@ -630,33 +890,21 @@ function DeleteButton({ onDelete }) {
   };
   return (
     <button
+      type="button"
       onClick={handleClick}
       title={confirming ? "Click again to confirm delete" : "Delete"}
-      style={{
-        display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6,
-        height: 30, padding: confirming ? "0 12px" : 0, width: confirming ? "auto" : 30,
-        borderRadius: 7, border: `1px solid ${confirming ? C.red : C.line}`,
-        background: confirming ? C.red : C.card, color: confirming ? "#fff" : C.red, cursor: "pointer", flexShrink: 0,
-        fontSize: 12, fontWeight: 600, fontFamily: "'IBM Plex Sans', sans-serif", whiteSpace: "nowrap",
-      }}
+      aria-label={confirming ? "Click again to confirm delete" : "Delete"}
+      className={"del-btn" + (confirming ? " confirming" : "")}
     >
-      <Trash2 size={14} />
+      <Trash2 size={15} />
       {confirming && "Confirm?"}
     </button>
   );
 }
 
-function Select({ value, onChange, options, placeholder }) {
+function Select({ value, onChange, options, placeholder, ariaLabel }) {
   return (
-    <select
-      value={value || ""}
-      onChange={(e) => onChange(e.target.value)}
-      style={{
-        fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 13.5, color: C.ink,
-        background: C.card, border: `1px solid ${C.line}`, borderRadius: 8,
-        padding: "8px 10px", outline: "none", width: "100%",
-      }}
-    >
+    <select value={value || ""} onChange={(e) => onChange(e.target.value)} aria-label={ariaLabel}>
       <option value="">{placeholder || "Select..."}</option>
       {options.map((o) => (
         <option key={o} value={o}>{o}</option>
@@ -669,24 +917,15 @@ function Select({ value, onChange, options, placeholder }) {
 function MultiSelect({ value, onChange, options, placeholder }) {
   const v = value || [];
   if (options.length === 0) {
-    return <div style={{ fontSize: 12.5, color: C.inkSoft, fontStyle: "italic", padding: "8px 0" }}>{placeholder || "No options yet"}</div>;
+    return <div className="hint" style={{ marginTop: 0 }}>{placeholder || "No options yet"}</div>;
   }
   const toggle = (opt) => onChange(v.includes(opt) ? v.filter((x) => x !== opt) : [...v, opt]);
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+    <div className="chips">
       {options.map((opt) => {
         const active = v.includes(opt);
         return (
-          <button
-            key={opt}
-            onClick={() => toggle(opt)}
-            style={{
-              fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 12.5, fontWeight: 500,
-              padding: "5px 11px", borderRadius: 999, cursor: "pointer",
-              border: `1px solid ${active ? C.teal : C.line}`,
-              background: active ? C.teal : C.card, color: active ? "#fff" : C.inkSoft,
-            }}
-          >
+          <button key={opt} type="button" aria-pressed={active} onClick={() => toggle(opt)} className={"chip" + (active ? " selected" : "")}>
             {opt}
           </button>
         );
@@ -700,40 +939,20 @@ function MultiSelect({ value, onChange, options, placeholder }) {
 function ChecklistBlock({ items, checked, onChangeChecked, detail, onChangeDetail, detailLabel = "Tell us more about what's checked above" }) {
   const toggle = (key) => onChangeChecked(checked.includes(key) ? checked.filter((k) => k !== key) : [...checked, key]);
   return (
-    <div style={{ marginBottom: 8 }}>
-      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: checked.length ? 16 : 0 }}>
+    <div>
+      <div className="check-list" style={{ marginBottom: checked.length ? 16 : 0 }}>
         {items.map((item) => {
           const active = checked.includes(item.key);
           return (
-            <button
-              key={item.key}
-              onClick={() => toggle(item.key)}
-              style={{
-                display: "flex", alignItems: "center", gap: 10, textAlign: "left",
-                padding: "12px 14px", borderRadius: 9, cursor: "pointer",
-                border: `1.5px solid ${active ? C.teal : C.line}`, background: active ? C.tealSoft : C.card,
-                fontFamily: "'IBM Plex Sans', sans-serif",
-              }}
-            >
-              <span style={{
-                width: 18, height: 18, borderRadius: 5, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
-                border: `1.5px solid ${active ? C.teal : C.inkSoft}`, background: active ? C.teal : "transparent",
-              }}>
-                {active && <CheckCircle2 size={13} color="#fff" style={{ margin: -1 }} />}
-              </span>
-              <span style={{ fontSize: 13.5, color: C.ink }}>{item.label}</span>
+            <button key={item.key} type="button" role="checkbox" aria-checked={active} onClick={() => toggle(item.key)} className={"check-item" + (active ? " selected" : "")}>
+              <span className="check-box">{active && <Check size={13} />}</span>
+              <span>{item.label}</span>
             </button>
           );
         })}
       </div>
       {checked.length > 0 && (
-        <AutoTextarea
-          value={detail}
-          onChange={(e) => onChangeDetail(e.target.value)}
-          placeholder={detailLabel}
-          minHeight={90}
-          style={{ width: "100%", fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 14, color: C.ink, background: C.card, border: `1px solid ${C.line}`, borderRadius: 8, padding: "12px 14px", outline: "none" }}
-        />
+        <AutoTextarea value={detail} onChange={(e) => onChangeDetail(e.target.value)} placeholder={detailLabel} minHeight={90} />
       )}
     </div>
   );
@@ -751,40 +970,35 @@ function Repeater({ items, onChange, fields, addLabel, empty }) {
 
   return (
     <div>
-      {items.length === 0 && (
-        <div style={{ fontSize: 13.5, color: C.inkSoft, fontStyle: "italic", marginBottom: 12 }}>{empty}</div>
-      )}
-      <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 14 }}>
-        {items.map((row) => (
-          <div key={row.id} style={{ border: `1px solid ${C.line}`, borderRadius: 10, padding: 18, background: C.cardAlt, display: "flex", gap: 12, alignItems: "flex-start" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 14, flex: 1 }}>
-              {fields.map((f) => (
-                <div key={f.key}>
-                  <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.04em" }}>{f.label}</div>
-                  {f.type === "select" ? (
-                    <Select value={row[f.key]} onChange={(v) => set(row.id, f.key, v)} options={f.options} />
-                  ) : f.type === "textarea" ? (
-                    <AutoTextarea
-                      value={row[f.key]}
-                      onChange={(e) => set(row.id, f.key, e.target.value)}
-                      minHeight={76}
-                      style={{ width: "100%", fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 13.5, color: C.ink, background: C.card, border: `1px solid ${C.line}`, borderRadius: 7, padding: "10px 12px", outline: "none" }}
-                    />
-                  ) : (
-                    <input
-                      type={f.type === "number" ? "number" : "text"}
-                      value={row[f.key]}
-                      onChange={(e) => set(row.id, f.key, e.target.value)}
-                      style={{ width: "100%", fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 13.5, color: C.ink, background: C.card, border: `1px solid ${C.line}`, borderRadius: 7, padding: "10px 12px", outline: "none" }}
-                    />
-                  )}
-                </div>
-              ))}
+      {items.length === 0 && <p className="italic-empty">{empty}</p>}
+      {items.length > 0 && (
+        <div className="stack-lg">
+          {items.map((row) => (
+            <div key={row.id} className="entry rep-row">
+              <div className="rep-fields">
+                {fields.map((f) => (
+                  <div key={f.key} className={f.wide || f.type === "textarea" ? "wide" : ""}>
+                    <div className="mini-label">{f.label}</div>
+                    {f.type === "select" ? (
+                      <Select value={row[f.key]} onChange={(v) => set(row.id, f.key, v)} options={f.options} ariaLabel={f.label} />
+                    ) : f.type === "textarea" ? (
+                      <AutoTextarea value={row[f.key]} onChange={(e) => set(row.id, f.key, e.target.value)} minHeight={76} />
+                    ) : (
+                      <input
+                        type={f.type === "number" ? "number" : "text"}
+                        aria-label={f.label}
+                        value={row[f.key]}
+                        onChange={(e) => set(row.id, f.key, e.target.value)}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+              <DeleteButton onDelete={() => remove(row.id)} />
             </div>
-            <DeleteButton onDelete={() => remove(row.id)} />
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
       <GhostBtn onClick={add}><Plus size={15} /> {addLabel}</GhostBtn>
     </div>
   );
@@ -908,8 +1122,22 @@ function App() {
   const [confirmModal, setConfirmModal] = useState(null); // { message, onConfirm }
   const [showSummary, setShowSummary] = useState(false);
   const [saveStatus, setSaveStatus] = useState("idle"); // 'idle' | 'saving' | 'saved'
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [, setThemeTick] = useState(0);
   const saveTimer = useRef(null);
   const savedFlashTimer = useRef(null);
+
+  useEffect(() => {
+    let mq = null;
+    const h = () => setThemeTick((x) => x + 1);
+    try { mq = window.matchMedia("(prefers-color-scheme: dark)"); mq.addEventListener("change", h); } catch (e) {}
+    return () => { try { mq && mq.removeEventListener("change", h); } catch (e) {} };
+  }, []);
+  const dark = isDark();
+  const toggleTheme = () => {
+    document.documentElement.setAttribute("data-theme", isDark() ? "light" : "dark");
+    setThemeTick((x) => x + 1);
+  };
 
   useEffect(() => {
     (async () => {
@@ -945,6 +1173,7 @@ function App() {
   const update = (section, patch) => setData((d) => ({ ...d, [section]: { ...d[section], ...patch } }));
 
   const resetAll = () => {
+    setMenuOpen(false);
     setConfirmModal({
       message: "Clear all entries and start over? This can't be undone.",
       onConfirm: async () => {
@@ -962,15 +1191,18 @@ function App() {
   const stepKeys = phaseStepsAll[phase];
   const stepKey = stepKeys[step];
 
+  const scrollTop = () => { try { window.scrollTo({ top: 0 }); } catch (e) {} };
   const goNext = () => {
     if (step < stepKeys.length - 1) setStep(step + 1);
     else if (phase < PHASES.length - 1) { setPhase(phase + 1); setStep(0); }
+    scrollTop();
   };
   const goBack = () => {
     if (step > 0) setStep(step - 1);
     else if (phase > 0) { setPhase(phase - 1); setStep(phaseStepsAll[phase - 1].length - 1); }
+    scrollTop();
   };
-  const jump = (p, s) => { setPhase(p); setStep(s); };
+  const jump = (p, s) => { setPhase(p); setStep(s); setMenuOpen(false); scrollTop(); };
   const jumpToRequirement = (p, reqStepKey) => {
     const keys = phaseStepsAll[p];
     const idx = keys.indexOf(reqStepKey);
@@ -993,158 +1225,116 @@ function App() {
   const completablePhases = PHASES.filter((p) => p.completable);
   const phasesComplete = PHASES.map((p, i) => p.completable && phaseComplete(data, i)).filter(Boolean).length;
 
+  const phaseList = (
+    <PhaseList
+      data={data}
+      phase={phase}
+      infoPhase={infoPhase}
+      setInfoPhase={setInfoPhase}
+      onJump={(i) => jump(i, 0)}
+      onJumpReq={(p, k) => { jumpToRequirement(p, k); setInfoPhase(null); }}
+    />
+  );
+  const statusPanel = (
+    <StatusPanel
+      saveStatus={saveStatus}
+      phasesComplete={phasesComplete}
+      completableCount={completablePhases.length}
+      overallImpact={overallImpact}
+      overallReady={overallReady}
+      mode={mode}
+      setMode={setMode}
+      onSummary={() => { setMenuOpen(false); setShowSummary(true); }}
+      onAbout={() => { setMenuOpen(false); setShowWelcome(true); }}
+      onReset={resetAll}
+    />
+  );
+  const themeBtn = (
+    <button type="button" className="icon-btn" onClick={toggleTheme} aria-label={dark ? "Switch to light mode" : "Switch to dark mode"} title={dark ? "Switch to light mode" : "Switch to dark mode"}>
+      {dark ? <Sun size={18} /> : <Moon size={18} />}
+    </button>
+  );
+
   return (
-    <div style={{ minHeight: "100vh", background: C.paper, fontFamily: "'IBM Plex Sans', sans-serif" }}>
-      <style>{`
-        ${FONT_IMPORT}
-        * { box-sizing: border-box; }
-        ::placeholder { color: #A8A192; }
-        input:focus, textarea:focus, select:focus { border-color: ${C.teal} !important; }
-        @media (prefers-reduced-motion: no-preference) {
-          .cm-fade { animation: cmFade .25s ease; }
-        }
-        @keyframes cmFade { from { opacity: 0; transform: translateY(4px);} to {opacity:1; transform:none;} }
-        @media print {
-          body * { visibility: hidden; }
-          #cm-print-area, #cm-print-area * { visibility: visible; }
-          #cm-print-area { position: absolute; top: 0; left: 0; width: 100%; }
-          .cm-no-print { display: none !important; }
-          .cm-print-only { display: block !important; }
-        }
-        @media (max-width: 720px) {
-          .cm-header-top { flex-direction: column !important; align-items: flex-start !important; }
-          .cm-header-actions { width: 100%; }
-          .cm-header-actions button { min-width: 40px; min-height: 40px; }
-          .cm-initiative-input { font-size: 20px !important; width: 100% !important; max-width: 100% !important; }
-          .cm-legend { display: none !important; }
-          .cm-card { padding: 20px 18px !important; }
-          .cm-phase-row, .cm-step-row { flex-wrap: nowrap !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; padding-bottom: 6px; margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
-          .cm-phase-row::-webkit-scrollbar, .cm-step-row::-webkit-scrollbar { height: 0; display: none; }
-          .cm-phase-pill, .cm-step-pill { flex-shrink: 0; }
-          .cm-body-pad { padding-left: 16px !important; padding-right: 16px !important; }
-          .cm-footer-inner { padding: 10px 16px !important; }
-          .cm-footer-inner button { min-height: 44px; }
-          .cm-sscols, .cm-owner-date { grid-template-columns: 1fr !important; }
-          .cm-overlay-box { padding: 24px 20px !important; }
-        }
-      `}</style>
-
-      {/* header */}
-      <div style={{ borderBottom: `1px solid ${C.line}`, background: C.card, position: "sticky", top: 0, zIndex: 10 }}>
-        <div className="cm-body-pad" style={{ maxWidth: 1180, margin: "0 auto", padding: "16px 24px 0" }}>
-          <div className="cm-header-top" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 20, marginBottom: 14 }}>
-            <div>
-              <Eyebrow>Change Management Module</Eyebrow>
-              <input
-                className="cm-initiative-input"
-                value={data.setup.initiativeName}
-                onChange={(e) => update("setup", { initiativeName: e.target.value })}
-                placeholder="Name this initiative..."
-                style={{
-                  fontFamily: "'Fraunces', serif", fontWeight: 500, fontSize: 26, color: C.ink,
-                  border: "none", outline: "none", background: "transparent", padding: 0, width: 420, maxWidth: "60vw",
-                }}
-              />
-            </div>
-            <div className="cm-header-actions" style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-              <SaveIndicator status={saveStatus} />
-              <Badge label="Sections" value={`${phasesComplete}/${completablePhases.length}`} color={phasesComplete === completablePhases.length ? C.teal : C.inkSoft} />
-              {overallImpact && (
-                <Badge label="Impact" value={overallImpact} color={LEVEL_COLOR[overallImpact]} />
-              )}
-              {overallReady && (
-                <Badge label="Readiness" value={overallReady} color={LEVEL_COLOR[overallReady]} />
-              )}
-              <ModeToggle mode={mode} onChange={setMode} />
-              <button onClick={() => setShowSummary(true)} title="View full summary" style={{ width: 34, height: 34, borderRadius: 8, border: `1px solid ${C.line}`, background: "transparent", color: C.inkSoft, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <ListChecks size={15} />
-              </button>
-              <button onClick={() => setShowWelcome(true)} title="About this tool" style={{ width: 34, height: 34, borderRadius: 8, border: `1px solid ${C.line}`, background: "transparent", color: C.inkSoft, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'IBM Plex Serif', serif", fontStyle: "italic", fontWeight: 600, fontSize: 15 }}>
-                ?
-              </button>
-              <button onClick={resetAll} title="Start over" style={{ width: 34, height: 34, borderRadius: 8, border: `1px solid ${C.line}`, background: "transparent", color: C.inkSoft, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <RotateCcw size={15} />
-              </button>
-            </div>
+    <div>
+      {/* phone header */}
+      <header className="mobile-header">
+        <div className="mh-row">
+          <button type="button" className="mobile-toggle" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+            <span className="mb-text">
+              <span className="mb-step">Section {phase + 1} of {PHASES.length}</span>
+              <span className="mb-label">{PHASES[phase].label}</span>
+            </span>
+            <span className="mb-chev"><ChevronDown size={14} strokeWidth={2.2} /></span>
+          </button>
+          <button type="button" className="icon-btn" onClick={() => setShowSummary(true)} aria-label="View full summary" title="View full summary"><ListChecks size={18} /></button>
+          {themeBtn}
+        </div>
+        {menuOpen && (
+          <div className="mb-menu">
+            {phaseList}
+            <StatusLegend />
+            {statusPanel}
           </div>
+        )}
+        <div className="mb-progress"><div className="mb-fill" style={{ width: `${progressPct}%` }} /></div>
+      </header>
 
-          {/* legend */}
-          <div className="cm-legend" style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap", marginBottom: 10 }}>
-            <span style={{ fontSize: 11, color: C.inkSoft, fontFamily: "'IBM Plex Mono', monospace", textTransform: "uppercase", letterSpacing: "0.05em" }}>Section status:</span>
-            <LegendItem swatch={{ background: "transparent", border: `1.5px solid ${C.line}` }} label="Not started" />
-            <LegendItem swatch={{ background: C.tealSoft, border: `1.5px solid ${C.teal}` }} label="In progress" />
-            <LegendItem swatch={{ background: C.teal, border: `1.5px solid ${C.teal}` }} label="Complete" />
+      <div className="shell">
+        <aside className="sidebar">
+          <div className="brand">
+            <span className="brand-tile"><BarChart size={17} /></span>
+            <span className="brand-name">Change Management Module</span>
+            {themeBtn}
           </div>
-
-          {/* phase buttons */}
-          <div className="cm-phase-row" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {PHASES.map((p, i) => {
-              const Icon = p.icon;
-              const active = i === phase;
-              const complete = p.completable && phaseComplete(data, i);
-              const bg = complete ? C.teal : active ? C.tealSoft : "transparent";
-              const color = complete ? "#fff" : active ? C.tealDark : C.inkSoft;
-              const border = complete ? C.teal : active ? C.teal : C.line;
-              return (
-                <div key={p.label} className="cm-phase-pill" style={{ display: "flex", alignItems: "center", border: `1.5px solid ${border}`, borderRadius: 999, background: bg, overflow: "hidden" }}>
-                  <button
-                    onClick={() => jump(i, 0)}
-                    title={complete ? `${p.label} — complete` : p.label}
-                    style={{
-                      display: "flex", alignItems: "center", gap: 7,
-                      padding: p.completable ? "9px 6px 9px 15px" : "9px 15px", border: "none",
-                      background: "transparent", cursor: "pointer",
-                      color, fontSize: 13.5, fontWeight: 500,
-                    }}
-                  >
-                    {complete ? <CheckCircle2 size={15} /> : <Icon size={15} />} {p.label}
-                  </button>
-                  {p.completable && (
-                    <button
-                      onClick={() => setInfoPhase(infoPhase === i ? null : i)}
-                      title="What's needed to complete this section"
-                      style={{
-                        border: "none", background: "transparent", cursor: "pointer",
-                        color, opacity: 0.75, padding: "9px 13px 9px 4px", fontSize: 12, fontWeight: 700,
-                      }}
-                    >
-                      {infoPhase === i ? "▲" : "▾"}
-                    </button>
-                  )}
-                </div>
-              );
-            })}
+          <div className="progress">
+            <div className="progress-top"><span>Progress</span><span>{progressPct}%</span></div>
+            <div className="progress-track"><div className="progress-fill" style={{ width: `${progressPct}%` }} /></div>
           </div>
+          {phaseList}
+          <StatusLegend />
+          {statusPanel}
+        </aside>
 
-          {infoPhase !== null && (
-            <div style={{ marginTop: 10, marginBottom: 4, background: C.cardAlt, border: `1px solid ${C.line}`, borderRadius: 10, padding: "14px 16px", maxWidth: 480 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.ink, marginBottom: 8 }}>To mark "{PHASES[infoPhase].label}" complete:</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                {PHASE_REQUIREMENTS[infoPhase].map((req, ri) => {
-                  const done = req.check(data);
-                  return (
-                    <button
-                      key={ri}
-                      onClick={() => { if (!done) { jumpToRequirement(infoPhase, req.stepKey); setInfoPhase(null); } }}
-                      disabled={done}
-                      style={{
-                        display: "flex", gap: 8, alignItems: "flex-start", fontSize: 13, color: done ? C.teal : C.ink,
-                        background: "transparent", border: "none", padding: "5px 6px", borderRadius: 6,
-                        cursor: done ? "default" : "pointer", textAlign: "left", fontFamily: "'IBM Plex Sans', sans-serif",
-                      }}
-                    >
-                      {done ? <CheckCircle2 size={14} style={{ marginTop: 2, flexShrink: 0 }} /> : <span style={{ width: 14, height: 14, borderRadius: 99, border: `1.5px solid ${C.inkSoft}`, marginTop: 2, flexShrink: 0, display: "inline-block" }} />}
-                      <span style={{ textDecoration: done ? "line-through" : "none" }}>{req.label}</span>
-                    </button>
-                  );
-                })}
+        <main className="main">
+          <Eyebrow>Change Management Module</Eyebrow>
+          <input
+            className="title-input"
+            aria-label="Initiative name"
+            value={data.setup.initiativeName}
+            onChange={(e) => update("setup", { initiativeName: e.target.value })}
+            placeholder="Name this initiative..."
+          />
+
+          <div className="screen" key={phase + "-" + step}>
+            {step === 0 && (
+              <div className="note">
+                <Compass size={16} />
+                <p>{PHASE_DESCRIPTIONS[phase]}</p>
               </div>
+            )}
+
+            <StepDots steps={stepKeys} current={step} onJump={(s) => { setStep(s); scrollTop(); }} labels={stepLabels(phase, stepKeys)} />
+
+            {phase === 0 && <SetupScreen stepKey={stepKey} data={data} update={update} />}
+            {phase === 1 && <ImpactScreen stepKey={stepKey} data={data} update={update} />}
+            {phase === 2 && <ReadinessScreen stepKey={stepKey} data={data} update={update} overallImpact={overallImpact} readyAvg={readyAvg} overallReady={overallReady} />}
+            {phase === 3 && <PlanScreen stepKey={stepKey} data={data} update={update} overallImpact={overallImpact} overallReady={overallReady} />}
+            {phase === 4 && <ActionPlanScreen stepKey={stepKey} data={data} update={update} />}
+            {phase === 5 && <MonitoringDashboardScreen data={data} overallReady={overallReady} />}
+          </div>
+
+          <div className="nav-bar">
+            <div className="nav-inner">
+              <GhostBtn onClick={goBack}><ChevronLeft size={16} /> Back</GhostBtn>
+              {!isLast ? (
+                <PrimaryBtn onClick={goNext}>Continue <ChevronRight size={16} /></PrimaryBtn>
+              ) : (
+                <div className="caught-up"><CheckCircle2 size={17} /> You're all caught up</div>
+              )}
             </div>
-          )}
-        </div>
-        <div style={{ height: 3, background: C.cardAlt }}>
-          <div style={{ height: "100%", width: `${progressPct}%`, background: C.teal, transition: "width .3s ease" }} />
-        </div>
+          </div>
+        </main>
       </div>
 
       {showSummary && <SummaryOverlay data={data} overallImpact={overallImpact} overallReady={overallReady} onClose={() => setShowSummary(false)} />}
@@ -1156,99 +1346,129 @@ function App() {
           onConfirm={() => { confirmModal.onConfirm(); setConfirmModal(null); }}
         />
       )}
+    </div>
+  );
+}
 
-      {/* body */}
-      <div className="cm-fade cm-body-pad" style={{ maxWidth: 1180, margin: "0 auto", padding: "34px 24px 120px" }} key={phase + "-" + step}>
-        {step === 0 && (
-          <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: C.tealSoft, border: `1px solid ${C.teal}33`, borderRadius: 12, padding: "14px 16px", marginBottom: 20 }}>
-            <Compass size={16} color={C.teal} style={{ marginTop: 2, flexShrink: 0 }} />
-            <p style={{ fontSize: 13.5, color: C.ink, lineHeight: 1.55, margin: 0 }}>{PHASE_DESCRIPTIONS[phase]}</p>
-          </div>
-        )}
-
-        <StepDots steps={stepKeys} current={step} onJump={(s) => setStep(s)} labels={stepLabels(phase, stepKeys)} />
-
-        <div style={{ marginTop: 22 }}>
-          {phase === 0 && <SetupScreen stepKey={stepKey} data={data} update={update} />}
-          {phase === 1 && <ImpactScreen stepKey={stepKey} data={data} update={update} />}
-          {phase === 2 && <ReadinessScreen stepKey={stepKey} data={data} update={update} overallImpact={overallImpact} readyAvg={readyAvg} overallReady={overallReady} />}
-          {phase === 3 && <PlanScreen stepKey={stepKey} data={data} update={update} overallImpact={overallImpact} overallReady={overallReady} />}
-          {phase === 4 && <ActionPlanScreen stepKey={stepKey} data={data} update={update} />}
-          {phase === 5 && <MonitoringDashboardScreen data={data} overallReady={overallReady} />}
-        </div>
-      </div>
-
-      {/* footer nav */}
-      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: C.card, borderTop: `1px solid ${C.line}` }}>
-        <div className="cm-footer-inner" style={{ maxWidth: 1180, margin: "0 auto", padding: "14px 24px", display: "flex", justifyContent: "space-between" }}>
-          <GhostBtn onClick={goBack}><ChevronLeft size={16} /> Back</GhostBtn>
-          {!isLast ? (
-            <PrimaryBtn onClick={goNext}>Continue <ChevronRight size={16} /></PrimaryBtn>
-          ) : (
-            <div style={{ display: "flex", alignItems: "center", gap: 8, color: C.teal, fontWeight: 500, fontSize: 14 }}>
-              <CheckCircle2 size={17} /> You're all caught up
+function PhaseList({ data, phase, infoPhase, setInfoPhase, onJump, onJumpReq }) {
+  return (
+    <ul className="steps">
+      {PHASES.map((p, i) => {
+        const active = i === phase;
+        const complete = p.completable && phaseComplete(data, i);
+        const cls = "step clickable" + (active ? " active" : "") + (complete ? " done" : "");
+        const mark = complete ? <Check size={12} /> : p.completable ? i + 1 : "★";
+        return (
+          <li key={p.label}>
+            <div className={cls}>
+              <button
+                type="button"
+                className="step-main"
+                onClick={() => onJump(i)}
+                aria-current={active ? "step" : undefined}
+                title={complete ? `${p.label} — complete` : p.label}
+              >
+                <span className="step-num">{mark}</span>
+                <span className="step-label">{p.label}</span>
+              </button>
+              {p.completable && (
+                <button
+                  type="button"
+                  className="req-toggle"
+                  aria-expanded={infoPhase === i}
+                  onClick={() => setInfoPhase(infoPhase === i ? null : i)}
+                  title="What's needed to complete this section"
+                  aria-label="What's needed to complete this section"
+                >
+                  <ChevronDown size={15} />
+                </button>
+              )}
             </div>
-          )}
-        </div>
+            {infoPhase === i && (
+              <div className="req-panel">
+                <div className="req-title">To mark "{PHASES[i].label}" complete:</div>
+                {PHASE_REQUIREMENTS[i].map((req, ri) => {
+                  const done = req.check(data);
+                  return (
+                    <button key={ri} type="button" className="req-item" disabled={done} onClick={() => { if (!done) onJumpReq(i, req.stepKey); }}>
+                      <span className={"req-mark" + (done ? " done" : "")}>{done && <Check size={10} />}</span>
+                      <span>{req.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function StatusLegend() {
+  return (
+    <div className="legend">
+      <span className="legend-title">Section status:</span>
+      <span className="legend-item"><span className="legend-dot" /> Not started</span>
+      <span className="legend-item"><span className="legend-dot active" /> In progress</span>
+      <span className="legend-item"><span className="legend-dot done" /> Complete</span>
+    </div>
+  );
+}
+
+function StatusPanel({ saveStatus, phasesComplete, completableCount, overallImpact, overallReady, mode, setMode, onSummary, onAbout, onReset }) {
+  return (
+    <div className="status-card">
+      <div className="status-badges">
+        <Badge label="Sections" value={`${phasesComplete}/${completableCount}`} tone={phasesComplete === completableCount ? "info" : "neutral"} />
+        {overallImpact && <Badge label="Impact" value={overallImpact} tone={IMPACT_TONE[overallImpact]} />}
+        {overallReady && <Badge label="Readiness" value={overallReady} tone={READY_TONE[overallReady]} />}
+      </div>
+      <div className="status-row">
+        <ModeToggle mode={mode} onChange={setMode} />
+        <SaveIndicator status={saveStatus} />
+      </div>
+      <div className="status-actions">
+        <button type="button" className="btn btn-text" onClick={onSummary}><ListChecks size={16} /> View full summary</button>
+        <button type="button" className="btn btn-text" onClick={onAbout}><HelpCircle size={16} /> About this tool</button>
+        <button type="button" className="btn btn-text" onClick={onReset}><RotateCcw size={16} /> Start over</button>
       </div>
     </div>
   );
 }
 
-function Badge({ label, value, color }) {
+function Badge({ label, value, tone = "neutral" }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 999, background: color + "22", border: `1px solid ${color}55` }}>
-      <span style={{ width: 7, height: 7, borderRadius: 99, background: color }} />
-      <span style={{ fontSize: 11.5, color: C.inkSoft, fontFamily: "'IBM Plex Mono', monospace" }}>{label}</span>
-      <span style={{ fontSize: 12.5, fontWeight: 600, color: C.ink }}>{value}</span>
-    </div>
-  );
-}
-
-function LegendItem({ swatch, label }) {
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-      <span style={{ width: 13, height: 13, borderRadius: 999, flexShrink: 0, ...swatch }} />
-      <span style={{ fontSize: 12, color: C.inkSoft }}>{label}</span>
-    </div>
+    <span className={"badge " + tone}>
+      {label && <span className="badge-label">{label}</span>}
+      <span className="badge-value">{value}</span>
+    </span>
   );
 }
 
 function SaveIndicator({ status }) {
-  if (status === "idle") return null;
+  if (status === "idle") return <span className="save-ind" />;
   const saving = status === "saving";
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.inkSoft, fontFamily: "'IBM Plex Mono', monospace" }}>
-      {saving ? (
-        <>
-          <span style={{ width: 6, height: 6, borderRadius: 99, background: C.amber }} />
-          Saving…
-        </>
-      ) : (
-        <>
-          <CheckCircle2 size={12} color={C.teal} />
-          Saved
-        </>
-      )}
-    </div>
+    <span className="save-ind" role="status">
+      {saving ? (<><span className="save-dot" /> Saving…</>) : (<><CheckCircle2 size={13} /> Saved</>)}
+    </span>
   );
 }
 
 function ModeToggle({ mode, onChange }) {
   return (
-    <div style={{ display: "flex", border: `1px solid ${C.line}`, borderRadius: 999, overflow: "hidden" }}>
+    <div className="mode-toggle" role="group" aria-label="Plan depth">
       {["quick", "full"].map((m) => {
         const active = mode === m;
         return (
           <button
             key={m}
+            type="button"
+            aria-pressed={active}
+            className={active ? "selected" : ""}
             onClick={() => onChange(m)}
             title={m === "quick" ? "Quick plan — required fields only" : "Full plan — every question"}
-            style={{
-              border: "none", padding: "7px 12px", fontSize: 12, fontWeight: 500, textTransform: "capitalize",
-              background: active ? C.teal : "transparent", color: active ? "#fff" : C.inkSoft, cursor: "pointer",
-              fontFamily: "'IBM Plex Sans', sans-serif",
-            }}
           >
             {m}
           </button>
@@ -1260,12 +1480,9 @@ function ModeToggle({ mode, onChange }) {
 
 function Overlay({ children, onBackdropClick }) {
   return (
-    <div
-      onClick={onBackdropClick}
-      style={{ position: "fixed", inset: 0, background: "rgba(27,36,48,0.55)", overflowY: "auto", zIndex: 100 }}
-    >
-      <div style={{ minHeight: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-        <div onClick={(e) => e.stopPropagation()}>{children}</div>
+    <div className="overlay" onClick={onBackdropClick}>
+      <div className="overlay-inner">
+        <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", display: "flex", justifyContent: "center" }}>{children}</div>
       </div>
     </div>
   );
@@ -1275,44 +1492,40 @@ function WelcomeOverlay({ mode, onStart }) {
   const [choice, setChoice] = useState(mode || "full");
   return (
     <Overlay onBackdropClick={() => onStart(choice)}>
-      <div className="cm-overlay-box" style={{ background: C.card, borderRadius: 16, padding: "36px 40px", maxWidth: 560, boxShadow: "0 20px 60px rgba(27,36,48,0.35)" }}>
+      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="cm-welcome-title">
         <Eyebrow>Change Management Module</Eyebrow>
-        <h1 style={{ fontFamily: "'Fraunces', serif", fontWeight: 500, fontSize: 26, color: C.ink, margin: "0 0 14px" }}>
-          Plan a change from setup through rollout
-        </h1>
-        <p style={{ fontSize: 14.5, color: C.inkSoft, lineHeight: 1.6, margin: "0 0 18px" }}>
+        <h1 id="cm-welcome-title">Plan a change from setup through rollout</h1>
+        <p className="modal-desc">
           This tool walks you through six sections. Information you enter once — like affected groups or your change
           team — carries forward automatically, so you won't re-type it later.
         </p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 22 }}>
+        <div className="phase-list">
           {PHASES.map((p, i) => {
-            const Icon = p.icon;
+            const PIcon = p.icon;
             return (
-              <div key={p.label} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-                <div style={{ width: 26, height: 26, borderRadius: 8, background: C.tealSoft, color: C.teal, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
-                  <Icon size={14} />
-                </div>
+              <div key={p.label} className="phase-row">
+                <div className="phase-ic"><PIcon size={15} /></div>
                 <div>
-                  <div style={{ fontSize: 13.5, fontWeight: 600, color: C.ink }}>{p.label}</div>
-                  <div style={{ fontSize: 12.5, color: C.inkSoft, lineHeight: 1.4 }}>{PHASE_DESCRIPTIONS[i]}</div>
+                  <div className="phase-name">{p.label}</div>
+                  <div className="phase-desc">{PHASE_DESCRIPTIONS[i]}</div>
                 </div>
               </div>
             );
           })}
         </div>
-        <p style={{ fontSize: 12.5, color: C.inkSoft, lineHeight: 1.5, margin: "0 0 10px", display: "flex", gap: 8, alignItems: "flex-start" }}>
-          <CheckCircle2 size={14} color={C.teal} style={{ marginTop: 2, flexShrink: 0 }} />
-          Click the small arrow next to any section to see exactly what's still needed.
-        </p>
-        <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap", marginBottom: 22, paddingLeft: 22 }}>
-          <LegendItem swatch={{ background: "transparent", border: `1.5px solid ${C.line}` }} label="Not started" />
-          <LegendItem swatch={{ background: C.tealSoft, border: `1.5px solid ${C.teal}` }} label="In progress" />
-          <LegendItem swatch={{ background: C.teal, border: `1.5px solid ${C.teal}` }} label="Complete" />
+        <div className="note small" style={{ marginBottom: 12 }}>
+          <CheckCircle2 size={15} />
+          <p>Click the small arrow next to any section to see exactly what's still needed.</p>
+        </div>
+        <div className="legend" style={{ padding: 0, marginBottom: 24 }}>
+          <span className="legend-item"><span className="legend-dot" /> Not started</span>
+          <span className="legend-item"><span className="legend-dot active" /> In progress</span>
+          <span className="legend-item"><span className="legend-dot done" /> Complete</span>
         </div>
 
-        <div style={{ marginBottom: 18 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: C.ink, marginBottom: 10 }}>How thorough should this plan be?</div>
-          <div style={{ display: "flex", gap: 10 }}>
+        <div style={{ marginBottom: 22 }}>
+          <div className="field-label" style={{ fontSize: 13, fontWeight: 600, marginBottom: 10 }}>How thorough should this plan be?</div>
+          <div className="mode-cards">
             <ModeCard
               title="Quick plan"
               description="Just the required fields — ownership, overview, stakeholders, impact, readiness, and actions. Good for smaller changes."
@@ -1326,7 +1539,7 @@ function WelcomeOverlay({ mode, onStart }) {
               onClick={() => setChoice("full")}
             />
           </div>
-          <div style={{ fontSize: 11.5, color: C.inkSoft, marginTop: 8 }}>You can switch this anytime from the toggle in the header.</div>
+          <div className="hint">You can switch this anytime from the Quick / Full toggle.</div>
         </div>
 
         <PrimaryBtn onClick={() => onStart(choice)}>Get started</PrimaryBtn>
@@ -1337,16 +1550,9 @@ function WelcomeOverlay({ mode, onStart }) {
 
 function ModeCard({ title, description, active, onClick }) {
   return (
-    <button
-      onClick={onClick}
-      style={{
-        flex: 1, textAlign: "left", padding: "14px 16px", borderRadius: 10, cursor: "pointer",
-        border: `1.5px solid ${active ? C.teal : C.line}`, background: active ? C.tealSoft : C.card,
-        fontFamily: "'IBM Plex Sans', sans-serif",
-      }}
-    >
-      <div style={{ fontSize: 13.5, fontWeight: 600, color: active ? C.tealDark : C.ink, marginBottom: 4 }}>{title}</div>
-      <div style={{ fontSize: 12, color: C.inkSoft, lineHeight: 1.4 }}>{description}</div>
+    <button type="button" aria-pressed={active} onClick={onClick} className={"mode-card" + (active ? " selected" : "")}>
+      <div className="mc-title">{title}</div>
+      <div className="mc-desc">{description}</div>
     </button>
   );
 }
@@ -1354,19 +1560,14 @@ function ModeCard({ title, description, active, onClick }) {
 function ConfirmModal({ message, onConfirm, onCancel }) {
   return (
     <Overlay onBackdropClick={onCancel}>
-      <div className="cm-overlay-box" style={{ background: C.card, borderRadius: 14, padding: "26px 28px", maxWidth: 380, boxShadow: "0 20px 60px rgba(27,36,48,0.35)" }}>
-        <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 22 }}>
-          <AlertTriangle size={18} color={C.amber} style={{ marginTop: 1, flexShrink: 0 }} />
-          <p style={{ fontSize: 14.5, color: C.ink, lineHeight: 1.5, margin: 0 }}>{message}</p>
+      <div className="modal small" role="alertdialog" aria-modal="true">
+        <div className="confirm-body">
+          <AlertTriangle size={19} />
+          <p style={{ margin: 0 }}>{message}</p>
         </div>
-        <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+        <div className="modal-actions">
           <GhostBtn onClick={onCancel}>Cancel</GhostBtn>
-          <button
-            onClick={onConfirm}
-            style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: 500, fontSize: 14.5, padding: "10px 20px", borderRadius: 9, border: "none", background: C.red, color: "#fff", cursor: "pointer" }}
-          >
-            Confirm
-          </button>
+          <button type="button" className="btn btn-danger" onClick={onConfirm}>Confirm</button>
         </div>
       </div>
     </Overlay>
@@ -1375,8 +1576,8 @@ function ConfirmModal({ message, onConfirm, onCancel }) {
 
 function SumSection({ title, children }) {
   return (
-    <div style={{ marginBottom: 26, breakInside: "avoid" }}>
-      <div style={{ fontFamily: "'Fraunces', serif", fontWeight: 500, fontSize: 18, color: C.ink, marginBottom: 12, paddingBottom: 8, borderBottom: `2px solid ${C.ink}` }}>{title}</div>
+    <div className="sum-section">
+      <div className="sum-section-title">{title}</div>
       {children}
     </div>
   );
@@ -1384,9 +1585,9 @@ function SumSection({ title, children }) {
 
 function SumRow({ label, value }) {
   return (
-    <div style={{ marginBottom: 10 }}>
-      <div style={{ fontSize: 11, fontWeight: 600, color: C.teal, textTransform: "uppercase", letterSpacing: "0.03em", marginBottom: 2 }}>{label}</div>
-      <div style={{ fontSize: 13.5, color: C.ink, lineHeight: 1.5, whiteSpace: "pre-line" }}>{value || "—"}</div>
+    <div className="sum-row">
+      <div className="sum-label">{label}</div>
+      <div className="sum-text">{value || "—"}</div>
     </div>
   );
 }
@@ -1396,23 +1597,19 @@ function SummaryOverlay({ data, overallImpact, overallReady, onClose }) {
   const actions = pl.actions.filter((a) => a.action);
   return (
     <Overlay onBackdropClick={onClose}>
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="cm-overlay-box"
-        style={{ background: C.card, borderRadius: 16, padding: "36px 40px", maxWidth: 760, width: "90vw", boxShadow: "0 20px 60px rgba(27,36,48,0.35)" }}
-      >
+      <div className="modal wide" role="dialog" aria-modal="true" aria-label="Full plan summary">
         <div id="cm-print-area">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 26 }} className="cm-no-print">
+          <div className="sum-head cm-no-print">
             <div>
               <Eyebrow>Full Plan Summary</Eyebrow>
-              <h1 style={{ fontFamily: "'Fraunces', serif", fontWeight: 500, fontSize: 24, color: C.ink, margin: 0 }}>{s.initiativeName || "Untitled Initiative"}</h1>
+              <h1>{s.initiativeName || "Untitled Initiative"}</h1>
             </div>
             <div style={{ display: "flex", gap: 8 }}>
               <GhostBtn onClick={() => window.print()}><ListChecks size={15} /> Print / Save as PDF</GhostBtn>
-              <IconBtn onClick={onClose}><ChevronLeft size={15} /></IconBtn>
+              <IconBtn onClick={onClose} label="Close summary"><ChevronLeft size={16} /></IconBtn>
             </div>
           </div>
-          <h1 className="cm-print-only" style={{ display: "none", fontFamily: "'Fraunces', serif", fontWeight: 500, fontSize: 24, color: C.ink, margin: "0 0 24px" }}>{s.initiativeName || "Untitled Initiative"} — Change Plan Summary</h1>
+          <h1 className="print-only" style={{ fontSize: 24, margin: "0 0 24px" }}>{s.initiativeName || "Untitled Initiative"} — Change Plan Summary</h1>
 
           <SumSection title="Setup & Governance">
             <SumRow label="Executive Sponsor" value={`${s.sponsor.name}${s.sponsor.title ? ", " + s.sponsor.title : ""}`} />
@@ -1434,7 +1631,7 @@ function SummaryOverlay({ data, overallImpact, overallReady, onClose }) {
           </SumSection>
 
           <SumSection title="Change Readiness">
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 10, marginBottom: 10 }}>
+            <div className="sum-grid">
               {READINESS_CATS.map((c) => {
                 const avg = catAverage(rr, c.key, c.statements.length);
                 return <SumRow key={c.key} label={c.title} value={avg !== null ? `${avg.toFixed(1)} / 5` : "Not scored"} />;
@@ -1445,27 +1642,25 @@ function SummaryOverlay({ data, overallImpact, overallReady, onClose }) {
 
           <SumSection title="Action Plan">
             {actions.length === 0 ? (
-              <div style={{ fontSize: 13.5, color: C.inkSoft, fontStyle: "italic" }}>No actions documented yet.</div>
+              <p className="italic-empty">No actions documented yet.</p>
             ) : (
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12.5 }}>
-                <thead>
-                  <tr>
-                    {["Action", "Owner", "Due", "Status"].map((h) => (
-                      <th key={h} style={{ textAlign: "left", padding: "6px 8px", borderBottom: `2px solid ${C.ink}`, fontSize: 10.5, textTransform: "uppercase", color: C.inkSoft }}>{h}</th>
+              <div className="table-wrap">
+                <table className="table">
+                  <thead>
+                    <tr>{["Action", "Owner", "Due", "Status"].map((h) => <th key={h}>{h}</th>)}</tr>
+                  </thead>
+                  <tbody>
+                    {actions.map((a) => (
+                      <tr key={a.id}>
+                        <td>{a.action}</td>
+                        <td>{a.owner || "—"}</td>
+                        <td>{a.dueDate || "—"}</td>
+                        <td className={"t-" + (STATUS_TONE[a.status] || "neutral")} style={{ fontWeight: 600 }}>{a.status}</td>
+                      </tr>
                     ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {actions.map((a) => (
-                    <tr key={a.id} style={{ borderBottom: `1px solid ${C.line}` }}>
-                      <td style={{ padding: "6px 8px" }}>{a.action}</td>
-                      <td style={{ padding: "6px 8px" }}>{a.owner || "—"}</td>
-                      <td style={{ padding: "6px 8px" }}>{a.dueDate || "—"}</td>
-                      <td style={{ padding: "6px 8px", color: STATUS_COLOR[a.status], fontWeight: 600 }}>{a.status}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </tbody>
+                </table>
+              </div>
             )}
           </SumSection>
         </div>
@@ -1489,22 +1684,18 @@ function stepLabels(phase, keys) {
 function StepDots({ steps, current, onJump, labels }) {
   if (steps.length <= 1) return null;
   return (
-    <div className="cm-step-row" style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+    <div className="pills" role="tablist" aria-label="Steps in this section">
       {steps.map((s, i) => {
         const active = i === current;
         const done = i < current;
         return (
           <button
             key={s}
-            className="cm-step-pill"
+            type="button"
+            role="tab"
+            aria-selected={active}
             onClick={() => onJump(i)}
-            style={{
-              fontSize: 12, fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: 500,
-              padding: "5px 11px", borderRadius: 999, cursor: "pointer",
-              border: `1px solid ${active ? C.teal : C.line}`,
-              background: active ? C.teal : done ? C.tealSoft : "transparent",
-              color: active ? "#fff" : done ? C.tealDark : C.inkSoft,
-            }}
+            className={"pill" + (active ? " active" : done ? " done" : "")}
           >
             {labels[i]}
           </button>
@@ -1520,21 +1711,20 @@ function StepDots({ steps, current, onJump, labels }) {
 
 function RequiredLegend() {
   return (
-    <div style={{ fontSize: 12, color: C.inkSoft, marginBottom: 18, marginTop: -6 }}>
-      <span style={{ color: C.red }}>*</span> Required for this section to be marked complete
+    <div className="req-legend">
+      <span className="req">*</span> Required for this section to be marked complete
     </div>
   );
 }
 
 function PersonFields({ label, value, onChange, required }) {
+  const id = useId();
   return (
-    <div style={{ marginBottom: 32 }}>
-      <label style={{ display: "block", fontSize: 13.5, fontWeight: 500, color: C.ink, marginBottom: 6 }}>{label}{required && <span style={{ color: C.red }}> *</span>}</label>
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <input value={value.name} onChange={(e) => onChange({ ...value, name: e.target.value })} placeholder="Name"
-          style={{ width: "100%", fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 14.5, color: C.ink, background: C.card, border: `1px solid ${C.line}`, borderRadius: 8, padding: "12px 14px", outline: "none" }} />
-        <input value={value.title} onChange={(e) => onChange({ ...value, title: e.target.value })} placeholder="Job title"
-          style={{ width: "100%", fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 14.5, color: C.ink, background: C.card, border: `1px solid ${C.line}`, borderRadius: 8, padding: "12px 14px", outline: "none" }} />
+    <div className="field">
+      <label htmlFor={id}>{label}{required && <span className="req"> *</span>}</label>
+      <div className="row2">
+        <input id={id} type="text" value={value.name} onChange={(e) => onChange({ ...value, name: e.target.value })} placeholder="Name" />
+        <input type="text" aria-label={label + " — job title"} value={value.title} onChange={(e) => onChange({ ...value, title: e.target.value })} placeholder="Job title" style={{ marginTop: 0 }} />
       </div>
     </div>
   );
@@ -1559,9 +1749,9 @@ function SetupScreen({ stepKey, data, update }) {
   if (stepKey === "team") {
     return (
       <>
-        <Card style={{ marginBottom: 20 }}>
+        <Card>
           <Eyebrow>Change Team</Eyebrow>
-          <p style={{ fontSize: 14, color: C.inkSoft, marginTop: -4, marginBottom: 14 }}>Who's on the core change team, and what each person will do.</p>
+          <p className="card-help">Who's on the core change team, and what each person will do.</p>
           <Repeater
             items={s.team}
             onChange={(v) => set({ team: v })}
@@ -1578,7 +1768,7 @@ function SetupScreen({ stepKey, data, update }) {
         </Card>
         <Card>
           <Eyebrow>Extended Contributors</Eyebrow>
-          <p style={{ fontSize: 14, color: C.inkSoft, marginTop: -4, marginBottom: 14 }}>Anyone who needs to be involved but isn't on the core team.</p>
+          <p className="card-help">Anyone who needs to be involved but isn't on the core team.</p>
           <Repeater
             items={s.smes}
             onChange={(v) => set({ smes: v })}
@@ -1587,7 +1777,7 @@ function SetupScreen({ stepKey, data, update }) {
             fields={[
               { key: "name", label: "Name" },
               { key: "function", label: "Business Function" },
-              { key: "role", label: "Role in the Change" },
+              { key: "role", label: "Role in the Change", wide: true },
             ]}
           />
         </Card>
@@ -1598,7 +1788,7 @@ function SetupScreen({ stepKey, data, update }) {
     return (
       <Card>
         <Eyebrow>Governance</Eyebrow>
-        <Field label="Who has final decision-making authority for the change?" value={s.decisionAuthority} onChange={(v) => set({ decisionAuthority: v })} area rows={2} />
+        <Field label="Who has final decision-making authority for the change?" value={s.decisionAuthority} onChange={(v) => set({ decisionAuthority: v })} area />
         <Field label="How will major issues, risks, or decisions be escalated?" value={s.escalation} onChange={(v) => set({ escalation: v })} area />
       </Card>
     );
@@ -1619,11 +1809,13 @@ function ImpactScreen({ stepKey, data, update }) {
       <Card>
         <Eyebrow>Change Overview</Eyebrow>
         <RequiredLegend />
-        <Field label="What is changing?" value={im.whatChanging} onChange={(v) => set({ whatChanging: v })} area rows={5} required />
-        <Field label="Why is the change being made?" value={im.why} onChange={(v) => set({ why: v })} area rows={5} required />
-        <Field label="Why now? What happens if this waits?" value={im.urgency} onChange={(v) => set({ urgency: v })} area rows={4} required help="This is what a sponsor points to when someone asks 'why can't this wait until next quarter?'" />
-        <Field label="What business outcome is the change intended to achieve?" value={im.outcome} onChange={(v) => set({ outcome: v })} area rows={5} required />
-        <Field label="When will the change take effect?" value={im.effectiveDate} onChange={(v) => set({ effectiveDate: v })} type="date" />
+        <Field label="What is changing?" value={im.whatChanging} onChange={(v) => set({ whatChanging: v })} area required />
+        <Field label="Why is the change being made?" value={im.why} onChange={(v) => set({ why: v })} area required />
+        <Field label="Why now? What happens if this waits?" value={im.urgency} onChange={(v) => set({ urgency: v })} area required help="This is what a sponsor points to when someone asks 'why can't this wait until next quarter?'" />
+        <Field label="What business outcome is the change intended to achieve?" value={im.outcome} onChange={(v) => set({ outcome: v })} area required />
+        <div style={{ maxWidth: 320 }}>
+          <Field label="When will the change take effect?" value={im.effectiveDate} onChange={(v) => set({ effectiveDate: v })} type="date" />
+        </div>
       </Card>
     );
   }
@@ -1631,9 +1823,9 @@ function ImpactScreen({ stepKey, data, update }) {
   if (stepKey === "stakeholders") {
     return (
       <>
-        <Card style={{ marginBottom: 20 }}>
+        <Card>
           <Eyebrow>Stakeholders</Eyebrow>
-          <p style={{ fontSize: 14, color: C.inkSoft, marginTop: -4, marginBottom: 14 }}>List every group affected by this change — a team, department, or location. You'll rate each one's impact next, and they'll carry forward automatically into Readiness and the Change Management Plan.</p>
+          <p className="card-help">List every group affected by this change — a team, department, or location. You'll rate each one's impact next, and they'll carry forward automatically into Readiness and the Change Management Plan.</p>
           <Repeater
             items={im.groups}
             onChange={(v) => set({ groups: v })}
@@ -1646,7 +1838,7 @@ function ImpactScreen({ stepKey, data, update }) {
             ]}
           />
         </Card>
-        <Card style={{ marginBottom: 20 }}>
+        <Card>
           <YesNo label="Are any groups affected significantly more than others?" value={im.sigMore} onChange={(v) => set({ sigMore: v })} detailLabel="Which groups, and how?" />
           <YesNo label="Are customers, vendors, or external partners affected?" value={im.external} onChange={(v) => set({ external: v })} detailLabel="Which external groups, and how?" />
         </Card>
@@ -1664,25 +1856,22 @@ function ImpactScreen({ stepKey, data, update }) {
           onChange={(v) => set({ rolesChange: { ...im.rolesChange, yes: v } })}
         />
         {im.rolesChange.yes === true && (
-          <div style={{ marginTop: 16, marginBottom: 28 }}>
+          <div style={{ marginBottom: 28 }}>
             <Repeater
               items={im.rolesChange.list}
               onChange={(v) => set({ rolesChange: { ...im.rolesChange, list: v } })}
               addLabel="Add role change"
               empty="No role changes added yet."
-              fields={[{ key: "role", label: "Role / Responsibility" }, { key: "detail", label: "What Changes", type: "textarea", wide: true }]}
+              fields={[{ key: "role", label: "Role / Responsibility", wide: true }, { key: "detail", label: "What Changes", type: "textarea", wide: true }]}
             />
           </div>
         )}
-        <div style={{ marginBottom: 10, marginTop: 4 }}>
-          <label style={{ display: "block", fontSize: 13.5, fontWeight: 500, color: C.ink, marginBottom: 8 }}>What will people need to start, stop, or continue doing?</label>
-        </div>
-        <div className="cm-sscols" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16, marginBottom: 8 }}>
+        <div className="field-label" style={{ fontSize: 13, fontWeight: 600, marginBottom: 12 }}>What will people need to start, stop, or continue doing?</div>
+        <div className="sscols">
           <LineList label="Start" items={im.start} onChange={(v) => set({ start: v })} placeholder="Something to start doing" />
           <LineList label="Stop" items={im.stop} onChange={(v) => set({ stop: v })} placeholder="Something to stop doing" />
           <LineList label="Continue" items={im.cont} onChange={(v) => set({ cont: v })} placeholder="Something to keep doing" />
         </div>
-        <div style={{ height: 8 }} />
         <YesNo label="Will decision-making authority or accountability change?" value={im.authorityChange} onChange={(v) => set({ authorityChange: v })} />
         <YesNo label="Will reporting relationships or team structures change?" value={im.reportingChange} onChange={(v) => set({ reportingChange: v })} />
       </Card>
@@ -1693,34 +1882,35 @@ function ImpactScreen({ stepKey, data, update }) {
     return (
       <Card>
         <Eyebrow>Processes & Ways of Working</Eyebrow>
-        <p style={{ fontSize: 14, color: C.inkSoft, marginTop: -4, marginBottom: 14 }}>List any existing processes or workflows this change affects.</p>
+        <p className="card-help">List any existing processes or workflows this change affects.</p>
         <Repeater
           items={im.processes}
           onChange={(v) => set({ processes: v })}
           addLabel="Add process"
           empty="No processes added yet."
           fields={[
-            { key: "name", label: "Process / Workflow" },
+            { key: "name", label: "Process / Workflow", wide: true },
             { key: "whatChanges", label: "What Will Change", type: "textarea", wide: true },
             { key: "significance", label: "Significance", type: "select", options: ["Low", "Medium", "High"] },
           ]}
         />
-        <div style={{ height: 18 }} />
+        <div className="spacer-24" />
         <YesNoSimple
           label="Are any new processes, outside of what was listed above, being introduced?"
           value={im.newProcesses.yes}
           onChange={(v) => set({ newProcesses: { ...im.newProcesses, yes: v } })}
         />
         {im.newProcesses.yes === true && (
-          <Repeater
-            items={im.newProcesses.list}
-            onChange={(v) => set({ newProcesses: { ...im.newProcesses, list: v } })}
-            addLabel="Add new process"
-            empty="None added yet."
-            fields={[{ key: "name", label: "New Process" }, { key: "significance", label: "Significance", type: "select", options: ["Low", "Medium", "High"] }]}
-          />
+          <div style={{ marginBottom: 22 }}>
+            <Repeater
+              items={im.newProcesses.list}
+              onChange={(v) => set({ newProcesses: { ...im.newProcesses, list: v } })}
+              addLabel="Add new process"
+              empty="None added yet."
+              fields={[{ key: "name", label: "New Process" }, { key: "significance", label: "Significance", type: "select", options: ["Low", "Medium", "High"] }]}
+            />
+          </div>
         )}
-        <div style={{ height: 10 }} />
         <YesNo label="Will the change affect how teams work together or depend on one another?" value={im.handoffs} onChange={(v) => set({ handoffs: v })} />
       </Card>
     );
@@ -1730,7 +1920,7 @@ function ImpactScreen({ stepKey, data, update }) {
     return (
       <Card>
         <Eyebrow>Technology & Tools</Eyebrow>
-        <p style={{ fontSize: 13.5, color: C.inkSoft, marginTop: -4, marginBottom: 18 }}>Check anything that applies, then add detail once below.</p>
+        <p className="card-help">Check anything that applies, then add detail once below.</p>
         <ChecklistBlock
           items={[
             { key: "newSystems", label: "Employees will use new or different systems, tools, or technology" },
@@ -1752,9 +1942,9 @@ function ImpactScreen({ stepKey, data, update }) {
     return (
       <Card>
         <Eyebrow>Skills & Behaviors</Eyebrow>
-        <Field label="What new knowledge or skills will employees need?" value={im.newSkills} onChange={(v) => set({ newSkills: v })} area rows={5} />
-        <Field label="What existing skills will become less important or obsolete?" value={im.obsoleteSkills} onChange={(v) => set({ obsoleteSkills: v })} area rows={5} />
-        <Field label="What behaviors will need to change?" value={im.behaviorChange} onChange={(v) => set({ behaviorChange: v })} area rows={5} />
+        <Field label="What new knowledge or skills will employees need?" value={im.newSkills} onChange={(v) => set({ newSkills: v })} area />
+        <Field label="What existing skills will become less important or obsolete?" value={im.obsoleteSkills} onChange={(v) => set({ obsoleteSkills: v })} area />
+        <Field label="What behaviors will need to change?" value={im.behaviorChange} onChange={(v) => set({ behaviorChange: v })} area />
         <YesNo label="Will managers need new capabilities to support the change?" value={im.managerCapability} onChange={(v) => set({ managerCapability: v })} />
       </Card>
     );
@@ -1764,7 +1954,7 @@ function ImpactScreen({ stepKey, data, update }) {
     return (
       <Card>
         <Eyebrow>Policies & Structure</Eyebrow>
-        <p style={{ fontSize: 13.5, color: C.inkSoft, marginTop: -4, marginBottom: 18 }}>Check anything that applies, then add detail once below.</p>
+        <p className="card-help">Check anything that applies, then add detail once below.</p>
         <ChecklistBlock
           items={[
             { key: "policyChange", label: "Policies, procedures, governance, or controls will change" },
@@ -1784,27 +1974,25 @@ function ImpactScreen({ stepKey, data, update }) {
 
   if (stepKey === "impactLevel") {
     if (im.groups.length === 0) {
-      return <Card><p style={{ fontSize: 14, color: C.inkSoft }}>Add affected groups on the Stakeholders step to rate their impact level here.</p></Card>;
+      return <Card><p className="italic-empty" style={{ margin: 0 }}>Add affected groups on the Stakeholders step to rate their impact level here.</p></Card>;
     }
     return (
       <Card>
         <Eyebrow>Impact Level</Eyebrow>
-        <p style={{ fontSize: 14, color: C.inkSoft, marginTop: -4, marginBottom: 18 }}>Rate each group below. Their overall impact level is calculated automatically and determines which groups get flagged as priorities later in your Change Management Plan.</p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <p className="card-help">Rate each group below. Their overall impact level is calculated automatically and determines which groups get flagged as priorities later in your Change Management Plan.</p>
+        <div className="stack">
           {im.groups.map((g) => {
             const dims = im.ratings[g.id] || {};
             const level = overallLevel(dims);
             const setDim = (dim, val) => set({ ratings: { ...im.ratings, [g.id]: { ...dims, [dim]: val } } });
             return (
-              <div key={g.id} style={{ border: `1px solid ${C.line}`, borderRadius: 10, padding: 18, background: C.cardAlt }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: g.effect ? 4 : 10, gap: 10 }}>
-                  <div style={{ fontWeight: 600, fontSize: 14.5 }}>{g.name || "Unnamed group"}</div>
-                  {level && <Badge label="Overall" value={level} color={LEVEL_COLOR[level]} />}
+              <div key={g.id} className="entry">
+                <div className="card-head" style={{ marginBottom: g.effect ? 0 : 14 }}>
+                  <div className="group-name">{g.name || "Unnamed group"}</div>
+                  {level && <Badge label="Overall" value={level} tone={IMPACT_TONE[level]} />}
                 </div>
-                {g.effect && (
-                  <div style={{ fontSize: 12.5, color: C.inkSoft, lineHeight: 1.5, marginBottom: 14, maxWidth: 640 }}>{g.effect}</div>
-                )}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16 }}>
+                {g.effect && <div className="group-effect">{g.effect}</div>}
+                <div className="dims">
                   {[
                     ["degree", "Degree of Change", "How different the future state is from how things work today."],
                     ["frequency", "Frequency", "How often this group will encounter or use the change."],
@@ -1812,9 +2000,9 @@ function ImpactScreen({ stepKey, data, update }) {
                     ["disruption", "Disruption", "How much the change will interrupt current work or routines."],
                   ].map(([key, label, def]) => (
                     <div key={key}>
-                      <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 4, textTransform: "uppercase" }}>{label}</div>
-                      <div style={{ fontSize: 11, color: C.inkSoft, marginBottom: 6, lineHeight: 1.4 }}>{def}</div>
-                      <Select value={dims[key]} onChange={(v) => setDim(key, v)} options={["Low", "Medium", "High"]} />
+                      <div className="mini-label" style={{ color: "var(--ink)", marginBottom: 2 }}>{label}</div>
+                      <div className="mini-desc">{def}</div>
+                      <Select value={dims[key]} onChange={(v) => setDim(key, v)} options={["Low", "Medium", "High"]} ariaLabel={`${g.name || "Group"} — ${label}`} />
                     </div>
                   ))}
                 </div>
@@ -1830,17 +2018,19 @@ function ImpactScreen({ stepKey, data, update }) {
     return (
       <Card>
         <Eyebrow>Organizational Impact — Summary</Eyebrow>
-        <SummaryBlock label="What's changing" text={im.whatChanging} />
-        <SummaryBlock label="Why" text={im.why} />
-        <SummaryBlock label="Why now" text={im.urgency} />
-        <SummaryBlock label="Target outcome" text={im.outcome} />
-        <SummaryBlock label="Effective date" text={im.effectiveDate} />
-        <SummaryBlock label="Affected groups" text={im.groups.map((g) => `${g.name || "—"} (${g.count || "?"} people): ${g.effect || "—"}`).join("\n") || "None entered."} />
-        <SummaryBlock label="Start / Stop / Continue" text={`Start: ${im.start.map((i) => i.text).filter(Boolean).join("; ") || "—"}\nStop: ${im.stop.map((i) => i.text).filter(Boolean).join("; ") || "—"}\nContinue: ${im.cont.map((i) => i.text).filter(Boolean).join("; ") || "—"}`} />
-        <SummaryBlock label="Process changes" text={im.processes.map((p) => `${p.name || "—"} — ${p.whatChanges || "—"} (${p.significance || "unrated"})`).join("\n") || "None entered."} />
-        <SummaryBlock label="Technology changes" text={im.techChecklist.length > 0 ? `${im.techChecklist.length} area(s) flagged: ${im.techDetail || "no detail yet"}` : "No system changes flagged."} />
-        <SummaryBlock label="Skills & behaviors" text={`New skills: ${im.newSkills || "—"}\nBehavior change: ${im.behaviorChange || "—"}`} />
-        <SummaryBlock label="Impact levels" text={im.groups.map((g) => `${g.name || "—"}: ${overallLevel(im.ratings[g.id] || {}) || "not yet rated"}`).join("\n") || "None entered."} last />
+        <div>
+          <SummaryBlock label="What's changing" text={im.whatChanging} />
+          <SummaryBlock label="Why" text={im.why} />
+          <SummaryBlock label="Why now" text={im.urgency} />
+          <SummaryBlock label="Target outcome" text={im.outcome} />
+          <SummaryBlock label="Effective date" text={im.effectiveDate} />
+          <SummaryBlock label="Affected groups" text={im.groups.map((g) => `${g.name || "—"} (${g.count || "?"} people): ${g.effect || "—"}`).join("\n") || "None entered."} />
+          <SummaryBlock label="Start / Stop / Continue" text={`Start: ${im.start.map((i) => i.text).filter(Boolean).join("; ") || "—"}\nStop: ${im.stop.map((i) => i.text).filter(Boolean).join("; ") || "—"}\nContinue: ${im.cont.map((i) => i.text).filter(Boolean).join("; ") || "—"}`} />
+          <SummaryBlock label="Process changes" text={im.processes.map((p) => `${p.name || "—"} — ${p.whatChanges || "—"} (${p.significance || "unrated"})`).join("\n") || "None entered."} />
+          <SummaryBlock label="Technology changes" text={im.techChecklist.length > 0 ? `${im.techChecklist.length} area(s) flagged: ${im.techDetail || "no detail yet"}` : "No system changes flagged."} />
+          <SummaryBlock label="Skills & behaviors" text={`New skills: ${im.newSkills || "—"}\nBehavior change: ${im.behaviorChange || "—"}`} />
+          <SummaryBlock label="Impact levels" text={im.groups.map((g) => `${g.name || "—"}: ${overallLevel(im.ratings[g.id] || {}) || "not yet rated"}`).join("\n") || "None entered."} />
+        </div>
       </Card>
     );
   }
@@ -1848,11 +2038,11 @@ function ImpactScreen({ stepKey, data, update }) {
   return null;
 }
 
-function SummaryBlock({ label, text, last }) {
+function SummaryBlock({ label, text }) {
   return (
-    <div style={{ marginBottom: last ? 0 : 16, paddingBottom: last ? 0 : 16, borderBottom: last ? "none" : `1px solid ${C.line}` }}>
-      <div style={{ fontSize: 12, fontWeight: 600, color: C.teal, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>{label}</div>
-      <div style={{ fontSize: 14, color: C.ink, whiteSpace: "pre-line", lineHeight: 1.5 }}>{text || "Not yet entered."}</div>
+    <div className="sum-block">
+      <div className="sum-label">{label}</div>
+      <div className="sum-text">{text || "Not yet entered."}</div>
     </div>
   );
 }
@@ -1876,44 +2066,44 @@ function ReadinessScreen({ stepKey, data, update, overallImpact, readyAvg, overa
     const avg = catAverage(rr, cat.key, cat.statements.length);
     return (
       <Card>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
+        <div className="card-head">
           <Eyebrow>{cat.title}</Eyebrow>
-          {avg !== null && <Badge label="Section avg" value={avg.toFixed(1)} color={RATING[Math.round(avg)].color} />}
+          {avg !== null && <Badge label="Section avg" value={avg.toFixed(1)} tone={READY_TONE[readinessLevel(avg)]} />}
         </div>
-        <p style={{ fontSize: 13.5, color: C.inkSoft, marginTop: -2, marginBottom: 16, lineHeight: 1.5 }}>
+        <p className="card-help">
           Rate each statement from 1–5, where 1 = Strongly Disagree and 5 = Strongly Agree. For each statement, identify the actions needed to improve readiness.
         </p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <div className="stack">
           {cat.statements.map((stmt, idx) => {
             const row = (rr[cat.key] || [])[idx] || {};
             return (
-              <div key={idx} style={{ border: `1px solid ${C.line}`, borderRadius: 10, padding: 14, background: C.cardAlt }}>
-                <div style={{ fontSize: 14, color: C.ink, marginBottom: 10 }}>{stmt}</div>
-                <div style={{ display: "flex", gap: 6, marginBottom: row.score ? 10 : 0 }}>
+              <div key={idx} className="entry">
+                <div className="stmt">{stmt}</div>
+                <div className="scores" role="group" aria-label={stmt} style={{ marginBottom: 12 }}>
                   {[1, 2, 3, 4, 5].map((n) => {
                     const active = row.score === n;
                     return (
                       <button
                         key={n}
+                        type="button"
+                        aria-pressed={active}
                         onClick={() => setRow(cat.key, idx, { score: n }, cat.statements.length)}
                         title={RATING[n].label}
-                        style={{
-                          width: 36, height: 36, borderRadius: 8, border: `1.5px solid ${active ? RATING[n].color : C.line}`,
-                          background: active ? RATING[n].color : "#fff", color: active ? "#fff" : C.inkSoft,
-                          fontWeight: 600, fontSize: 14, cursor: "pointer",
-                        }}
+                        aria-label={`${n} — ${RATING[n].label}`}
+                        className={"score-btn" + (active ? " selected" : "")}
                       >
                         {n}
                       </button>
                     );
                   })}
-                  {row.score && <span style={{ fontSize: 12.5, color: C.inkSoft, alignSelf: "center", marginLeft: 4 }}>{RATING[row.score].label}</span>}
+                  {row.score && <span className="score-label">{RATING[row.score].label}</span>}
                 </div>
                 <input
+                  type="text"
+                  aria-label="Action step to close the gap"
                   value={row.action || ""}
                   onChange={(e) => setRow(cat.key, idx, { action: e.target.value }, cat.statements.length)}
                   placeholder="Action step to close the gap (optional)"
-                  style={{ width: "100%", fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 13.5, color: C.ink, background: C.card, border: `1px solid ${C.line}`, borderRadius: 7, padding: "8px 10px", outline: "none" }}
                 />
               </div>
             );
@@ -1929,58 +2119,48 @@ function ReadinessScreen({ stepKey, data, update, overallImpact, readyAvg, overa
     return (
       <Card>
         <Eyebrow>Overall Readiness</Eyebrow>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14, marginBottom: 24 }}>
+        <div className="cat-grid">
           {READINESS_CATS.map((c) => {
             const a = catAverage(rr, c.key, c.statements.length);
             const rows = rr[c.key] || [];
             const actionTexts = rows.map((r) => r && r.action).filter((t) => t && t.trim());
+            const tone = a !== null ? READY_TONE[readinessLevel(a)] : "neutral";
             return (
-              <div key={c.key} style={{ border: `1px solid ${C.line}`, borderRadius: 10, padding: 14, background: C.cardAlt }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: C.ink, marginBottom: 4 }}>{c.title}</div>
-                <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 18, fontWeight: 500, color: a !== null ? RATING[Math.round(a)].color : C.line, marginBottom: actionTexts.length ? 8 : 0 }}>
-                  {a !== null ? a.toFixed(1) : "—"}
-                </div>
+              <div key={c.key} className="cat-tile">
+                <div className="cat-title">{c.title}</div>
+                <div className={"cat-score t-" + tone}>{a !== null ? a.toFixed(1) : "—"}</div>
                 {actionTexts.length > 0 && (
-                  <ul style={{ margin: 0, paddingLeft: 16, display: "flex", flexDirection: "column", gap: 3 }}>
-                    {actionTexts.map((t, i) => (
-                      <li key={i} style={{ fontSize: 12, color: C.inkSoft, lineHeight: 1.45 }}>{t}</li>
-                    ))}
-                  </ul>
+                  <ul>{actionTexts.map((t, i) => <li key={i}>{t}</li>)}</ul>
                 )}
               </div>
             );
           })}
         </div>
 
-        <div style={{ display: "flex", gap: 10, marginBottom: 24 }}>
-          <Badge label="Overall readiness" value={readyAvg !== null ? `${readyAvg.toFixed(1)} · ${overallReady}` : "Not yet scored"} color={overallReady ? LEVEL_COLOR[overallReady] : C.inkSoft} />
-          <Badge label="Overall impact" value={overallImpact || "Not yet rated"} color={overallImpact ? LEVEL_COLOR[overallImpact] : C.inkSoft} />
+        <div className="badge-row">
+          <Badge label="Overall readiness" value={readyAvg !== null ? `${readyAvg.toFixed(1)} · ${overallReady}` : "Not yet scored"} tone={overallReady ? READY_TONE[overallReady] : "neutral"} />
+          <Badge label="Overall impact" value={overallImpact || "Not yet rated"} tone={overallImpact ? IMPACT_TONE[overallImpact] : "neutral"} />
         </div>
 
         <Eyebrow>Impact × Readiness</Eyebrow>
-        <div style={{ display: "flex", gap: 20, alignItems: "flex-start", marginTop: 10 }}>
-          <div style={{ position: "relative", width: 240, height: 240 }}>
-            <div style={{ position: "absolute", inset: 0, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gridTemplateRows: "1fr 1fr 1fr", border: `1px solid ${C.line}`, borderRadius: 10, overflow: "hidden" }}>
+        <div className="pairing">
+          <div className="matrix">
+            <div className="matrix-grid">
               {Array.from({ length: 9 }).map((_, i) => {
                 const col = i % 3, row = Math.floor(i / 3);
                 const highlight = px !== null && py !== null && col === px && row === 2 - py;
-                return <div key={i} style={{ background: highlight ? C.amberSoft : i % 2 === 0 ? "#FBF9F4" : "#F3EEE2", border: `1px solid ${C.line}` }} />;
+                return <div key={i} className={"matrix-cell" + (highlight ? " hl" : "")} />;
               })}
             </div>
             {px !== null && py !== null && (
-              <div style={{
-                position: "absolute", width: 16, height: 16, borderRadius: 99, background: C.amber, border: "2px solid #fff", boxShadow: "0 0 0 2px " + C.amber,
-                left: `${(px / 2) * 100}%`, top: `${((2 - py) / 2) * 100}%`, transform: "translate(-50%,-50%) translate(40px,40px)",
-              }} />
+              <div className="matrix-dot" style={{ left: `${((px * 2 + 1) / 6) * 100}%`, top: `${(((2 - py) * 2 + 1) / 6) * 100}%` }} />
             )}
-            <div style={{ position: "absolute", left: -6, top: "50%", transform: "translate(-100%,-50%) rotate(-90deg)", fontSize: 11, color: C.inkSoft, fontFamily: "'IBM Plex Mono', monospace" }}>IMPACT →</div>
-            <div style={{ position: "absolute", bottom: -22, left: "50%", transform: "translateX(-50%)", fontSize: 11, color: C.inkSoft, fontFamily: "'IBM Plex Mono', monospace" }}>READINESS →</div>
+            <div className="axis y">IMPACT →</div>
+            <div className="axis x">READINESS →</div>
           </div>
-          <div style={{ flex: 1, paddingTop: 6 }}>
-            <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 6, color: C.ink }}>
-              {overallImpact && overallReady ? `${overallImpact} impact, ${overallReady.toLowerCase()} readiness` : "Complete both assessments to see the full picture"}
-            </div>
-            <p style={{ fontSize: 13.5, color: C.inkSoft, lineHeight: 1.6 }}>
+          <div className="pairing-text">
+            <h3>{overallImpact && overallReady ? `${overallImpact} impact, ${overallReady.toLowerCase()} readiness` : "Complete both assessments to see the full picture"}</h3>
+            <p>
               {overallImpact === "High" && overallReady === "Low" && "Largest gap on the board — the Change Management Plan will prioritize stakeholder engagement, leadership visibility, and resistance planning."}
               {overallImpact === "High" && overallReady !== "Low" && "Significant change with a reasonable foundation — the plan will focus on sustaining momentum and reinforcing new behaviors."}
               {overallImpact !== "High" && overallReady === "Low" && "Modest change, but low readiness signals a communication or awareness gap worth closing early."}
@@ -2014,49 +2194,49 @@ function ActionsRepeater({ sectionKey, data, update, groups }) {
   const set = (id, key, val) => update("plan", { actions: all.map((a) => (a.id === id ? { ...a, [key]: val } : a)) });
 
   return (
-    <div>
+    <div style={{ borderTop: "1px solid var(--line)", paddingTop: 24, marginTop: 6 }}>
       <Eyebrow>Actions</Eyebrow>
-      <p style={{ fontSize: 13.5, color: C.inkSoft, marginTop: -4, marginBottom: 16, lineHeight: 1.55 }}>
+      <p className="card-help">
         Turn the answers above into specific actions — who owns each one, when it's due, and what success looks like. Status, issues, and comments are tracked separately in the Action Plan section.
       </p>
-      {items.length === 0 && <div style={{ fontSize: 13.5, color: C.inkSoft, fontStyle: "italic", marginBottom: 12 }}>No actions added yet. These roll up automatically into the Action Plan and the Monitoring Dashboard.</div>}
-      <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 14 }}>
-        {items.map((row) => (
-          <div key={row.id} style={{ border: `1px solid ${C.line}`, borderRadius: 10, padding: 18, background: C.cardAlt }}>
-            <div style={{ marginBottom: 14 }}>
-              <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 5, textTransform: "uppercase" }}>Action</div>
-              <AutoTextarea value={row.action} onChange={(e) => set(row.id, "action", e.target.value)} minHeight={56} style={inputStyle} />
-            </div>
-            <div style={{ marginBottom: 14 }}>
-              <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 5, textTransform: "uppercase" }}>Stakeholder Group(s)</div>
-              <MultiSelect value={row.group} onChange={(v) => set(row.id, "group", v)} options={groupNames} placeholder="Add stakeholder groups on the Stakeholders step first" />
-            </div>
-            <div className="cm-owner-date" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
-              <div>
-                <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 5, textTransform: "uppercase" }}>Owner</div>
-                <Select value={row.owner} onChange={(v) => set(row.id, "owner", v)} options={owners} />
+      {items.length === 0 && <p className="italic-empty">No actions added yet. These roll up automatically into the Action Plan and the Monitoring Dashboard.</p>}
+      {items.length > 0 && (
+        <div className="stack-lg">
+          {items.map((row) => (
+            <div key={row.id} className="entry">
+              <div style={{ marginBottom: 16 }}>
+                <div className="mini-label">Action</div>
+                <AutoTextarea value={row.action} onChange={(e) => set(row.id, "action", e.target.value)} minHeight={56} />
               </div>
-              <div>
-                <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 5, textTransform: "uppercase" }}>Due Date</div>
-                <input type="date" value={row.dueDate} onChange={(e) => set(row.id, "dueDate", e.target.value)} style={inputStyle} />
+              <div style={{ marginBottom: 16 }}>
+                <div className="mini-label">Stakeholder Group(s)</div>
+                <MultiSelect value={row.group} onChange={(v) => set(row.id, "group", v)} options={groupNames} placeholder="Add stakeholder groups on the Stakeholders step first" />
+              </div>
+              <div className="row2" style={{ marginBottom: 16 }}>
+                <div>
+                  <div className="mini-label">Owner</div>
+                  <Select value={row.owner} onChange={(v) => set(row.id, "owner", v)} options={owners} ariaLabel="Owner" />
+                </div>
+                <div>
+                  <div className="mini-label">Due Date</div>
+                  <input type="date" aria-label="Due Date" value={row.dueDate} onChange={(e) => set(row.id, "dueDate", e.target.value)} />
+                </div>
+              </div>
+              <div className="measure-row">
+                <div>
+                  <div className="mini-label">Success Measure</div>
+                  <input type="text" aria-label="Success Measure" value={row.measure} onChange={(e) => set(row.id, "measure", e.target.value)} />
+                </div>
+                <DeleteButton onDelete={() => remove(row.id)} />
               </div>
             </div>
-            <div style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 5, textTransform: "uppercase" }}>Success Measure</div>
-                <input value={row.measure} onChange={(e) => set(row.id, "measure", e.target.value)} style={inputStyle} />
-              </div>
-              <DeleteButton onDelete={() => remove(row.id)} />
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
       <GhostBtn onClick={add}><Plus size={15} /> Add action</GhostBtn>
     </div>
   );
 }
-
-const inputStyle = { width: "100%", fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 13.5, color: C.ink, background: C.card, border: `1px solid ${C.line}`, borderRadius: 7, padding: "10px 12px", outline: "none" };
 
 function GapBanner({ section, data }) {
   const rr = data.readiness.ratings;
@@ -2070,11 +2250,9 @@ function GapBanner({ section, data }) {
   if (section.related.length === 0) return null;
   if (gaps.length > 0) {
     return (
-      <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: C.amberSoft, border: `1px solid ${C.amber}55`, borderRadius: 10, padding: "12px 14px", marginBottom: 18 }}>
-        <AlertTriangle size={16} color={C.amber} style={{ marginTop: 2, flexShrink: 0 }} />
-        <div style={{ fontSize: 13.5, color: C.ink, lineHeight: 1.5 }}>
-          <strong>Priority — </strong>flagged from Readiness: {gaps.map((g) => `${g.title} scored ${g.avg.toFixed(1)}/5`).join("; ")}.
-        </div>
+      <div className="note warning">
+        <AlertTriangle size={16} />
+        <p><strong>Priority — </strong>flagged from Readiness: {gaps.map((g) => `${g.title} scored ${g.avg.toFixed(1)}/5`).join("; ")}.</p>
       </div>
     );
   }
@@ -2084,11 +2262,9 @@ function GapBanner({ section, data }) {
   });
   if (scored) {
     return (
-      <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: C.tealSoft, border: `1px solid ${C.teal}44`, borderRadius: 10, padding: "12px 14px", marginBottom: 18 }}>
-        <CheckCircle2 size={16} color={C.teal} style={{ marginTop: 2, flexShrink: 0 }} />
-        <div style={{ fontSize: 13.5, color: C.ink, lineHeight: 1.5 }}>
-          <strong>Light touch — </strong>related readiness scores are healthy. Keep this section brief.
-        </div>
+      <div className="note info">
+        <CheckCircle2 size={16} />
+        <p><strong>Light touch — </strong>related readiness scores are healthy. Keep this section brief.</p>
       </div>
     );
   }
@@ -2099,18 +2275,16 @@ function ChangeContextCard({ data }) {
   const im = data.impact;
   if (im.groups.length === 0) return null;
   return (
-    <div style={{ border: `1px solid ${C.teal}44`, background: C.tealSoft, borderRadius: 12, padding: "16px 20px", marginBottom: 20 }}>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-        {im.groups.map((g) => {
-          const lvl = overallLevel(im.ratings[g.id] || {});
-          return <Badge key={g.id} label={g.name || "Group"} value={lvl || "unrated"} color={lvl ? LEVEL_COLOR[lvl] : C.inkSoft} />;
-        })}
-      </div>
+    <div className="context-strip">
+      {im.groups.map((g) => {
+        const lvl = overallLevel(im.ratings[g.id] || {});
+        return <Badge key={g.id} label={g.name || "Group"} value={lvl || "unrated"} tone={lvl ? IMPACT_TONE[lvl] : "neutral"} />;
+      })}
     </div>
   );
 }
 
-function PlanScreen({ stepKey, data, update, overallImpact, overallReady }) {
+function PlanScreen({ stepKey, data, update }) {
   const section = PLAN_SECTIONS.find((s) => s.key === stepKey);
   const notes = data.plan.notes;
 
@@ -2124,9 +2298,9 @@ function PlanScreen({ stepKey, data, update, overallImpact, overallReady }) {
       <>
         <ChangeContextCard data={data} />
         {section.key === "stakeholder" && (
-          <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: C.tealSoft, border: `1px solid ${C.teal}33`, borderRadius: 10, padding: "12px 14px", marginBottom: 18 }}>
-            <ListChecks size={15} color={C.teal} style={{ marginTop: 2, flexShrink: 0 }} />
-            <p style={{ fontSize: 12.5, color: C.ink, lineHeight: 1.5, margin: 0 }}>
+          <div className="note small">
+            <ListChecks size={15} />
+            <p>
               Think of this whole phase as gap-to-action: sections flagged "Priority" below are pulled directly from low scores back in Change Readiness — that's what tells you where to focus first.
             </p>
           </div>
@@ -2135,9 +2309,8 @@ function PlanScreen({ stepKey, data, update, overallImpact, overallReady }) {
           <Eyebrow>{section.title}</Eyebrow>
           <GapBanner section={section} data={data} />
           {section.questions.map((q, idx) => (
-            <Field key={idx} label={q} value={(notes[section.key] || [])[idx]} onChange={(v) => setNote(idx, v)} area rows={4} />
+            <Field key={idx} label={q} value={(notes[section.key] || [])[idx]} onChange={(v) => setNote(idx, v)} area />
           ))}
-          <div style={{ height: 6 }} />
           <ActionsRepeater sectionKey={section.key} data={data} update={update} groups={data.impact.groups} />
         </Card>
       </>
@@ -2159,49 +2332,49 @@ function ActionPlanScreen({ stepKey, data, update }) {
       <Card>
         <Eyebrow>Change Management Plan Actions</Eyebrow>
         {actions.length > 0 && (
-          <p style={{ fontSize: 12.5, color: C.inkSoft, marginTop: -4, marginBottom: 18, lineHeight: 1.5 }}>
+          <p className="card-help">
             Status and Trend here feed the Monitoring Dashboard's calculations automatically — keep them current as work progresses.
           </p>
         )}
         {actions.length === 0 ? (
-          <div style={{ fontSize: 14, color: C.inkSoft, fontStyle: "italic" }}>No actions added yet — go to the Change Management Plan section and use "Add action" within any section.</div>
+          <p className="italic-empty" style={{ margin: 0 }}>No actions added yet — go to the Change Management Plan section and use "Add action" within any section.</p>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div className="stack">
             {actions.map((a) => {
               const sec = PLAN_SECTIONS.find((s) => s.key === a.section);
               return (
-                <div key={a.id} style={{ border: `1px solid ${C.line}`, borderRadius: 12, padding: 18, background: C.cardAlt }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 12 }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: C.ink, lineHeight: 1.4 }}>{a.action}</div>
-                    <Badge label="Category" value={sec ? sec.title : a.section} color={C.teal} />
+                <div key={a.id} className="entry">
+                  <div className="card-head">
+                    <div className="action-title">{a.action}</div>
+                    <Badge label="Category" value={sec ? sec.title : a.section} tone="neutral" />
                   </div>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 10, marginBottom: 16, paddingBottom: 16, borderBottom: `1px solid ${C.line}` }}>
+                  <div className="read-grid">
                     <ReadField label="Stakeholder Group(s)" value={(a.group || []).join(", ")} />
                     <ReadField label="Owner" value={a.owner} />
                     <ReadField label="Success Measure" value={a.measure} />
                     <ReadField label="Due Date" value={a.dueDate} />
                   </div>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14, marginBottom: 14 }}>
+                  <div className="status-grid">
                     <div>
-                      <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 5, textTransform: "uppercase" }}>Status</div>
-                      <Select value={a.status} onChange={(v) => set(a.id, "status", v)} options={STATUS_OPTIONS} />
+                      <div className="mini-label">Status</div>
+                      <Select value={a.status} onChange={(v) => set(a.id, "status", v)} options={STATUS_OPTIONS} ariaLabel="Status" />
                     </div>
                     <div>
-                      <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 5, textTransform: "uppercase" }}>Trend</div>
-                      <Select value={a.trend} onChange={(v) => set(a.id, "trend", v)} options={TREND_OPTIONS} />
+                      <div className="mini-label">Trend</div>
+                      <Select value={a.trend} onChange={(v) => set(a.id, "trend", v)} options={TREND_OPTIONS} ariaLabel="Trend" />
                     </div>
                   </div>
 
-                  <div style={{ marginBottom: 14 }}>
-                    <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 5, textTransform: "uppercase" }}>Emerging Issues / Roadblocks</div>
-                    <AutoTextarea value={a.issues || ""} onChange={(e) => set(a.id, "issues", e.target.value)} placeholder="None logged" minHeight={56} style={inputStyle} />
+                  <div style={{ marginBottom: 16 }}>
+                    <div className="mini-label">Emerging Issues / Roadblocks</div>
+                    <AutoTextarea value={a.issues || ""} onChange={(e) => set(a.id, "issues", e.target.value)} placeholder="None logged" minHeight={56} />
                   </div>
 
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 5, textTransform: "uppercase" }}>Comments</div>
-                    <AutoTextarea value={a.comments || ""} onChange={(e) => set(a.id, "comments", e.target.value)} placeholder="Optional" minHeight={56} style={inputStyle} />
+                    <div className="mini-label">Comments</div>
+                    <AutoTextarea value={a.comments || ""} onChange={(e) => set(a.id, "comments", e.target.value)} placeholder="Optional" minHeight={56} />
                   </div>
                 </div>
               );
@@ -2217,9 +2390,9 @@ function ActionPlanScreen({ stepKey, data, update }) {
 
 function ReadField({ label, value }) {
   return (
-    <div>
-      <div style={{ fontSize: 11, fontWeight: 500, color: C.inkSoft, marginBottom: 3, textTransform: "uppercase" }}>{label}</div>
-      <div style={{ fontSize: 13.5, color: C.ink }}>{value || "—"}</div>
+    <div className="read-field">
+      <div className="rf-label">{label}</div>
+      <div className="rf-value">{value || "—"}</div>
     </div>
   );
 }
@@ -2278,47 +2451,43 @@ function MonitoringDashboardScreen({ data, overallReady }) {
     return (
       <Card>
         <Eyebrow>Monitoring Dashboard</Eyebrow>
-        <p style={{ fontSize: 14, color: C.inkSoft }}>Add actions in the Change Management Plan first — this dashboard fills in automatically once you do.</p>
+        <p className="italic-empty" style={{ margin: 0 }}>Add actions in the Change Management Plan first — this dashboard fills in automatically once you do.</p>
       </Card>
     );
   }
 
   return (
     <>
-      <Card style={{ marginBottom: 20 }}>
+      <Card>
         <Eyebrow>Executive Overview</Eyebrow>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14, marginTop: 8 }}>
-          <StatTile label="Overall Status" value={overallStatus} color={STATUS_COLOR[overallStatus] || C.inkSoft} text />
-          <StatTile label="Overall Trend" value={overallTrend} color={TREND_COLOR[overallTrend] || C.inkSoft} text />
-          <StatTile label="Overall Readiness" value={overallReady || "Not yet scored"} color={overallReady ? LEVEL_COLOR[overallReady] : C.inkSoft} text />
-          <StatTile label="Actions Completed" value={`${pctComplete}%`} color={C.teal} />
+        <div className="metric-grid">
+          <StatTile label="Overall Status" value={overallStatus} tone={STATUS_TONE[overallStatus] || "neutral"} />
+          <StatTile label="Overall Trend" value={overallTrend} tone={TREND_TONE[overallTrend] || "neutral"} />
+          <StatTile label="Overall Readiness" value={overallReady || "Not yet scored"} tone={overallReady ? READY_TONE[overallReady] : "neutral"} />
+          <StatTile label="Actions Completed" value={`${pctComplete}%`} num />
         </div>
       </Card>
 
-      <Card style={{ marginBottom: 20 }}>
+      <Card>
         <Eyebrow>Actions Requiring Attention</Eyebrow>
         {attention.length === 0 ? (
-          <div style={{ fontSize: 13.5, color: C.inkSoft, fontStyle: "italic" }}>No actions currently At Risk, Off Track, or Blocked.</div>
+          <p className="italic-empty" style={{ margin: 0 }}>No actions currently At Risk, Off Track, or Blocked.</p>
         ) : (
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+          <div className="table-wrap">
+            <table className="table">
               <thead>
-                <tr>
-                  {["Area", "Current Condition", "Leadership Support Needed"].map((h) => (
-                    <th key={h} style={{ textAlign: "left", padding: "8px 10px", borderBottom: `2px solid ${C.ink}`, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.03em", color: C.inkSoft }}>{h}</th>
-                  ))}
-                </tr>
+                <tr>{["Area", "Current Condition", "Leadership Support Needed"].map((h) => <th key={h}>{h}</th>)}</tr>
               </thead>
               <tbody>
                 {attention.map((a) => (
-                  <tr key={a.id} style={{ borderBottom: `1px solid ${C.line}` }}>
-                    <td style={{ padding: "9px 10px", fontWeight: 500 }}>{a.action}</td>
-                    <td style={{ padding: "9px 10px" }}>
-                      <span style={{ color: STATUS_COLOR[a.status], fontWeight: 600 }}>{a.status}</span>
+                  <tr key={a.id}>
+                    <td style={{ fontWeight: 500 }}>{a.action}</td>
+                    <td>
+                      <span className={"t-" + STATUS_TONE[a.status]} style={{ fontWeight: 600 }}>{a.status}</span>
                       {a.issues ? ` — ${a.issues}` : ""}
                       {isOverdue(a) ? " (overdue)" : ""}
                     </td>
-                    <td style={{ padding: "9px 10px" }}>{leadershipSupportFor(a.status)}</td>
+                    <td>{leadershipSupportFor(a.status)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -2329,27 +2498,27 @@ function MonitoringDashboardScreen({ data, overallReady }) {
 
       <Card>
         <Eyebrow>All Actions</Eyebrow>
-        <p style={{ fontSize: 13.5, color: C.inkSoft, marginTop: -4, marginBottom: 16 }}>This list is read-only. Update status, issues, trend, and comments from the Action Plan section.</p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <p className="card-help">This list is read-only. Update status, issues, trend, and comments from the Action Plan section.</p>
+        <div className="stack">
           {actions.map((a) => {
             const sec = PLAN_SECTIONS.find((s) => s.key === a.section);
             const overdueRow = isOverdue(a);
             return (
-              <div key={a.id} style={{ border: `1px solid ${overdueRow ? C.red + "66" : C.line}`, background: overdueRow ? C.redSoft : C.cardAlt, borderRadius: 10, padding: 14 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: 10, marginBottom: 8 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: C.ink }}>{a.action}</div>
-                  <div style={{ fontSize: 11.5, color: C.inkSoft, whiteSpace: "nowrap" }}>{sec ? sec.title : a.section}</div>
+              <div key={a.id} className={"entry dash-item" + (overdueRow ? " overdue" : "")}>
+                <div className="dash-top">
+                  <div className="dash-title">{a.action}</div>
+                  <div className="dash-sec">{sec ? sec.title : a.section}</div>
                 </div>
-                <div style={{ fontSize: 12.5, color: C.inkSoft, marginBottom: 8 }}>
+                <div className="dash-meta">
                   {(a.group || []).join(", ") || "No group"} · Owner: {a.owner || "Unassigned"} · Due: {a.dueDate || "—"} · Success: {a.measure || "—"}
                 </div>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-                  <Badge label="Status" value={a.status} color={STATUS_COLOR[a.status] || C.inkSoft} />
-                  <Badge label="Trend" value={a.trend || "Not Yet Determined"} color={TREND_COLOR[a.trend] || C.inkSoft} />
-                  {overdueRow && <Badge label="Due" value="Overdue" color={C.red} />}
+                <div className="status-badges">
+                  <Badge label="Status" value={a.status} tone={STATUS_TONE[a.status] || "neutral"} />
+                  <Badge label="Trend" value={a.trend || "Not Yet Determined"} tone={TREND_TONE[a.trend] || "neutral"} />
+                  {overdueRow && <Badge label="Due" value="Overdue" tone="high" />}
                 </div>
-                {a.issues && <div style={{ fontSize: 12.5, color: C.ink, marginTop: 8 }}><strong>Issues:</strong> {a.issues}</div>}
-                {a.comments && <div style={{ fontSize: 12.5, color: C.inkSoft, marginTop: 4 }}><strong>Comments:</strong> {a.comments}</div>}
+                {a.issues && <div className="dash-note"><strong>Issues:</strong> {a.issues}</div>}
+                {a.comments && <div className="dash-note soft"><strong>Comments:</strong> {a.comments}</div>}
               </div>
             );
           })}
@@ -2359,11 +2528,11 @@ function MonitoringDashboardScreen({ data, overallReady }) {
   );
 }
 
-function StatTile({ label, value, color, text }) {
+function StatTile({ label, value, tone = "neutral", num }) {
   return (
-    <div style={{ border: `1px solid ${C.line}`, borderRadius: 10, padding: "14px 12px", textAlign: "center" }}>
-      <div style={{ fontFamily: text ? "'IBM Plex Sans', sans-serif" : "'IBM Plex Mono', monospace", fontSize: text ? 16 : 26, fontWeight: text ? 600 : 500, color }}>{value}</div>
-      <div style={{ fontSize: 11, color: C.inkSoft, marginTop: 4, textTransform: "uppercase", letterSpacing: "0.03em" }}>{label}</div>
+    <div className="metric">
+      <span className="metric-label">{label}</span>
+      <span className={"metric-value" + (num ? " num" : " t-" + tone)} style={tone === "neutral" && !num ? { color: "var(--ink)" } : undefined}>{value}</span>
     </div>
   );
 }
