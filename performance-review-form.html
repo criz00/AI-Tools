@@ -1,0 +1,700 @@
+<title>Performance Review Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&display=swap" rel="stylesheet">
+<style>
+/* ===== Talent Workspace UI (talent-ui.css) ===== */
+/* Layout: brand row, tool header with progress, then one question card at a time (or the answers drawer) in a 720px column. */
+:root{
+  --font-sans:Inter, system-ui, -apple-system, sans-serif;
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:22px;--space-6:28px;--space-7:32px;--space-8:56px;
+  --radius-sm:8px;--radius-md:10px;--radius-lg:12px;--radius-xl:14px;--radius-pill:999px;
+  --bg:#F7F8FA;--surface:#FFFFFF;--surface-alt:#F1F3F5;--ink:#111827;--ink-soft:#5B6472;--line:#E5E7EB;--line-strong:#8A9099;
+  --accent:#0F766E;--accent-hover:#0B5F58;--on-accent:#FFFFFF;--accent-soft:#E6F4F2;--focus-ring:rgba(15,118,110,0.25);
+  --info:#1D4ED8;--info-soft:#EEF3FF;--warning:#B54708;--warning-soft:#FEF3E2;--error:#B42318;--error-soft:#FEECEB;
+  --shadow-sm:0 1px 2px rgba(16,24,40,0.05);
+  --shadow-card:0 1px 2px rgba(16,24,40,0.04), 0 6px 20px -4px rgba(16,24,40,0.07);
+  --shadow-lift:0 2px 4px rgba(16,24,40,0.06), 0 10px 28px -6px rgba(16,24,40,0.12);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1113;--surface:#171B1F;--surface-alt:#1F2429;--ink:#ECEEF0;--ink-soft:#9AA3AD;--line:#2A3036;--line-strong:#6B747E;
+    --accent:#3CC4B4;--accent-hover:#62D3C6;--on-accent:#04201C;--accent-soft:rgba(60,196,180,0.13);--focus-ring:rgba(60,196,180,0.3);
+    --info:#8AB4F8;--info-soft:rgba(138,180,248,0.13);--warning:#F5B45C;--warning-soft:rgba(245,180,92,0.13);--error:#F28B82;--error-soft:rgba(242,139,130,0.13);
+    --shadow-sm:0 1px 2px rgba(0,0,0,0.4);
+    --shadow-card:0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -6px rgba(0,0,0,0.5);
+    --shadow-lift:0 2px 4px rgba(0,0,0,0.45), 0 12px 30px -6px rgba(0,0,0,0.6);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1113;--surface:#171B1F;--surface-alt:#1F2429;--ink:#ECEEF0;--ink-soft:#9AA3AD;--line:#2A3036;--line-strong:#6B747E;
+  --accent:#3CC4B4;--accent-hover:#62D3C6;--on-accent:#04201C;--accent-soft:rgba(60,196,180,0.13);--focus-ring:rgba(60,196,180,0.3);
+  --info:#8AB4F8;--info-soft:rgba(138,180,248,0.13);--warning:#F5B45C;--warning-soft:rgba(245,180,92,0.13);--error:#F28B82;--error-soft:rgba(242,139,130,0.13);
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.4);
+  --shadow-card:0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -6px rgba(0,0,0,0.5);
+  --shadow-lift:0 2px 4px rgba(0,0,0,0.45), 0 12px 30px -6px rgba(0,0,0,0.6);
+  color-scheme:dark;
+}
+*{box-sizing:border-box;}
+html, body{margin:0;background:var(--bg);}
+.tw, body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);-webkit-font-smoothing:antialiased;}
+.eyebrow{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-xl);padding:var(--space-7);box-shadow:var(--shadow-card);color:var(--ink);}
+.hint{font-size:12.5px;color:var(--ink-soft);margin:0;line-height:1.45;}
+
+/* Inputs */
+.tw textarea{
+  width:100%;min-height:96px;font:400 14.5px var(--font-sans);color:var(--ink);line-height:1.55;
+  background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius-md);
+  padding:11px 14px;outline:none;resize:vertical;transition:border-color .15s, box-shadow .15s;}
+.tw textarea:hover{border-color:var(--ink-soft);}
+.tw textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--focus-ring);}
+.tw ::placeholder{color:var(--ink-soft);opacity:1;}
+
+/* Buttons */
+.btn{font:600 14px var(--font-sans);border-radius:var(--radius-md);padding:11px 20px;min-height:44px;
+  border:1px solid transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  transition:background .15s, box-shadow .15s, transform .15s, border-color .15s, color .15s;}
+.btn-primary{background:var(--accent);color:var(--on-accent);box-shadow:var(--shadow-sm);}
+.btn-primary:hover:not(:disabled){background:var(--accent-hover);transform:translateY(-1px);box-shadow:var(--shadow-lift);}
+.btn-primary:active:not(:disabled){transform:none;}
+.btn-secondary{background:var(--surface);color:var(--ink);border-color:var(--line-strong);box-shadow:var(--shadow-sm);}
+.btn-secondary:hover:not(:disabled){background:var(--surface-alt);}
+.btn-text{background:transparent;color:var(--ink-soft);border:none;padding:8px 10px;min-height:36px;}
+.btn-text:hover{color:var(--ink);background:var(--surface-alt);}
+.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;}
+.btn:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus-ring);}
+
+/* ===== Page shell ===== */
+.shell{max-width:720px;margin:0 auto;padding-inline:32px;padding-block:28px 48px;}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:var(--space-7);}
+.brand-tile{width:32px;height:32px;border-radius:var(--radius-md);background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.brand-name{flex:1;min-width:0;font-size:14px;font-weight:650;letter-spacing:-.01em;}
+.icon-btn{width:34px;height:34px;border-radius:var(--radius-md);border:none;background:transparent;color:var(--ink-soft);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s,color .15s;}
+.icon-btn:hover{background:var(--surface-alt);color:var(--ink);}
+.icon-btn:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus-ring);}
+
+/* Tool header + progress */
+.tool-head{margin-bottom:var(--space-5);}
+.topRow{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
+#historyToggle{margin-right:-10px;}
+.progress-track{margin-top:14px;height:6px;border-radius:var(--radius-pill);background:var(--surface-alt);overflow:hidden;}
+.progress-fill{height:100%;width:4%;border-radius:var(--radius-pill);background:var(--accent);transition:width .5s cubic-bezier(.2,.8,.2,1);}
+
+/* ===== Answers drawer ===== */
+#historyDrawer{display:none;flex-direction:column;gap:12px;}
+#historyDrawer.open{display:flex;}
+#historyDrawer .entry{max-width:88%;padding:12px 16px;border-radius:var(--radius-lg);font-size:14px;line-height:1.55;min-width:0;overflow-wrap:anywhere;}
+#historyDrawer .entry.assistant{align-self:flex-start;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm);color:var(--ink);}
+#historyDrawer .entry.user{align-self:flex-end;background:var(--accent);color:var(--on-accent);}
+#historyDrawer .entry p{margin:0 0 6px;}
+#historyDrawer .entry p:last-child{margin-bottom:0;}
+#historyDrawer .entry ul{margin:4px 0 6px;padding-left:18px;}
+
+/* ===== Question stage ===== */
+#stage{min-height:300px;display:flex;flex-direction:column;}
+#stage.hidden{display:none;}
+#stage > .card{animation:rise .35s ease;}
+@keyframes rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.lead-small{font-size:13px;font-weight:600;color:var(--ink-soft);margin:0 0 10px;line-height:1.5;}
+.lead-doc{font-size:14.5px;line-height:1.6;color:var(--ink);margin:0 0 22px;max-width:62ch;}
+.lead-doc p{margin:0 0 12px;}
+.lead-doc ul{margin:6px 0 14px;padding-left:20px;}
+.lead-doc li{margin-bottom:8px;}
+.lead-doc li::marker{color:var(--accent);}
+.lead-doc strong{font-weight:650;}
+
+.question{font-size:24px;line-height:1.3;font-weight:650;letter-spacing:-.022em;color:var(--ink);margin:0 0 22px;text-wrap:balance;}
+
+.goal-tag{display:inline-flex;align-items:center;font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:3px 10px;border-radius:var(--radius-pill);margin-bottom:10px;}
+
+/* Widgets */
+.widgetActions{display:flex;gap:var(--space-3);margin-top:var(--space-4);align-items:center;flex-wrap:wrap;}
+
+.choiceGrid{display:flex;flex-direction:column;gap:10px;}
+.choiceBtn{text-align:left;background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius-lg);
+  padding:13px 16px;min-height:48px;font:500 14.5px var(--font-sans);color:var(--ink);cursor:pointer;box-shadow:var(--shadow-sm);
+  transition:background .15s,border-color .15s,box-shadow .15s;}
+.choiceBtn:hover:not(:disabled){border-color:var(--accent);background:var(--accent-soft);}
+.choiceBtn:focus-visible{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--focus-ring);}
+.choiceBtn:disabled{opacity:.5;cursor:not-allowed;}
+.yesnoRow{display:flex;gap:var(--space-3);}
+.yesnoRow .choiceBtn{flex:1;text-align:center;font-weight:600;}
+
+.checkRow{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius-lg);
+  padding:12px 16px;min-height:48px;cursor:pointer;box-shadow:var(--shadow-sm);transition:background .15s,border-color .15s;}
+.checkRow:hover{border-color:var(--accent);}
+.checkRow.checked{border-color:var(--accent);background:var(--accent-soft);}
+.checkRow:focus-within{box-shadow:0 0 0 4px var(--focus-ring);}
+.checkRow input{accent-color:var(--accent);width:18px;height:18px;flex-shrink:0;margin:0;}
+.checkRow span{font-size:14.5px;}
+
+.thinking{display:flex;gap:5px;padding:10px 0;}
+.thinking span{width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:.45;animation:bounce 1.2s infinite ease-in-out;}
+.thinking span:nth-child(2){animation-delay:.15s;}
+.thinking span:nth-child(3){animation-delay:.3s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.45;}30%{transform:translateY(-4px);opacity:1;}}
+
+.errorBox{background:var(--error-soft);color:var(--error);border-radius:var(--radius-md);padding:12px 14px;font-size:13.5px;line-height:1.5;margin-top:12px;}
+
+.page-foot{margin-top:var(--space-6);text-align:center;}
+
+@media (max-width:800px){
+  .shell{padding-inline:16px;padding-block:16px 40px;}
+  .brand{margin-bottom:var(--space-5);}
+  .card{padding:22px 18px;}
+  .question{font-size:20px;}
+  .tw textarea{font-size:16px;min-height:120px;}
+  .btn{min-height:48px;}
+  .widgetActions .btn{flex:1 1 auto;}
+  #historyDrawer .entry{max-width:94%;}
+}
+@media (prefers-reduced-motion:reduce){
+  .tw *, .tw *::before, .tw *::after{animation:none !important;transition:none !important;}
+}
+</style>
+
+<div class="tw">
+<div class="shell" id="app">
+
+  <div class="brand">
+    <span class="brand-tile"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg></span>
+    <span class="brand-name">Talent Workspace</span>
+    <button type="button" class="icon-btn theme-toggle" aria-label="Switch theme"></button>
+  </div>
+
+  <header class="tool-head">
+    <div class="topRow">
+      <span class="eyebrow">Performance Review Assistant</span>
+      <button id="historyToggle" class="btn btn-text" type="button">Review answers so far</button>
+    </div>
+    <div class="progress-track" role="presentation"><div class="progress-fill" id="gaugeFill"></div></div>
+  </header>
+
+  <div id="historyDrawer"></div>
+
+  <main id="stage" aria-live="polite">
+    <div class="thinking" id="initialThinking"><span></span><span></span><span></span></div>
+  </main>
+
+  <footer class="page-foot">
+    <p class="hint">This is a working test build — nothing here is saved once you close the tab.</p>
+  </footer>
+</div>
+</div>
+
+<script>
+  /* Theme toggle (Talent Workspace) */
+  const ICON_SUN = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+  const ICON_MOON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+  function isDark(){
+    const t = document.documentElement.getAttribute('data-theme');
+    if(t) return t==='dark';
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+  function paintThemeButtons(){
+    const dark = isDark();
+    document.querySelectorAll('.theme-toggle').forEach(b=>{
+      b.innerHTML = dark ? ICON_SUN : ICON_MOON;
+      b.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+      b.title = b.getAttribute('aria-label');
+    });
+  }
+  document.querySelectorAll('.theme-toggle').forEach(b=> b.addEventListener('click', ()=>{
+    document.documentElement.setAttribute('data-theme', isDark() ? 'light' : 'dark');
+    paintThemeButtons();
+  }));
+  if(window.matchMedia){ try{ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', paintThemeButtons); }catch(e){} }
+  paintThemeButtons();
+</script>
+
+<script>
+  const SYSTEM_PROMPT = `# Performance Review Assistant — System Prompt
+
+## Role and Purpose
+
+You are Claude, acting as a performance review assistant. You help managers prepare fair, evidence-based performance reviews by walking them through a structured, consistent sequence of questions, capturing their responses, and drafting a summary they can use both to plan the review conversation and to prepare for calibration.
+
+Your job is to:
+- Ask the questions below, in order, exactly as written.
+- Capture the manager's responses verbatim.
+- Reduce bias by keeping the structure consistent from one review to the next.
+- Draft a clear, editable summary once the questions are complete.
+
+You must not reword, combine, skip, or add to the questions or scripted statements below.
+
+## Operating Principles
+
+- One question at a time. Never present more than one question per turn, even when a step lists several (e.g., the three Context questions, or the Goal Completion Check questions). Show one, wait for the manager's answer, then move to the next.
+- Verbatim capture. Store the manager's responses as given. Don't summarize, clean up, or interpret them on the way in — only at the final summary stage.
+- Navigation. The manager can move back to a previous question or forward to one already answered at any point; if they do, update the stored response and resume from where they left off.
+- One clarification, when needed. If a response is unclear or incomplete, you may ask a single neutral follow-up before moving on — for example, "Can you give me one concrete example?" or "Which part of the review period does this relate to?" Never ask more than one clarifying question per response.
+- No added framing. The step numbers and headers below (e.g., "1. Context") are for internal organization only — never display them to the manager. Don't add intro phrases, transitions, or commentary of your own (e.g., "Great — let's get started") beyond the scripted text provided. Just ask the question.
+
+## Boundaries
+
+- You do not make final decisions. You must not assign a rating, recommend compensation, promotion, or termination, predict a calibration outcome, or override the manager's judgment.
+- The manager selects the performance rating. You must not suggest, hint at, or influence which rating fits.
+- Your scope is limited to performance review preparation, drafting written feedback, and calibration preparation summaries.
+- If the manager raises policy exceptions, discipline, legal matters, or compensation decisions, redirect them to HR or Legal. Don't offer guidance on these topics beyond that redirect.
+
+## Reference Content — use exactly as written, no substitutions
+
+Performance Rating Scale
+- Does Not Meet — Performance frequently fell short of expectations and required significant support or correction.
+- Meets — Performance consistently met expectations and delivered required results.
+- Exceeds — Performance consistently exceeded expectations and delivered outsized or differentiated impact.
+
+Company Values
+- Champion the customer
+- Seek to learn
+- Own our outcomes
+- Communicate with purpose
+- Commit to our future
+
+## Conversation Flow
+
+### Opening
+
+When a manager types "plan for a performance review", respond with exactly:
+
+I'll help you get ready for this performance review with a focused set of questions designed to surface what matters most. Once we're done, I'll draft a clear, balanced summary you can confidently use during calibration.
+
+Before we begin, take a moment to gather the information below. Having it on hand will make this process faster, sharper, and far more effective.
+
+- Goals from the review period — The goals your employee was accountable for and the progress made against them
+- Performance metrics — Quantifiable data points that reflect results, quality, or impact
+- Concrete examples — Specific moments where the employee was particularly effective or fell short in achieving goals
+- Direct feedback — Customer or coworker statements that illustrate how the employee's work showed up in practice
+
+When you're ready, we'll dive in and turn this information into a thoughtful, well-supported review. Type Ready when you're ready to proceed.
+
+Once the manager types "Ready", begin Question 1.
+
+### Questions
+
+1. Context
+Ask each of these on its own turn, waiting for an answer before moving to the next:
+- What's the employee's role or title?
+- What's their level? (e.g., P1–P5, M1–M6)
+- What are the start and end dates for this review period?
+
+2. Goals & Scope
+Now let's review their goals for this review period. Enter one goal at a time, then type "Done" when you've entered them all.
+
+Loop: "What was their first goal?" → "What was the second goal?" → "What's the next one?" — repeat until "Done." Store each goal as a discrete item, then read the list back and ask: "Is that the complete list of goals?"
+
+3. Goal Completion Check
+Now let's check in on completion. Did they complete all of their goals? (Present as Yes / No.)
+If No, continue to Steps 4–5. If Yes, skip ahead to Step 7.
+
+4. Incomplete Goals
+Now let's look at what didn't get finished. Here's a recap of their goals for this review period — which ones weren't completed?
+Recap each stored goal, then ask which were not completed (checkbox-style, including a "None" option). Any goal not selected is treated as completed. This selection drives Steps 5 and 6.
+
+5. Barriers & Context (Incomplete Goals)
+Now let's talk about what got in the way.
+Then, for each incomplete goal, with that goal's text shown above the question: "What got in the way of completing this goal?"
+Ask once per incomplete goal. Require a response before revealing the next goal.
+
+6. Evidence (Incomplete Goals)
+Now let's look at what progress they made anyway.
+Then, for each incomplete goal, with that goal's text shown above the question: "Even though this goal wasn't finished, what progress or meaningful work did they still show?"
+Same pattern as Step 5: one goal at a time, requiring at least one example before moving on.
+
+7. Evidence (Completed Goals)
+Now let's focus on the goals they completed during this review period.
+Then, for each completed goal, with that goal's text shown above the question: "What's an example that best shows the quality and impact of their work on [goal name]?"
+Show one goal at a time, requiring at least one example before revealing the next. Once every goal — completed or not — has evidence attached, shift from goal-level questions into the broader performance assessment.
+
+8. Performance Above Expectations
+Now let's zoom out and look at their overall performance. Where did they exceed expectations during this review period?
+
+9. Performance Gaps
+Now let's look at where there's room to grow. Where do you see room for improvement?
+
+10. Behavior and Values Consistency
+Now let's talk about company values. Which values did they consistently demonstrate during this review period?
+For each value the manager selects, ask: "Can you share an example of how they demonstrated this value?"
+Ask once per selected value. Don't carry over an example from an earlier answer unless the manager repeats it here.
+
+11. Feedback Signals
+Now let's shift our focus to the feedback they received during this review period. What feedback did they receive from peers, managers, and customers? Please do not include names.
+
+12. Peer Comparison (Same Level Only)
+Now let's put their performance in context. How does their performance compare to others at the same role and level?
+Note: Consider only role- and level-equivalent peers and previously documented evidence. Don't introduce new comparisons here.
+
+13. Overall Assessment
+Now let's pull this together. Looking at the whole picture, which rating fits best?
+- Does Not Meet — Performance frequently fell short of expectations and required significant support or correction.
+- Meets — Performance consistently met expectations and delivered required results.
+- Exceeds — Performance consistently exceeded expectations and delivered outsized or differentiated impact.
+
+14. Calibration Readiness
+Now let's prepare for calibration. Is there anything else a calibration group should know about this employee?
+If peers at the same level show stronger or weaker evidence, would you be open to adjusting this rating?
+If the manager answers Yes, ask the follow-up below. If No, skip it.
+"What peer comparisons or evidence would help strengthen the case for this rating?"
+
+## Summary Structure
+
+Once all questions are answered, draft the summary using exactly this structure:
+
+Performance Summary — 3–5 sentences summarizing overall performance across goals, behaviors, and impact during the review period.
+Key Strengths — bullet list of the employee's most significant strengths, supported by manager-provided evidence.
+Development Focus — bullet list identifying areas where performance can improve or capabilities should grow.
+Calibration Justification — a concise explanation, referencing the evidence the manager provided, for why it supports the selected rating.
+
+## Starting a New Review
+
+After presenting the summary, ask exactly:
+"Would you like to prepare a performance review for another employee?"
+
+If Yes, display:
+"Before we continue, please make sure you have captured or saved all information for the previous employee. Once we begin preparing for the next performance review, all prior employee-specific information will be cleared and cannot be recovered."
+
+Then:
+"Let's start planning a review for another employee."
+
+Clear all employee-specific inputs and stored variables (including performance_rating), and begin the question set again from Question 1.
+
+If No, the session ends here.
+
+## UI Integration Directive (for this embedded interface only)
+
+This conversation is being rendered by a custom interface, not a plain chat window. After every single reply to the manager — including the opening message and the final summary — end your message with a hidden control tag on its own final line, in exactly this format:
+
+[[INPUT type="TYPE" options="OPTION1;OPTION2;OPTION3"]]
+
+Never mention, explain, or refer to this tag anywhere in your visible response — it is read only by the interface and stripped before the manager sees anything.
+
+Choose TYPE as follows:
+- text — default for open-ended written answers (Context questions, goal barriers, evidence, feedback, peer comparison, additional calibration context, etc.)
+- textloop — use only while collecting goals one at a time in Step 2, before "Done" has been entered; options="Done"
+- yesno — for yes/no questions: the "Is that the complete list of goals?" confirmation, the Goal Completion Check, the calibration adjustment question, and "Would you like to prepare a performance review for another employee?"
+- choice — a single pick from a small set of mutually exclusive options, e.g. the opening's Ready prompt (options="Ready"), and the Overall Assessment rating (options="Does Not Meet;Meets;Exceeds")
+- multichoice — select one or more from a set, e.g. which goals were not completed (options should list each goal's short text plus "None"), or which company values were demonstrated (options="Champion the customer;Seek to learn;Own our outcomes;Communicate with purpose;Commit to our future")
+
+Keep option labels short (a few words) since they're rendered as tappable buttons. For the final summary turn, use type="text" so the manager can add notes, unless you are also asking the "prepare another review" question in the same turn, in which case use type="yesno".`;
+
+  const stage = document.getElementById('stage');
+  const historyDrawer = document.getElementById('historyDrawer');
+  const historyToggle = document.getElementById('historyToggle');
+  const gaugeFill = document.getElementById('gaugeFill');
+
+  let history = [];       // {role, content} sent to the API (tags stripped)
+  let displayLog = [];    // {role, content} cleaned, for the history drawer
+  let turnCount = 0;
+  let multiSelected = new Set();
+  const ESTIMATED_TOTAL_TURNS = 24;
+
+  historyToggle.addEventListener('click', () => {
+    const open = historyDrawer.classList.toggle('open');
+    stage.classList.toggle('hidden', open);
+    historyToggle.textContent = open ? 'Back to question' : 'Review answers so far';
+    if (open) renderHistoryDrawer();
+  });
+
+  function escapeHtml(str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function inlineFormat(text) {
+    return text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  }
+
+  // Small markdown-ish renderer: bold, bullet lists, paragraphs -> HTML
+  function renderMarkdown(raw) {
+    const escaped = escapeHtml(raw);
+    const lines = escaped.split('\n');
+    let html = '';
+    let inList = false;
+    let buf = [];
+    function flush() {
+      if (buf.length) { html += '<p>' + buf.join(' ') + '</p>'; buf = []; }
+    }
+    for (const line of lines) {
+      const t = line.trim();
+      const bullet = t.match(/^[-*]\s+(.*)$/);
+      if (bullet) {
+        flush();
+        if (!inList) { html += '<ul>'; inList = true; }
+        html += '<li>' + inlineFormat(bullet[1]) + '</li>';
+      } else if (t === '') {
+        if (inList) { html += '</ul>'; inList = false; }
+        flush();
+      } else {
+        if (inList) { html += '</ul>'; inList = false; }
+        buf.push(inlineFormat(t));
+      }
+    }
+    if (inList) html += '</ul>';
+    flush();
+    return html || '<p></p>';
+  }
+
+  // Parse and strip the hidden [[INPUT ...]] control tag
+  function extractControlTag(raw) {
+    const match = raw.match(/\[\[INPUT\s+type="([a-z]+)"(?:\s+options="([^"]*)")?\s*\]\]\s*$/i);
+    if (!match) {
+      return { clean: raw.trim(), type: 'text', options: [] };
+    }
+    const clean = raw.slice(0, match.index).trim();
+    const type = match[1].toLowerCase();
+    const options = (match[2] || '').split(';').map(s => s.trim()).filter(Boolean);
+    return { clean, type, options };
+  }
+
+  // Split cleaned text into a lead section and a focal question (last line ending in '?')
+  function splitLeadAndQuestion(clean) {
+    const paragraphs = clean.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+    if (!paragraphs.length) return { lead: '', question: '' };
+    const last = paragraphs[paragraphs.length - 1];
+    if (/\?\s*$/.test(last)) {
+      return { lead: paragraphs.slice(0, -1).join('\n\n'), question: last };
+    }
+    return { lead: clean, question: '' };
+  }
+
+  function updateGauge() {
+    const pct = Math.min(96, 4 + (turnCount / ESTIMATED_TOTAL_TURNS) * 92);
+    gaugeFill.style.width = pct + '%';
+  }
+
+  function renderHistoryDrawer() {
+    historyDrawer.innerHTML = '';
+    if (!displayLog.length) {
+      historyDrawer.innerHTML = '<p class="hint" style="text-align:left;">Nothing captured yet.</p>';
+      return;
+    }
+    for (const entry of displayLog) {
+      const div = document.createElement('div');
+      div.className = 'entry ' + entry.role;
+      if (entry.role === 'assistant') {
+        div.innerHTML = renderMarkdown(entry.content);
+      } else {
+        div.textContent = entry.content;
+      }
+      historyDrawer.appendChild(div);
+    }
+  }
+
+  async function callClaude() {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: history
+      })
+    });
+    if (!response.ok) throw new Error('Request failed with status ' + response.status);
+    const data = await response.json();
+    const blocks = (data.content || []).filter(b => b.type === 'text').map(b => b.text);
+    return blocks.join('\n');
+  }
+
+  function showThinking() {
+    stage.innerHTML = '<div class="thinking"><span></span><span></span><span></span></div>';
+  }
+
+  function showError(message) {
+    const box = document.createElement('div');
+    box.className = 'errorBox';
+    box.textContent = message;
+    stage.appendChild(box);
+  }
+
+  async function sendTurn(userText, opts) {
+    opts = opts || {};
+    if (userText !== null && userText !== undefined) {
+      history.push({ role: 'user', content: userText });
+      if (!opts.silent) displayLog.push({ role: 'user', content: userText });
+    }
+
+    multiSelected = new Set();
+    showThinking();
+
+    try {
+      const raw = await callClaude();
+      history.push({ role: 'assistant', content: raw });
+      const parsed = extractControlTag(raw);
+      displayLog.push({ role: 'assistant', content: parsed.clean });
+      turnCount += 1;
+      updateGauge();
+      renderScreen(parsed);
+    } catch (err) {
+      stage.innerHTML = '';
+      showError('Something went wrong reaching Claude: ' + err.message + '. Please try again.');
+      const retryBtn = document.createElement('button');
+      retryBtn.className = 'btn btn-secondary';
+      retryBtn.style.marginTop = '12px';
+      retryBtn.style.alignSelf = 'flex-start';
+      retryBtn.textContent = 'Try again';
+      retryBtn.addEventListener('click', () => sendTurn(null, { silent: true }));
+      stage.appendChild(retryBtn);
+    }
+  }
+
+  function renderScreen(parsed) {
+    stage.innerHTML = '';
+    const { lead, question } = splitLeadAndQuestion(parsed.clean);
+
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    if (question) {
+      // Short lead = muted eyebrow line; long lead (e.g. a full summary) = full document block
+      if (lead && lead.length <= 220) {
+        const leadEl = document.createElement('p');
+        leadEl.className = 'lead-small';
+        leadEl.textContent = lead;
+        card.appendChild(leadEl);
+      } else if (lead) {
+        const leadEl = document.createElement('div');
+        leadEl.className = 'lead-doc';
+        leadEl.innerHTML = renderMarkdown(lead);
+        card.appendChild(leadEl);
+      }
+      const qEl = document.createElement('div');
+      qEl.className = 'question';
+      qEl.textContent = question;
+      card.appendChild(qEl);
+    } else {
+      const leadEl = document.createElement('div');
+      leadEl.className = 'lead-doc';
+      leadEl.innerHTML = renderMarkdown(lead || parsed.clean);
+      card.appendChild(leadEl);
+    }
+
+    const widget = document.createElement('div');
+    widget.id = 'widget';
+    buildWidget(widget, parsed);
+    card.appendChild(widget);
+
+    stage.appendChild(card);
+
+    const firstInput = card.querySelector('textarea, .choiceBtn, input');
+    if (firstInput) firstInput.focus();
+  }
+
+  function buildWidget(container, parsed) {
+    const { type, options } = parsed;
+
+    if (type === 'yesno') {
+      const row = document.createElement('div');
+      row.className = 'yesnoRow';
+      ['Yes', 'No'].forEach(label => {
+        const btn = document.createElement('button');
+        btn.className = 'choiceBtn';
+        btn.textContent = label;
+        btn.addEventListener('click', () => submitAnswer(label));
+        row.appendChild(btn);
+      });
+      container.appendChild(row);
+      return;
+    }
+
+    if (type === 'choice') {
+      const grid = document.createElement('div');
+      grid.className = 'choiceGrid';
+      (options.length ? options : ['Continue']).forEach(label => {
+        const btn = document.createElement('button');
+        btn.className = 'choiceBtn';
+        btn.textContent = label;
+        btn.addEventListener('click', () => submitAnswer(label));
+        grid.appendChild(btn);
+      });
+      container.appendChild(grid);
+      return;
+    }
+
+    if (type === 'multichoice') {
+      const grid = document.createElement('div');
+      grid.className = 'choiceGrid';
+      options.forEach(label => {
+        const row = document.createElement('label');
+        row.className = 'checkRow';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.addEventListener('change', () => {
+          if (cb.checked) multiSelected.add(label); else multiSelected.delete(label);
+          row.classList.toggle('checked', cb.checked);
+        });
+        const span = document.createElement('span');
+        span.textContent = label;
+        row.appendChild(cb);
+        row.appendChild(span);
+        grid.appendChild(row);
+      });
+      container.appendChild(grid);
+
+      const actions = document.createElement('div');
+      actions.className = 'widgetActions';
+      const continueBtn = document.createElement('button');
+      continueBtn.className = 'btn btn-primary';
+      continueBtn.textContent = 'Continue';
+      continueBtn.addEventListener('click', () => {
+        const chosen = Array.from(multiSelected);
+        submitAnswer(chosen.length ? chosen.join(', ') : 'None');
+      });
+      actions.appendChild(continueBtn);
+      container.appendChild(actions);
+      return;
+    }
+
+    // text or textloop
+    const textarea = document.createElement('textarea');
+    textarea.className = 'textField';
+    textarea.id = 'answerField';
+    textarea.setAttribute('aria-label', 'Your response');
+    textarea.placeholder = 'Type your response…';
+    textarea.rows = 3;
+
+    const actions = document.createElement('div');
+    actions.className = 'widgetActions';
+
+    const sendBtn = document.createElement('button');
+    sendBtn.className = 'btn btn-primary';
+    sendBtn.textContent = 'Send';
+    sendBtn.disabled = true;
+
+    textarea.addEventListener('input', () => {
+      sendBtn.disabled = textarea.value.trim() === '';
+    });
+    textarea.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (!sendBtn.disabled) submitAnswer(textarea.value.trim());
+      }
+    });
+
+    sendBtn.addEventListener('click', () => submitAnswer(textarea.value.trim()));
+    actions.appendChild(sendBtn);
+
+    if (type === 'textloop') {
+      const doneBtn = document.createElement('button');
+      doneBtn.className = 'btn btn-secondary';
+      doneBtn.textContent = 'That\'s all the goals';
+      doneBtn.addEventListener('click', () => submitAnswer('Done'));
+      actions.appendChild(doneBtn);
+    }
+
+    container.appendChild(textarea);
+    container.appendChild(actions);
+  }
+
+  function submitAnswer(text) {
+    if (!text) return;
+    sendTurn(text);
+  }
+
+  // Kick off the scripted opening automatically, without showing a hidden trigger bubble
+  sendTurn('plan for a performance review', { silent: true });
+</script>
