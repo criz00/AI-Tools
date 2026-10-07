@@ -2,250 +2,314 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Succession Planning Tool</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&display=swap">
 <style>
-  :root{
-    --bg:#EEF1F4;
-    --surface:#FFFFFF;
-    --surface-alt:#E4E9EF;
-    --ink:#1B2430;
-    --ink-soft:#5B6675;
-    --line:#D6DCE3;
-    --accent:#2F6F63;
-    --accent-soft:#E4EFEC;
-    --error:#B3432B;
+/* ===== Talent Workspace UI (talent-ui.css) ===== */
+/* Layout: brand row, then a 280px sticky step rail beside the main column. At 800px and below the rail becomes a sticky section header with a dropdown. */
+:root{
+  --font-sans:Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:22px;--space-6:28px;--space-7:32px;--space-8:56px;
+  --radius-sm:8px;--radius-md:10px;--radius-lg:12px;--radius-xl:14px;--radius-pill:999px;
+  --bg:#F7F8FA;--surface:#FFFFFF;--surface-alt:#F1F3F5;--ink:#111827;--ink-soft:#5B6472;--line:#E5E7EB;--line-strong:#8A9099;
+  --accent:#0F766E;--accent-hover:#0B5F58;--on-accent:#FFFFFF;--accent-soft:#E6F4F2;--focus-ring:rgba(15,118,110,0.25);
+  --info:#1D4ED8;--info-soft:#EEF3FF;--warning:#B54708;--warning-soft:#FEF3E2;--error:#B42318;--error-soft:#FEECEB;
+  --shadow-sm:0 1px 2px rgba(16,24,40,0.05);
+  --shadow-card:0 1px 2px rgba(16,24,40,0.04), 0 6px 20px -4px rgba(16,24,40,0.07);
+  --shadow-lift:0 2px 4px rgba(16,24,40,0.06), 0 10px 28px -6px rgba(16,24,40,0.12);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1113;--surface:#171B1F;--surface-alt:#1F2429;--ink:#ECEEF0;--ink-soft:#9AA3AD;--line:#2A3036;--line-strong:#6B747E;
+    --accent:#3CC4B4;--accent-hover:#62D3C6;--on-accent:#04201C;--accent-soft:rgba(60,196,180,0.13);--focus-ring:rgba(60,196,180,0.3);
+    --info:#8AB4F8;--info-soft:rgba(138,180,248,0.13);--warning:#F5B45C;--warning-soft:rgba(245,180,92,0.13);--error:#F28B82;--error-soft:rgba(242,139,130,0.13);
+    --shadow-sm:0 1px 2px rgba(0,0,0,0.4);
+    --shadow-card:0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -6px rgba(0,0,0,0.5);
+    --shadow-lift:0 2px 4px rgba(0,0,0,0.45), 0 12px 30px -6px rgba(0,0,0,0.6);
+    color-scheme:dark;
   }
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--ink);
-    font-family:'Inter',system-ui,sans-serif;
-    -webkit-font-smoothing:antialiased;
-  }
-  h1,h2,h3{
-    font-family:'Source Serif 4', Georgia, serif;
-    font-weight:600;
-    margin:0;
-  }
-  .app{
-    display:flex;
-    min-height:100vh;
-  }
-  /* ---------- SIDEBAR ---------- */
-  .sidebar{
-    width:260px;
-    flex-shrink:0;
-    background:var(--surface);
-    border-right:1px solid var(--line);
-    padding:32px 20px;
-  }
-  .brand{
-    font-family:'Source Serif 4', serif;
-    font-size:19px;
-    font-weight:600;
-    color:var(--ink);
-    margin-bottom:4px;
-  }
-  .brand-sub{
-    font-size:12.5px;
-    color:var(--ink-soft);
-    margin-bottom:28px;
-  }
-  .steps{list-style:none;margin:0;padding:0;}
-  .step{
-    display:flex;
-    gap:12px;
-    align-items:flex-start;
-    padding:11px 8px;
-    border-radius:8px;
-    cursor:default;
-    margin-bottom:2px;
-  }
-  .step.clickable{cursor:pointer;}
-  .step.clickable:hover{background:var(--surface-alt);}
-  .step-num{
-    width:24px;height:24px;
-    border-radius:50%;
-    border:1.5px solid var(--line);
-    color:var(--ink-soft);
-    font-size:12px;
-    font-weight:600;
-    display:flex;align-items:center;justify-content:center;
-    flex-shrink:0;
-    background:var(--surface);
-  }
-  .step.active .step-num{background:var(--accent);border-color:var(--accent);color:#fff;}
-  .step.done .step-num{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);}
-  .step-label{font-size:13.5px;color:var(--ink-soft);line-height:1.35;padding-top:3px;}
-  .step.active .step-label{color:var(--ink);font-weight:600;}
-  .step.done .step-label{color:var(--ink);}
+}
+:root[data-theme="dark"]{
+  --bg:#0E1113;--surface:#171B1F;--surface-alt:#1F2429;--ink:#ECEEF0;--ink-soft:#9AA3AD;--line:#2A3036;--line-strong:#6B747E;
+  --accent:#3CC4B4;--accent-hover:#62D3C6;--on-accent:#04201C;--accent-soft:rgba(60,196,180,0.13);--focus-ring:rgba(60,196,180,0.3);
+  --info:#8AB4F8;--info-soft:rgba(138,180,248,0.13);--warning:#F5B45C;--warning-soft:rgba(245,180,92,0.13);--error:#F28B82;--error-soft:rgba(242,139,130,0.13);
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.4);
+  --shadow-card:0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -6px rgba(0,0,0,0.5);
+  --shadow-lift:0 2px 4px rgba(0,0,0,0.45), 0 12px 30px -6px rgba(0,0,0,0.6);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg)}
+body{color:var(--ink);font-family:var(--font-sans);font-size:14.5px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-weight:650;letter-spacing:-.022em;margin:0;line-height:1.2;text-wrap:balance}
+p{margin:0}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus-ring)}
 
-  /* ---------- MAIN ---------- */
-  .main{flex:1;padding:44px 56px;max-width:920px;}
-  .eyebrow{color:var(--accent);font-size:13px;font-weight:600;margin-bottom:6px;}
-  .page-title{font-size:28px;margin-bottom:10px;}
-  .page-desc{color:var(--ink-soft);font-size:15px;line-height:1.6;max-width:640px;margin-bottom:32px;}
+/* Brand row */
+.topbar{background:var(--surface);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1280px;margin:0 auto;padding-inline:32px;padding-block:14px;display:flex;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand-mark{width:32px;height:32px;border-radius:var(--radius-md);background:var(--accent);color:var(--on-accent);display:grid;place-items:center;flex:none}
+.brand-mark svg{width:17px;height:17px}
+.brand-name{font-size:15px;font-weight:650;letter-spacing:-.01em;line-height:1.3}
+.brand-sub{display:block;font-size:12.5px;color:var(--ink-soft)}
+.top-actions{margin-left:auto;display:flex;align-items:center;gap:6px}
+.theme-toggle{width:36px;height:36px;border-radius:var(--radius-md);border:none;background:transparent;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;transition:background .15s,color .15s}
+.theme-toggle:hover{background:var(--surface-alt);color:var(--ink)}
 
-  .card{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:28px 30px;
-    margin-bottom:20px;
-  }
-  .card-alt{background:var(--surface-alt);}
+/* Shell */
+.shell{max-width:1280px;margin:0 auto;padding-inline:32px;padding-block:var(--space-8) 56px;display:grid;grid-template-columns:280px minmax(0,860px);gap:40px;align-items:start;justify-content:center}
+.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 24px);display:flex;flex-direction:column;gap:16px}
 
-  .field{margin-bottom:20px;}
-  .field:last-child{margin-bottom:0;}
-  .field label{
-    display:block;
-    font-size:13px;
-    font-weight:600;
-    color:var(--ink);
-    margin-bottom:7px;
-  }
-  .hint{font-size:12.5px;color:var(--ink-soft);margin-top:5px;}
-  input[type=text], input[type=date], select, textarea{
-    width:100%;
-    font-family:'Inter',sans-serif;
-    font-size:14.5px;
-    color:var(--ink);
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:8px;
-    padding:11px 13px;
-    outline:none;
-    transition:border-color .15s;
-  }
-  input[type=text]:focus, input[type=date]:focus, select:focus, textarea:focus{
-    border-color:var(--accent);
-  }
-  textarea{
-    resize:vertical;
-    min-height:90px;
-    line-height:1.5;
-    width:100%;
-  }
-  select{appearance:none;cursor:pointer;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%235B6675' stroke-width='1.6' fill='none' fill-rule='evenodd'/></svg>");
-    background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;
-  }
-  .row2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
-  .readonly-field{
-    background:var(--surface-alt);
-    border:1px solid var(--line);
-    border-radius:8px;
-    padding:11px 13px;
-    font-size:14.5px;
-    color:var(--ink);
-  }
-  .readonly-field .rf-label{font-size:11.5px;color:var(--ink-soft);font-weight:600;margin-bottom:3px;text-transform:none;}
+/* Progress */
+.progress{padding:14px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm)}
+.progress-top{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:9px}
+.progress-top span:first-child{color:var(--ink-soft);font-weight:500}
+.progress-top span:last-child{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.progress-track{height:6px;border-radius:var(--radius-pill);background:var(--surface-alt);overflow:hidden}
+.progress-fill{height:100%;border-radius:var(--radius-pill);background:var(--accent);transition:width .5s cubic-bezier(.2,.8,.2,1)}
 
-  /* buttons */
-  .btn{
-    font-family:'Inter',sans-serif;
-    font-size:14px;
-    font-weight:600;
-    border-radius:8px;
-    padding:11px 20px;
-    border:1px solid transparent;
-    cursor:pointer;
-    transition:opacity .15s, background .15s;
-  }
-  .btn-primary{background:var(--accent);color:#fff;}
-  .btn-primary:hover{opacity:.9;}
-  .btn-secondary{background:#fff;color:var(--ink);border-color:var(--line);}
-  .btn-secondary:hover{background:var(--surface-alt);}
-  .btn-text{background:transparent;color:var(--accent);border:none;padding:8px 4px;}
-  .btn-danger{background:transparent;color:var(--error);border:none;font-size:13px;padding:6px;}
-  .btn-row{display:flex;gap:12px;margin-top:24px;align-items:center;}
-  .btn:disabled{opacity:.45;cursor:not-allowed;}
+/* Stepper */
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.step{display:flex;gap:12px;align-items:center;width:100%;padding:9px 10px;border-radius:var(--radius-md);border:0;background:transparent;text-align:left;color:var(--ink);transition:background .15s,box-shadow .15s}
+.step.clickable{cursor:pointer}
+.step.clickable:hover{background:var(--surface-alt)}
+.step:disabled{cursor:default}
+.step-num{width:24px;height:24px;border-radius:50%;flex-shrink:0;border:1.5px solid var(--line-strong);color:var(--ink-soft);font-size:11.5px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.step-num svg{width:12px;height:12px}
+.step-label{font-size:13.5px;color:var(--ink-soft);line-height:1.35}
+.step.active,.step.active.clickable:hover{background:var(--surface);box-shadow:var(--shadow-sm),inset 0 0 0 1px var(--line)}
+.step.active .step-num{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.step.active .step-label{color:var(--ink);font-weight:600}
+.step.done .step-num{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+.step.done .step-label{color:var(--ink)}
 
-  /* entry list cards */
-  .entry{
-    border:1px solid var(--line);
-    background:#fff;
-    border-radius:10px;
-    padding:16px 18px;
-    margin-bottom:12px;
-  }
-  .entry-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
-  .entry-title{font-weight:600;font-size:15px;}
-  .entry-sub{color:var(--ink-soft);font-size:13px;margin-top:2px;}
-  .entry-actions{display:flex;gap:14px;flex-shrink:0;}
-  .entry-actions button{background:none;border:none;color:var(--accent);font-size:13px;font-weight:600;cursor:pointer;padding:2px;}
-  .badge{
-    display:inline-block;font-size:11.5px;font-weight:600;
-    padding:3px 10px;border-radius:20px;
-    background:var(--accent-soft);color:var(--accent);
-    margin-top:8px;
-  }
-  .badge.high{background:#F6E3DE;color:var(--error);}
-  .badge.medium{background:#F5EFDD;color:#8A6D1D;}
-  .badge.low{background:var(--accent-soft);color:var(--accent);}
+/* Mobile header */
+.mobile-head{display:none}
+.mobile-toggle{display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;border-radius:var(--radius-md);padding:8px 8px 10px;text-align:left;cursor:pointer;color:var(--ink);font-family:var(--font-sans)}
+.mb-text{flex:1;min-width:0;display:flex;flex-direction:column}
+.mb-step{font-size:11.5px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em}
+.mb-label{font-size:15px;font-weight:600;letter-spacing:-.01em;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mb-chev{width:34px;height:34px;border-radius:var(--radius-md);flex:none;display:flex;align-items:center;justify-content:center;background:var(--surface-alt);color:var(--ink-soft);transition:transform .2s}
+.mobile-toggle[aria-expanded="true"] .mb-chev{transform:rotate(180deg)}
+.mb-progress{height:3px;background:var(--surface-alt)}
+.mb-fill{height:100%;background:var(--accent);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.mb-menu{position:absolute;left:0;right:0;top:100%;background:var(--surface);border-bottom:1px solid var(--line);box-shadow:var(--shadow-lift);padding:8px 12px 12px;max-height:70vh;overflow-y:auto}
+.mb-menu .step.active{background:var(--accent-soft);box-shadow:none}
 
-  .prompt-card{
-    border:1.5px dashed var(--accent);
-    background:var(--accent-soft);
-    border-radius:12px;
-    padding:24px 28px;
-    text-align:left;
-  }
-  .prompt-card h3{font-size:17px;margin-bottom:6px;}
-  .prompt-card p{color:var(--ink-soft);font-size:14px;margin:0 0 16px 0;}
+/* Main */
+.main{min-width:0;animation:tw-rise .32s ease both}
+@keyframes tw-rise{from{opacity:.001;transform:translateY(6px)}to{opacity:1;transform:none}}
+.eyebrow{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px}
+.page-title{font-size:32px;line-height:1.15;margin:0 0 12px}
+.page-desc{color:var(--ink-soft);font-size:15.5px;line-height:1.6;max-width:620px;margin:0 0 36px}
 
-  .empty-state{
-    border:1px dashed var(--line);
-    border-radius:10px;
-    padding:26px;
-    text-align:center;
-    color:var(--ink-soft);
-    font-size:14px;
-    margin-bottom:16px;
-  }
+/* Card */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-xl);padding:var(--space-7);margin-bottom:20px;box-shadow:var(--shadow-card);color:var(--ink)}
+.card h3{font-size:17px}
+.group-heading{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;font-weight:650;letter-spacing:-.01em;color:var(--ink);padding-bottom:16px;margin:0 0 22px;border-bottom:1px solid var(--line)}
+.group-heading .gh-sub{font-weight:500;color:var(--ink-soft);font-size:13.5px;letter-spacing:0}
 
-  ul.instr{margin:0;padding-left:20px;color:var(--ink);}
-  ul.instr li{margin-bottom:10px;line-height:1.55;font-size:14.5px;}
+/* Fields */
+.field{margin-bottom:var(--space-5)}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:var(--space-2)}
+.hint{font-size:12.5px;color:var(--ink-soft);margin-top:6px}
+input[type=text],input[type=date],select,textarea{width:100%;min-height:44px;font:400 14.5px var(--font-sans);color:var(--ink);background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius-md);padding:11px 14px;outline:none;transition:border-color .15s,box-shadow .15s}
+input:hover,select:hover,textarea:hover{border-color:var(--ink-soft)}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--focus-ring)}
+::placeholder{color:var(--ink-soft);opacity:1}
+input[type=date]{font-variant-numeric:tabular-nums}
+textarea{resize:vertical;min-height:96px;line-height:1.55;overflow:hidden}
+select{appearance:none;cursor:pointer;padding-right:40px;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%238A9099' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat:no-repeat;background-position:right 15px center}
+select.placeholder{color:var(--ink-soft)}
+select option{color:var(--ink);background:var(--surface)}
+.field.invalid input{border-color:var(--error);box-shadow:0 0 0 4px var(--error-soft)}
+.err{display:none;align-items:center;gap:5px;font-size:12.5px;color:var(--error);font-weight:600;margin-top:6px}
+.err svg{width:14px;height:14px;flex:none}
+.field.invalid .err{display:flex}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.row2 > *{min-width:0}
+.readonly-field{background:var(--surface-alt);border-radius:var(--radius-md);padding:11px 14px;font-size:14.5px;color:var(--ink);overflow-wrap:anywhere}
+.readonly-field .rf-label{font-size:11.5px;color:var(--ink-soft);font-weight:600;margin-bottom:3px}
+.ro-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px;margin-bottom:22px}
+.ro-grid .field{margin:0}
 
-  .group-heading{
-    font-size:12.5px;font-weight:700;color:var(--ink-soft);
-    text-transform:uppercase;letter-spacing:.04em;
-    margin:26px 0 12px 0;
-  }
-  .group-heading:first-child{margin-top:0;}
+/* Buttons */
+.btn{font:600 14px var(--font-sans);border-radius:var(--radius-md);padding:11px 20px;min-height:44px;border:1px solid transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:background .15s,box-shadow .15s,transform .15s,border-color .15s,color .15s}
+.btn svg{width:16px;height:16px;flex:none}
+.btn-primary{background:var(--accent);color:var(--on-accent);box-shadow:var(--shadow-sm)}
+.btn-primary:hover:not(:disabled){background:var(--accent-hover);transform:translateY(-1px);box-shadow:var(--shadow-lift)}
+.btn-primary:active:not(:disabled){transform:none}
+.btn-secondary{background:var(--surface);color:var(--ink);border-color:var(--line-strong);box-shadow:var(--shadow-sm)}
+.btn-secondary:hover:not(:disabled){background:var(--surface-alt)}
+.btn-text{background:transparent;color:var(--ink-soft);border:none;padding:8px 10px}
+.btn-text:hover{color:var(--ink);background:var(--surface-alt)}
+.btn-danger{background:var(--error);color:var(--on-accent)}
+.btn-danger:hover{filter:brightness(.93)}
+.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.btn:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus-ring)}
+.btn-row{display:flex;gap:var(--space-3);margin-top:var(--space-6);align-items:center;flex-wrap:wrap}
+.btn-sm{min-height:34px;padding:6px 12px;font-size:13px}
 
-  .final-card{
-    text-align:center;padding:60px 40px;
-  }
-  .final-card h2{font-size:24px;margin-bottom:10px;}
-  .final-card p{color:var(--ink-soft);margin-bottom:22px;}
+/* Entries */
+.entry{border:1px solid var(--line);background:var(--surface);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:12px;box-shadow:var(--shadow-sm);transition:box-shadow .2s;color:var(--ink)}
+.entry:hover{box-shadow:var(--shadow-card)}
+.entry-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.entry-top > div:first-child{min-width:0}
+.entry-title{font-weight:600;font-size:15px;letter-spacing:-.01em;overflow-wrap:anywhere}
+.entry-sub{color:var(--ink-soft);font-size:13px;margin-top:3px;overflow-wrap:anywhere}
+.entry-actions{display:flex;gap:4px;flex-shrink:0}
+.entry-actions button{background:none;border:none;border-radius:var(--radius-sm);color:var(--accent);font:600 13px var(--font-sans);cursor:pointer;padding:6px 10px;transition:background .15s,color .15s}
+.entry-actions button:hover{background:var(--accent-soft)}
+.entry-actions button.remove{color:var(--ink-soft)}
+.entry-actions button.remove:hover,.entry-actions button.remove:focus-visible{color:var(--error);background:var(--error-soft)}
+.entry.just-saved{animation:tw-saved 2.6s ease-out forwards}
+@keyframes tw-saved{0%,35%{box-shadow:0 0 0 2px var(--accent),var(--shadow-card)}100%{box-shadow:0 0 0 0 transparent,var(--shadow-sm)}}
+.confirm{margin-top:14px;padding:12px 14px;border-radius:var(--radius-md);background:var(--error-soft);color:var(--error);font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.confirm span{flex:1 1 220px}
+.confirm .btn-text{color:var(--ink)}
 
-  @media print{
-    .sidebar, .btn-row, .entry-actions, .no-print{display:none !important;}
-    .main{max-width:100%;padding:0;}
-    body{background:#fff;}
-  }
-  @media (max-width:800px){
-    .app{flex-direction:column;}
-    .sidebar{width:100%;border-right:none;border-bottom:1px solid var(--line);}
-    .main{padding:28px 20px;}
-    .row2{grid-template-columns:1fr;}
-  }
+/* Badges */
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 10px 3px 8px;border-radius:var(--radius-pill);margin-top:10px;background:var(--surface-alt);color:var(--ink-soft)}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+.badge.high{background:var(--error-soft);color:var(--error)}
+.badge.medium{background:var(--warning-soft);color:var(--warning)}
+.badge.low,.badge.neutral{background:var(--surface-alt);color:var(--ink-soft)}
+.badge.info{background:var(--info-soft);color:var(--info)}
+
+/* Confirmation prompt */
+.prompt-card{display:flex;gap:16px;align-items:flex-start;border:1px solid var(--line);background:var(--surface);border-radius:var(--radius-xl);padding:22px 24px;box-shadow:var(--shadow-card);color:var(--ink);margin-top:4px}
+.prompt-card .check{width:36px;height:36px;border-radius:50%;flex-shrink:0;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center}
+.prompt-card .check svg{width:18px;height:18px}
+.prompt-card h3{font-size:16px;margin:6px 0 4px}
+.prompt-card p{color:var(--ink-soft);font-size:14px;margin:0 0 16px}
+.prompt-card .btn-row{margin-top:0}
+.prompt-body{flex:1;min-width:0}
+
+/* Empty state */
+.empty-state{border:1.5px dashed var(--line);border-radius:var(--radius-xl);padding:36px 26px;text-align:center;color:var(--ink-soft);font-size:14px;margin-bottom:16px}
+
+/* Numbered list */
+ul.instr{margin:0;padding:0;list-style:none;counter-reset:i}
+ul.instr li{counter-increment:i;position:relative;padding-left:40px;margin-bottom:16px;line-height:1.55;font-size:14.5px;color:var(--ink)}
+ul.instr li:last-child{margin-bottom:0}
+ul.instr li::before{content:counter(i);position:absolute;left:0;top:-1px;width:26px;height:26px;border-radius:var(--radius-sm);background:var(--accent-soft);color:var(--accent);font-size:12.5px;font-weight:650;display:flex;align-items:center;justify-content:center}
+
+/* Final */
+.final-card{text-align:center;padding:56px 40px}
+.final-card .done-mark{width:52px;height:52px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin:0 auto 18px}
+.final-card .done-mark svg{width:24px;height:24px}
+.final-card h2{font-size:24px;margin-bottom:10px}
+.final-card p{color:var(--ink-soft);max-width:520px;margin:0 auto 4px}
+.final-card .btn-row{justify-content:center}
+.final-card .dl-note{font-size:13px;color:var(--ink-soft);margin-top:14px;min-height:1em}
+.final-card .dl-note.bad{color:var(--error);font-weight:600}
+
+/* Phone */
+@media (max-width:1040px){
+  .shell{grid-template-columns:240px minmax(0,1fr);gap:28px;padding-inline:24px}
+}
+@media (max-width:800px){
+  .topbar-in{padding-inline:16px;padding-block:10px}
+  .brand-sub{display:none}
+  .mobile-head{display:block;position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line);box-shadow:var(--shadow-sm)}
+  .mobile-head-in{padding-inline:8px;padding-top:6px}
+  .shell{grid-template-columns:minmax(0,1fr);gap:0;padding-inline:16px;padding-block:24px 32px}
+  .rail{display:none}
+  .page-title{font-size:26px}
+  .page-desc{font-size:15px;margin-bottom:24px}
+  .row2,.ro-grid{grid-template-columns:1fr;gap:0}
+  .ro-grid{gap:10px}
+  input[type=text],input[type=date],select,textarea{font-size:16px;min-height:48px}
+  textarea{min-height:120px}
+  .btn{min-height:48px}
+  .btn-sm{min-height:40px}
+  .btn-row .btn{flex:1 1 auto}
+  .btn-row .btn-text{flex:0 0 auto}
+  .card{padding:22px 18px}
+  .final-card{padding:40px 20px}
+  .entry{padding:16px 14px}
+  .entry-top{flex-direction:column}
+  .entry-actions{margin-left:-10px}
+  .prompt-card{flex-direction:column;gap:12px;padding:20px 18px}
+  .step-label{font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="sidebar">
-    <div class="brand">Succession Planning</div>
-    <div class="brand-sub">Talent continuity workspace</div>
-    <ul class="steps" id="steps"></ul>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M12 7.5v4M12 11.5l-6 4M12 11.5l6 4"/></svg></div>
+      <div><div class="brand-name">Succession Planning</div><span class="brand-sub">Talent continuity workspace</span></div>
+    </div>
+    <div class="top-actions">
+      <button type="button" class="theme-toggle" aria-label="Switch theme"></button>
+    </div>
   </div>
-  <div class="main" id="main"></div>
+</header>
+
+<div class="mobile-head" id="mobileHead">
+  <div class="mobile-head-in">
+    <button class="mobile-toggle" id="mToggle" type="button" aria-expanded="false" aria-controls="mMenu">
+      <span class="mb-text"><span class="mb-step" id="mbStep">Get started</span><span class="mb-label" id="mbLabel">Instructions</span></span>
+      <span class="mb-chev" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+    </button>
+  </div>
+  <div class="mb-progress"><div class="mb-fill" id="mbFill" style="width:0%"></div></div>
+  <nav class="mb-menu" id="mMenu" aria-label="Plan sections" hidden><ul class="steps" id="mSteps"></ul></nav>
 </div>
+
+<div class="shell">
+  <nav class="rail" aria-label="Plan sections">
+    <div class="progress">
+      <div class="progress-top"><span>Sections complete</span><span id="progText">0 of 5</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progFill" style="width:0%"></div></div>
+    </div>
+    <ul class="steps" id="steps"></ul>
+  </nav>
+  <main class="main" id="main"></main>
+</div>
+
+<script>
+/* Theme toggle (Talent Workspace) */
+(function(){
+  var ICON_SUN = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+  var ICON_MOON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+  function isDark(){
+    var t = document.documentElement.getAttribute('data-theme');
+    if (t) return t === 'dark';
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+  function paint(){
+    var dark = isDark();
+    document.querySelectorAll('.theme-toggle').forEach(function(b){
+      b.innerHTML = dark ? ICON_SUN : ICON_MOON;
+      b.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+      b.title = b.getAttribute('aria-label');
+    });
+  }
+  document.querySelectorAll('.theme-toggle').forEach(function(b){ b.addEventListener('click', function(){
+    document.documentElement.setAttribute('data-theme', isDark() ? 'light' : 'dark');
+    paint();
+  }); });
+  if (window.matchMedia) { try { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', paint); } catch (e) {} }
+  paint();
+})();
+</script>
 
 <script>
 /* ---------------- STATE ---------------- */
@@ -268,13 +332,21 @@ let state = {
   knowledge: {},   // roleId -> {criticalKnowledge, transferPlan, riskLevel, mitigation}
   monitoring: {},  // successorId -> {owner, reviewDate, updates, keyActions}
   ui: {            // transient per-section UI state
-    s1: {mode:'form', editingId:null, showPrompt:false},
-    s2: {mode:'form', editingId:null, showPrompt:false}
+    s1: {mode:'form', editingId:null, showPrompt:false, confirmId:null, savedId:null},
+    s2: {mode:'form', editingId:null, showPrompt:false, confirmId:null, savedId:null}
   },
   finished: false
 };
 let uid = 1;
 const newId = () => 'id' + (uid++);
+
+/* ---------------- ICONS ---------------- */
+const I_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const I_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+const I_NEXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
+const I_BACK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>';
+const I_DL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
+const I_ERR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg>';
 
 /* ---------------- HELPERS ---------------- */
 function autoGrow(el){
@@ -285,6 +357,12 @@ function attachAutoGrow(root){
   root.querySelectorAll('textarea').forEach(t=>{
     autoGrow(t);
     t.addEventListener('input', ()=>autoGrow(t));
+  });
+}
+function attachSelectTint(root){
+  root.querySelectorAll('select').forEach(s=>{
+    const tint = ()=>s.classList.toggle('placeholder', !s.value);
+    tint(); s.addEventListener('change', tint);
   });
 }
 function criticalityBadgeClass(v){
@@ -302,21 +380,46 @@ function render(){
 }
 
 /* ---------------- SIDEBAR ---------------- */
+function stepNum(s, isDone, isActive){
+  if(s.id==='intro') return 'i';
+  if(s.id==='done') return I_CHECK;
+  return (isDone && !isActive) ? I_CHECK : s.id;
+}
 function renderSidebar(){
-  const stepsEl = document.getElementById('steps');
-  stepsEl.innerHTML = '';
-  SECTIONS.forEach((s, idx) => {
-    const li = document.createElement('li');
+  const html = SECTIONS.map((s, idx) => {
     const isActive = state.current === s.id;
     const isDone = idx < indexOf(state.current) || (state.current==='done');
     const reachable = idx <= state.furthest;
-    li.className = 'step' + (isActive?' active':'') + (isDone && !isActive?' done':'') + (reachable?' clickable':'');
-    li.innerHTML = `<div class="step-num">${s.id==='intro' ? 'i' : (s.id==='done' ? '✓' : s.id)}</div><div class="step-label">${s.label}</div>`;
-    if(reachable){
-      li.addEventListener('click', ()=>{ state.current = s.id; render(); window.scrollTo(0,0); });
-    }
-    stepsEl.appendChild(li);
-  });
+    const cls = 'step' + (isActive?' active':'') + (isDone && !isActive?' done':'') + (reachable?' clickable':'');
+    return `<li><button type="button" class="${cls}" data-goto="${idx}" ${reachable?'':'disabled'} ${isActive?'aria-current="step"':''}><span class="step-num">${stepNum(s,isDone,isActive)}</span><span class="step-label">${escapeHtml(s.label)}</span></button></li>`;
+  }).join('');
+  document.getElementById('steps').innerHTML = html;
+  document.getElementById('mSteps').innerHTML = html;
+
+  const ci = indexOf(state.current);
+  const completed = state.current==='done' ? 5 : Math.max(0, Math.min(5, ci-1));
+  const pct = Math.round(completed/5*100);
+  document.getElementById('progText').textContent = completed + ' of 5';
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('mbFill').style.width = pct + '%';
+  const cur = SECTIONS[ci];
+  document.getElementById('mbStep').textContent = typeof cur.id==='number' ? 'Section '+cur.id+' of 5' : (cur.id==='intro' ? 'Get started' : 'All sections complete');
+  document.getElementById('mbLabel').textContent = cur.label;
+  setMenu(false);
+}
+document.addEventListener('click', e=>{
+  const menu = document.getElementById('mMenu');
+  if(!menu.hidden && !e.target.closest('#mobileHead')) setMenu(false);
+  if(e.target.closest('#mToggle')){ setMenu(menu.hidden); return; }
+  const b = e.target.closest('[data-goto]');
+  if(b && !b.disabled){ state.current = SECTIONS[+b.dataset.goto].id; render(); window.scrollTo(0,0); }
+});
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape' && !document.getElementById('mMenu').hidden){ setMenu(false); document.getElementById('mToggle').focus(); }
+});
+function setMenu(open){
+  document.getElementById('mMenu').hidden = !open;
+  document.getElementById('mToggle').setAttribute('aria-expanded', String(open));
 }
 function indexOf(id){ return SECTIONS.findIndex(s=>s.id===id); }
 function goTo(id){
@@ -331,6 +434,7 @@ function goTo(id){
 function renderMain(){
   const el = document.getElementById('main');
   el.innerHTML = '';
+  el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
   if(state.current === 'intro') return renderIntro(el);
   if(state.current === 1) return renderSection1(el);
   if(state.current === 2) return renderSection2(el);
@@ -347,7 +451,7 @@ function renderIntro(el){
     <h1 class="page-title">Succession Planning Tool</h1>
     <p class="page-desc">Work through five short sections to build a complete succession plan for your team — from identifying critical roles to tracking successor progress over time.</p>
     <div class="card">
-      <h3 style="margin-bottom:16px;">Instructions</h3>
+      <div class="group-heading">Instructions</div>
       <ul class="instr">
         <li>Fill out each section with relevant information. You can go back and edit any entry at any time.</li>
         <li>Use the drop-down menus where they're provided (Criticality Level, Readiness Level, Risk Level).</li>
@@ -357,10 +461,37 @@ function renderIntro(el){
       </ul>
     </div>
     <div class="btn-row">
-      <button class="btn btn-primary" id="start-btn">Start with Section 1</button>
+      <button class="btn btn-primary" id="start-btn">Start with Section 1${I_NEXT}</button>
     </div>
   `;
   el.querySelector('#start-btn').addEventListener('click', ()=>goTo(1));
+}
+
+/* ---------------- SHARED LIST RENDERING ---------------- */
+function entryCard(id, titleHtml, subHtml, badgeHtml, ui, confirmText, onRemove){
+  const card = document.createElement('div');
+  card.className = 'entry' + (ui.savedId===id ? ' just-saved' : '');
+  const confirming = ui.confirmId === id;
+  card.innerHTML = `
+    <div class="entry-top">
+      <div>
+        <div class="entry-title">${titleHtml}</div>
+        <div class="entry-sub">${subHtml}</div>
+        ${badgeHtml}
+      </div>
+      <div class="entry-actions">
+        <button type="button" data-edit="${id}">Edit</button>
+        <button type="button" class="remove" data-del="${id}">Remove</button>
+      </div>
+    </div>
+    ${confirming ? `<div class="confirm" role="alert"><span>${confirmText}</span><button type="button" class="btn btn-danger btn-sm" data-yes>Remove</button><button type="button" class="btn btn-text btn-sm" data-no>Keep</button></div>` : ''}
+  `;
+  if(confirming){
+    card.querySelector('[data-yes]').addEventListener('click', ()=>{ ui.confirmId=null; onRemove(); render(); });
+    card.querySelector('[data-no]').addEventListener('click', ()=>{ ui.confirmId=null; render(); });
+    setTimeout(()=>{ const n=card.querySelector('[data-no]'); n && n.focus(); },0);
+  }
+  return card;
 }
 
 /* ---------------- SECTION 1: Identify Key Roles ---------------- */
@@ -391,24 +522,22 @@ function renderSection1(el){
     body.appendChild(empty);
   } else {
     state.roles.forEach(r=>{
-      const card = document.createElement('div');
-      card.className = 'entry';
-      card.innerHTML = `
-        <div class="entry-top">
-          <div>
-            <div class="entry-title">${escapeHtml(r.title || 'Untitled role')}</div>
-            <div class="entry-sub">${escapeHtml(r.department || '—')}${r.holder ? ' · Current holder: '+escapeHtml(r.holder) : ''}</div>
-            ${r.criticality ? `<span class="badge ${criticalityBadgeClass(r.criticality)}">${r.criticality} criticality</span>` : ''}
-          </div>
-          <div class="entry-actions">
-            <button data-edit="${r.id}">Edit</button>
-            <button data-del="${r.id}" style="color:var(--error);">Remove</button>
-          </div>
-        </div>
-      `;
-      body.appendChild(card);
+      body.appendChild(entryCard(
+        r.id,
+        escapeHtml(r.title || 'Untitled role'),
+        `${escapeHtml(r.department || '—')}${r.holder ? ' · Current holder: '+escapeHtml(r.holder) : ''}`,
+        r.criticality ? `<span class="badge ${criticalityBadgeClass(r.criticality)}">${r.criticality} criticality</span>` : '',
+        ui,
+        'Remove this role and any linked successor or knowledge-transfer data?',
+        ()=>{
+          state.roles = state.roles.filter(x=>x.id!==r.id);
+          state.successors = state.successors.filter(s=>s.roleId!==r.id);
+          delete state.knowledge[r.id];
+        }
+      ));
     });
   }
+  ui.savedId = null;
 
   if(ui.showPrompt){
     body.appendChild(promptCard(
@@ -421,8 +550,8 @@ function renderSection1(el){
     const btnRow = document.createElement('div');
     btnRow.className = 'btn-row';
     btnRow.innerHTML = `
-      <button class="btn btn-secondary" id="add-role">+ Add key role</button>
-      <button class="btn btn-primary" id="to-s2" ${state.roles.length===0?'disabled':''}>Continue to Section 2</button>
+      <button class="btn btn-secondary" id="add-role">${I_PLUS}Add key role</button>
+      <button class="btn btn-primary" id="to-s2" ${state.roles.length===0?'disabled':''}>Continue to Section 2${I_NEXT}</button>
     `;
     body.appendChild(btnRow);
     body.querySelector('#add-role').addEventListener('click', ()=>{ ui.mode='form'; ui.editingId=null; render(); });
@@ -431,16 +560,10 @@ function renderSection1(el){
   }
 
   body.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click', e=>{
-    ui.mode='form'; ui.editingId = e.target.getAttribute('data-edit'); render();
+    ui.mode='form'; ui.confirmId=null; ui.showPrompt=false; ui.editingId = e.currentTarget.getAttribute('data-edit'); render();
   }));
   body.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', e=>{
-    const id = e.target.getAttribute('data-del');
-    if(confirm('Remove this role and any linked successor or knowledge-transfer data?')){
-      state.roles = state.roles.filter(r=>r.id!==id);
-      state.successors = state.successors.filter(s=>s.roleId!==id);
-      delete state.knowledge[id];
-      render();
-    }
+    ui.confirmId = e.currentTarget.getAttribute('data-del'); render();
   }));
 }
 
@@ -449,22 +572,23 @@ function roleForm(data){
   wrap.className = 'card';
   wrap.innerHTML = `
     <div class="row2">
-      <div class="field">
-        <label>Role title</label>
+      <div class="field" id="fw-title">
+        <label for="f-title">Role title</label>
         <input type="text" id="f-title" value="${attr(data.title)}" placeholder="e.g., Director of Operations">
+        <span class="err">${I_ERR}Please enter a role title.</span>
       </div>
       <div class="field">
-        <label>Department</label>
+        <label for="f-department">Department</label>
         <input type="text" id="f-department" value="${attr(data.department)}" placeholder="e.g., Operations">
       </div>
     </div>
     <div class="row2">
       <div class="field">
-        <label>Current role holder</label>
+        <label for="f-holder">Current role holder</label>
         <input type="text" id="f-holder" value="${attr(data.holder)}" placeholder="Name of person currently in the role">
       </div>
       <div class="field">
-        <label>Criticality level</label>
+        <label for="f-criticality">Criticality level</label>
         <select id="f-criticality">
           <option value="" ${data.criticality===''?'selected':''}>Select level</option>
           <option value="High" ${data.criticality==='High'?'selected':''}>High</option>
@@ -474,8 +598,8 @@ function roleForm(data){
       </div>
     </div>
     <div class="field">
-      <label>Reason for criticality</label>
-      <textarea id="f-reason" placeholder="Why is this role critical to the business? Consider impact, specialized knowledge, and risk if vacant.">${data.reason||''}</textarea>
+      <label for="f-reason">Reason for criticality</label>
+      <textarea id="f-reason" placeholder="Why is this role critical to the business? Consider impact, specialized knowledge, and risk if vacant.">${escapeHtml(data.reason||'')}</textarea>
     </div>
     <div class="btn-row">
       <button class="btn btn-primary" id="save-role">Save role</button>
@@ -483,9 +607,12 @@ function roleForm(data){
     </div>
   `;
   attachAutoGrow(wrap);
+  attachSelectTint(wrap);
+  const titleIn = wrap.querySelector('#f-title');
+  titleIn.addEventListener('input', ()=>{ if(titleIn.value.trim()) wrap.querySelector('#fw-title').classList.remove('invalid'); });
   wrap.querySelector('#save-role').addEventListener('click', ()=>{
-    const title = wrap.querySelector('#f-title').value.trim();
-    if(!title){ alert('Please enter a role title.'); return; }
+    const title = titleIn.value.trim();
+    if(!title){ wrap.querySelector('#fw-title').classList.add('invalid'); titleIn.focus(); return; }
     const record = {
       id: data.id || newId(),
       title,
@@ -502,11 +629,13 @@ function roleForm(data){
     }
     state.ui.s1.mode = 'list';
     state.ui.s1.showPrompt = true;
+    state.ui.s1.savedId = record.id;
     render();
   });
   wrap.querySelector('#cancel-role').addEventListener('click', ()=>{
     state.ui.s1.mode='list'; render();
   });
+  setTimeout(()=>titleIn.focus({preventScroll:true}),0);
   return wrap;
 }
 
@@ -526,7 +655,7 @@ function renderSection2(el){
 
   if(state.roles.length===0){
     body.innerHTML = `<div class="empty-state">Add at least one key role in Section 1 before identifying successors.</div>
-      <div class="btn-row"><button class="btn btn-secondary" id="back1">Back to Section 1</button></div>`;
+      <div class="btn-row"><button class="btn btn-secondary" id="back1">${I_BACK}Back to Section 1</button></div>`;
     body.querySelector('#back1').addEventListener('click', ()=>goTo(1));
     return;
   }
@@ -545,24 +674,22 @@ function renderSection2(el){
   } else {
     state.successors.forEach(s=>{
       const role = roleById(s.roleId);
-      const card = document.createElement('div');
-      card.className = 'entry';
-      card.innerHTML = `
-        <div class="entry-top">
-          <div>
-            <div class="entry-title">${escapeHtml(s.name || 'Unnamed successor')}</div>
-            <div class="entry-sub">For: ${escapeHtml(role ? role.title : '—')} &middot; Currently: ${escapeHtml(s.currentRole || '—')}</div>
-            ${s.readiness ? `<span class="badge low">Ready: ${s.readiness}</span>` : ''}
-          </div>
-          <div class="entry-actions">
-            <button data-edit="${s.id}">Edit</button>
-            <button data-del="${s.id}" style="color:var(--error);">Remove</button>
-          </div>
-        </div>
-      `;
-      body.appendChild(card);
+      body.appendChild(entryCard(
+        s.id,
+        escapeHtml(s.name || 'Unnamed successor'),
+        `For: ${escapeHtml(role ? role.title : '—')} &middot; Currently: ${escapeHtml(s.currentRole || '—')}`,
+        s.readiness ? `<span class="badge info">Ready: ${escapeHtml(s.readiness)}</span>` : '',
+        ui,
+        'Remove this successor and any linked development or monitoring data?',
+        ()=>{
+          state.successors = state.successors.filter(x=>x.id!==s.id);
+          delete state.devPlans[s.id];
+          delete state.monitoring[s.id];
+        }
+      ));
     });
   }
+  ui.savedId = null;
 
   if(ui.showPrompt){
     body.appendChild(promptCard(
@@ -575,8 +702,8 @@ function renderSection2(el){
     const btnRow = document.createElement('div');
     btnRow.className = 'btn-row';
     btnRow.innerHTML = `
-      <button class="btn btn-secondary" id="add-succ">+ Add successor</button>
-      <button class="btn btn-primary" id="to-s3" ${state.successors.length===0?'disabled':''}>Continue to Section 3</button>
+      <button class="btn btn-secondary" id="add-succ">${I_PLUS}Add successor</button>
+      <button class="btn btn-primary" id="to-s3" ${state.successors.length===0?'disabled':''}>Continue to Section 3${I_NEXT}</button>
     `;
     body.appendChild(btnRow);
     body.querySelector('#add-succ').addEventListener('click', ()=>{ ui.mode='form'; ui.editingId=null; render(); });
@@ -585,16 +712,10 @@ function renderSection2(el){
   }
 
   body.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click', e=>{
-    ui.mode='form'; ui.editingId = e.target.getAttribute('data-edit'); render();
+    ui.mode='form'; ui.confirmId=null; ui.showPrompt=false; ui.editingId = e.currentTarget.getAttribute('data-edit'); render();
   }));
   body.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', e=>{
-    const id = e.target.getAttribute('data-del');
-    if(confirm('Remove this successor and any linked development or monitoring data?')){
-      state.successors = state.successors.filter(s=>s.id!==id);
-      delete state.devPlans[id];
-      delete state.monitoring[id];
-      render();
-    }
+    ui.confirmId = e.currentTarget.getAttribute('data-del'); render();
   }));
 }
 
@@ -604,29 +725,30 @@ function successorForm(data){
   const roleOptions = state.roles.map(r=>`<option value="${r.id}" ${data.roleId===r.id?'selected':''}>${escapeHtml(r.title)}</option>`).join('');
   wrap.innerHTML = `
     <div class="field">
-      <label>Key Role</label>
+      <label for="f-roleId">Key Role</label>
       <select id="f-roleId">
         <option value="">Select a key role</option>
         ${roleOptions}
       </select>
     </div>
     <div class="row2">
-      <div class="field">
-        <label>Successor name</label>
+      <div class="field" id="fw-name">
+        <label for="f-name">Successor name</label>
         <input type="text" id="f-name" value="${attr(data.name)}" placeholder="Full name">
+        <span class="err">${I_ERR}Please enter a successor name.</span>
       </div>
       <div class="field">
-        <label>Current role</label>
+        <label for="f-currentRole">Current role</label>
         <input type="text" id="f-currentRole" value="${attr(data.currentRole)}" placeholder="Their role today">
       </div>
     </div>
     <div class="row2">
       <div class="field">
-        <label>Department</label>
+        <label for="f-department">Department</label>
         <input type="text" id="f-department" value="${attr(data.department)}" placeholder="e.g., Operations">
       </div>
       <div class="field">
-        <label>Readiness level</label>
+        <label for="f-readiness">Readiness level</label>
         <select id="f-readiness">
           <option value="" ${data.readiness===''?'selected':''}>Select level</option>
           <option value="Now" ${data.readiness==='Now'?'selected':''}>Now</option>
@@ -636,12 +758,12 @@ function successorForm(data){
       </div>
     </div>
     <div class="field">
-      <label>Strengths</label>
-      <textarea id="f-strengths" placeholder="What makes this person a strong candidate?">${data.strengths||''}</textarea>
+      <label for="f-strengths">Strengths</label>
+      <textarea id="f-strengths" placeholder="What makes this person a strong candidate?">${escapeHtml(data.strengths||'')}</textarea>
     </div>
     <div class="field">
-      <label>Development areas</label>
-      <textarea id="f-development" placeholder="What gaps or growth areas should be addressed?">${data.development||''}</textarea>
+      <label for="f-development">Development areas</label>
+      <textarea id="f-development" placeholder="What gaps or growth areas should be addressed?">${escapeHtml(data.development||'')}</textarea>
     </div>
     <div class="btn-row">
       <button class="btn btn-primary" id="save-succ">Save successor</button>
@@ -649,9 +771,12 @@ function successorForm(data){
     </div>
   `;
   attachAutoGrow(wrap);
+  attachSelectTint(wrap);
+  const nameIn = wrap.querySelector('#f-name');
+  nameIn.addEventListener('input', ()=>{ if(nameIn.value.trim()) wrap.querySelector('#fw-name').classList.remove('invalid'); });
   wrap.querySelector('#save-succ').addEventListener('click', ()=>{
-    const name = wrap.querySelector('#f-name').value.trim();
-    if(!name){ alert('Please enter a successor name.'); return; }
+    const name = nameIn.value.trim();
+    if(!name){ wrap.querySelector('#fw-name').classList.add('invalid'); nameIn.focus(); return; }
     const record = {
       id: data.id || newId(),
       roleId: wrap.querySelector('#f-roleId').value,
@@ -670,6 +795,7 @@ function successorForm(data){
     }
     state.ui.s2.mode = 'list';
     state.ui.s2.showPrompt = true;
+    state.ui.s2.savedId = record.id;
     render();
   });
   wrap.querySelector('#cancel-succ').addEventListener('click', ()=>{
@@ -690,7 +816,7 @@ function renderSection3(el){
 
   if(state.successors.length===0){
     body.innerHTML = `<div class="empty-state">Add successors in Section 2 first.</div>
-      <div class="btn-row"><button class="btn btn-secondary" id="back2">Back to Section 2</button></div>`;
+      <div class="btn-row"><button class="btn btn-secondary" id="back2">${I_BACK}Back to Section 2</button></div>`;
     body.querySelector('#back2').addEventListener('click', ()=>goTo(2));
     return;
   }
@@ -701,24 +827,24 @@ function renderSection3(el){
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
-      <div class="group-heading">${escapeHtml(s.name)} &middot; for ${escapeHtml(role ? role.title : '—')}</div>
+      <div class="group-heading">${escapeHtml(s.name)} <span class="gh-sub">&middot; for ${escapeHtml(role ? role.title : '—')}</span></div>
       <div class="field">
-        <label>Development actions</label>
-        <textarea data-field="actions" data-id="${s.id}" placeholder="Trainings, stretch assignments, mentoring, shadowing, etc.">${plan.actions}</textarea>
+        <label for="dp-actions-${s.id}">Development actions</label>
+        <textarea id="dp-actions-${s.id}" data-field="actions" data-id="${s.id}" placeholder="Trainings, stretch assignments, mentoring, shadowing, etc.">${escapeHtml(plan.actions)}</textarea>
       </div>
       <div class="row2">
         <div class="field">
-          <label>Resources needed</label>
-          <textarea data-field="resources" data-id="${s.id}" placeholder="Budget, tools, mentor time, courses">${plan.resources}</textarea>
+          <label for="dp-resources-${s.id}">Resources needed</label>
+          <textarea id="dp-resources-${s.id}" data-field="resources" data-id="${s.id}" placeholder="Budget, tools, mentor time, courses">${escapeHtml(plan.resources)}</textarea>
         </div>
         <div class="field">
-          <label>Target completion date</label>
-          <input type="date" data-field="targetDate" data-id="${s.id}" value="${plan.targetDate||''}">
+          <label for="dp-date-${s.id}">Target completion date</label>
+          <input type="date" id="dp-date-${s.id}" data-field="targetDate" data-id="${s.id}" value="${attr(plan.targetDate||'')}">
         </div>
       </div>
       <div class="field">
-        <label>Expected outcome</label>
-        <textarea data-field="outcome" data-id="${s.id}" placeholder="What will be true once this development plan is complete?">${plan.outcome}</textarea>
+        <label for="dp-outcome-${s.id}">Expected outcome</label>
+        <textarea id="dp-outcome-${s.id}" data-field="outcome" data-id="${s.id}" placeholder="What will be true once this development plan is complete?">${escapeHtml(plan.outcome)}</textarea>
       </div>
     `;
     body.appendChild(card);
@@ -737,8 +863,8 @@ function renderSection3(el){
   const btnRow = document.createElement('div');
   btnRow.className = 'btn-row';
   btnRow.innerHTML = `
-    <button class="btn btn-secondary" id="back2b">Back</button>
-    <button class="btn btn-primary" id="to-s4">Continue to Section 4</button>
+    <button class="btn btn-secondary" id="back2b">${I_BACK}Back</button>
+    <button class="btn btn-primary" id="to-s4">Continue to Section 4${I_NEXT}</button>
   `;
   body.appendChild(btnRow);
   body.querySelector('#back2b').addEventListener('click', ()=>goTo(2));
@@ -757,7 +883,7 @@ function renderSection4(el){
 
   if(state.roles.length===0){
     body.innerHTML = `<div class="empty-state">Add key roles in Section 1 first.</div>
-      <div class="btn-row"><button class="btn btn-secondary" id="back1">Back to Section 1</button></div>`;
+      <div class="btn-row"><button class="btn btn-secondary" id="back1">${I_BACK}Back to Section 1</button></div>`;
     body.querySelector('#back1').addEventListener('click', ()=>goTo(1));
     return;
   }
@@ -767,23 +893,23 @@ function renderSection4(el){
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
-      <div class="group-heading">${escapeHtml(r.title)}${r.department ? ' &middot; '+escapeHtml(r.department) : ''}</div>
+      <div class="group-heading">${escapeHtml(r.title)}${r.department ? ' <span class="gh-sub">&middot; '+escapeHtml(r.department)+'</span>' : ''}</div>
       <div class="field">
-        <label>Critical knowledge to transfer</label>
-        <textarea data-field="criticalKnowledge" data-id="${r.id}" placeholder="Institutional knowledge, key relationships, systems, or processes unique to this role">${k.criticalKnowledge}</textarea>
+        <label for="kt-ck-${r.id}">Critical knowledge to transfer</label>
+        <textarea id="kt-ck-${r.id}" data-field="criticalKnowledge" data-id="${r.id}" placeholder="Institutional knowledge, key relationships, systems, or processes unique to this role">${escapeHtml(k.criticalKnowledge)}</textarea>
       </div>
       <div class="field">
-        <label>Knowledge transfer plan</label>
-        <textarea data-field="transferPlan" data-id="${r.id}" placeholder="How and when will this knowledge be documented and shared?">${k.transferPlan}</textarea>
+        <label for="kt-tp-${r.id}">Knowledge transfer plan</label>
+        <textarea id="kt-tp-${r.id}" data-field="transferPlan" data-id="${r.id}" placeholder="How and when will this knowledge be documented and shared?">${escapeHtml(k.transferPlan)}</textarea>
       </div>
       <div class="field">
-        <label>Potential risks</label>
-        <textarea data-field="potentialRisks" data-id="${r.id}" placeholder="What could go wrong if this role becomes vacant? Consider knowledge gaps, timing, and business impact.">${k.potentialRisks||''}</textarea>
+        <label for="kt-pr-${r.id}">Potential risks</label>
+        <textarea id="kt-pr-${r.id}" data-field="potentialRisks" data-id="${r.id}" placeholder="What could go wrong if this role becomes vacant? Consider knowledge gaps, timing, and business impact.">${escapeHtml(k.potentialRisks||'')}</textarea>
       </div>
       <div class="row2">
         <div class="field">
-          <label>Risk level</label>
-          <select data-field="riskLevel" data-id="${r.id}">
+          <label for="kt-rl-${r.id}">Risk level</label>
+          <select id="kt-rl-${r.id}" data-field="riskLevel" data-id="${r.id}">
             <option value="" ${k.riskLevel===''?'selected':''}>Select level</option>
             <option value="High" ${k.riskLevel==='High'?'selected':''}>High</option>
             <option value="Medium" ${k.riskLevel==='Medium'?'selected':''}>Medium</option>
@@ -792,14 +918,15 @@ function renderSection4(el){
         </div>
       </div>
       <div class="field">
-        <label>Mitigation actions</label>
-        <textarea data-field="mitigation" data-id="${r.id}" placeholder="Steps to reduce risk if this role becomes vacant unexpectedly">${k.mitigation}</textarea>
+        <label for="kt-mi-${r.id}">Mitigation actions</label>
+        <textarea id="kt-mi-${r.id}" data-field="mitigation" data-id="${r.id}" placeholder="Steps to reduce risk if this role becomes vacant unexpectedly">${escapeHtml(k.mitigation)}</textarea>
       </div>
     `;
     body.appendChild(card);
   });
 
   attachAutoGrow(body);
+  attachSelectTint(body);
   body.querySelectorAll('textarea[data-field], select[data-field]').forEach(input=>{
     input.addEventListener('input', ()=>{
       const id = input.getAttribute('data-id');
@@ -812,8 +939,8 @@ function renderSection4(el){
   const btnRow = document.createElement('div');
   btnRow.className = 'btn-row';
   btnRow.innerHTML = `
-    <button class="btn btn-secondary" id="back3">Back</button>
-    <button class="btn btn-primary" id="to-s5">Continue to Section 5</button>
+    <button class="btn btn-secondary" id="back3">${I_BACK}Back</button>
+    <button class="btn btn-primary" id="to-s5">Continue to Section 5${I_NEXT}</button>
   `;
   body.appendChild(btnRow);
   body.querySelector('#back3').addEventListener('click', ()=>goTo(3));
@@ -832,7 +959,7 @@ function renderSection5(el){
 
   if(state.successors.length===0){
     body.innerHTML = `<div class="empty-state">Add successors in Section 2 first.</div>
-      <div class="btn-row"><button class="btn btn-secondary" id="back2">Back to Section 2</button></div>`;
+      <div class="btn-row"><button class="btn btn-secondary" id="back2">${I_BACK}Back to Section 2</button></div>`;
     body.querySelector('#back2').addEventListener('click', ()=>goTo(2));
     return;
   }
@@ -844,32 +971,30 @@ function renderSection5(el){
     card.className = 'card';
     card.innerHTML = `
       <div class="group-heading">${escapeHtml(s.name)}</div>
-      <div class="row2" style="margin-bottom:18px;">
+      <div class="ro-grid">
         <div class="readonly-field"><div class="rf-label">Role title</div>${escapeHtml(role ? role.title : '—')}</div>
         <div class="readonly-field"><div class="rf-label">Department</div>${escapeHtml(role ? (role.department||'—') : '—')}</div>
-      </div>
-      <div class="row2" style="margin-bottom:18px;">
         <div class="readonly-field"><div class="rf-label">Successor name</div>${escapeHtml(s.name)}</div>
         <div class="readonly-field"><div class="rf-label">Current role</div>${escapeHtml(s.currentRole||'—')}</div>
-      </div>
-      <div class="row2" style="margin-bottom:22px;">
         <div class="readonly-field"><div class="rf-label">Readiness level</div>${escapeHtml(s.readiness||'—')}</div>
-        <div class="field" style="margin:0;">
-          <label>Owner (mentor or coach)</label>
-          <input type="text" data-field="owner" data-id="${s.id}" value="${attr(m.owner)}" placeholder="Who is guiding this development?">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label for="pm-owner-${s.id}">Owner (mentor or coach)</label>
+          <input type="text" id="pm-owner-${s.id}" data-field="owner" data-id="${s.id}" value="${attr(m.owner)}" placeholder="Who is guiding this development?">
+        </div>
+        <div class="field">
+          <label for="pm-date-${s.id}">Review date</label>
+          <input type="date" id="pm-date-${s.id}" data-field="reviewDate" data-id="${s.id}" value="${attr(m.reviewDate||'')}">
         </div>
       </div>
       <div class="field">
-        <label>Review date</label>
-        <input type="date" data-field="reviewDate" data-id="${s.id}" value="${m.reviewDate||''}">
+        <label for="pm-upd-${s.id}">Updates and adjustments</label>
+        <textarea id="pm-upd-${s.id}" data-field="updates" data-id="${s.id}" placeholder="What's changed since the last review?">${escapeHtml(m.updates)}</textarea>
       </div>
       <div class="field">
-        <label>Updates and adjustments</label>
-        <textarea data-field="updates" data-id="${s.id}" placeholder="What's changed since the last review?">${m.updates}</textarea>
-      </div>
-      <div class="field">
-        <label>Key actions</label>
-        <textarea data-field="keyActions" data-id="${s.id}" placeholder="Next steps before the following review">${m.keyActions}</textarea>
+        <label for="pm-ka-${s.id}">Key actions</label>
+        <textarea id="pm-ka-${s.id}" data-field="keyActions" data-id="${s.id}" placeholder="Next steps before the following review">${escapeHtml(m.keyActions)}</textarea>
       </div>
     `;
     body.appendChild(card);
@@ -888,8 +1013,8 @@ function renderSection5(el){
   const btnRow = document.createElement('div');
   btnRow.className = 'btn-row';
   btnRow.innerHTML = `
-    <button class="btn btn-secondary" id="back4">Back</button>
-    <button class="btn btn-primary" id="finish">${state.finished ? 'Update plan' : 'Finish plan'}</button>
+    <button class="btn btn-secondary" id="back4">${I_BACK}Back</button>
+    <button class="btn btn-primary" id="finish">${state.finished ? 'Update plan' : 'Finish plan'}${I_NEXT}</button>
   `;
   body.appendChild(btnRow);
   body.querySelector('#back4').addEventListener('click', ()=>goTo(4));
@@ -900,13 +1025,15 @@ function renderSection5(el){
 function renderDone(el){
   el.innerHTML = `
     <div class="card final-card">
-      <div class="eyebrow" style="text-align:center;">All sections complete</div>
+      <div class="done-mark">${I_CHECK}</div>
+      <div class="eyebrow">All sections complete</div>
       <h2>Your succession plan is ready</h2>
       <p>${state.roles.length} key role${state.roles.length===1?'':'s'} and ${state.successors.length} successor${state.successors.length===1?'':'s'} documented. Transfer this information to your HCM/HRIS or dedicated talent management system, and share it with leadership.</p>
-      <div class="btn-row no-print" style="justify-content:center;">
-        <button class="btn btn-primary" id="download-btn">Download summary</button>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="download-btn">${I_DL}Download summary</button>
         <button class="btn btn-secondary" id="review-btn">Review sections</button>
       </div>
+      <p class="dl-note" id="dl-note" aria-live="polite"></p>
     </div>
   `;
   el.querySelector('#download-btn').addEventListener('click', downloadSummary);
@@ -914,7 +1041,16 @@ function renderDone(el){
 }
 
 /* ---------------- SUMMARY EXPORT ---------------- */
-function downloadSummary(){
+let dlPromise = null;
+function getDownloads(){
+  if(!dlPromise){
+    dlPromise = (window.claude && typeof window.claude.use==='function')
+      ? Promise.resolve(window.claude.use('downloads')).catch(()=>null)
+      : Promise.resolve(null);
+  }
+  return dlPromise;
+}
+function buildSummary(){
   const today = new Date().toLocaleDateString();
   let rolesHtml = state.roles.map(r=>`
     <div class="rcard">
@@ -926,7 +1062,6 @@ function downloadSummary(){
   let successorsHtml = state.successors.map(s=>{
     const role = roleById(s.roleId);
     const plan = state.devPlans[s.id] || {};
-    const k = role ? (state.knowledge[role.id] || {}) : {};
     const m = state.monitoring[s.id] || {};
     return `
     <div class="rcard">
@@ -960,20 +1095,20 @@ function downloadSummary(){
     </div>`;
   }).join('') || '<p class="empty">No knowledge transfer data added.</p>';
 
-  const doc = `<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>Succession Plan Summary</title>
+  return `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Succession Plan Summary</title>
 <style>
-  body{font-family:Georgia,serif;color:#1B2430;max-width:760px;margin:40px auto;padding:0 20px;line-height:1.55;}
-  h1{font-size:26px;margin-bottom:4px;}
-  .date{color:#5B6675;font-size:13px;margin-bottom:36px;}
-  h2{font-size:19px;border-bottom:2px solid #2F6F63;padding-bottom:8px;margin-top:44px;}
-  .rcard{border:1px solid #D6DCE3;border-radius:8px;padding:16px 20px;margin:16px 0;background:#fff;}
+  body{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:#111827;background:#F7F8FA;max-width:760px;margin:40px auto;padding:0 20px;line-height:1.55;}
+  h1{font-size:26px;margin-bottom:4px;letter-spacing:-.02em;}
+  .date{color:#5B6472;font-size:13px;margin-bottom:36px;}
+  h2{font-size:18px;color:#0F766E;border-bottom:1px solid #E5E7EB;padding-bottom:8px;margin-top:44px;letter-spacing:-.01em;}
+  .rcard{border:1px solid #E5E7EB;border-radius:12px;padding:16px 20px;margin:16px 0;background:#fff;}
   .rcard h3{margin:0 0 4px 0;font-size:16px;}
-  .meta{color:#5B6675;font-size:13px;margin:0 0 10px 0;}
-  .subhead{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#2F6F63;font-weight:bold;margin:14px 0 6px 0;}
-  .empty{color:#5B6675;font-style:italic;}
+  .meta{color:#5B6472;font-size:13px;margin:0 0 10px 0;}
+  .subhead{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:#0F766E;font-weight:600;margin:14px 0 6px 0;}
+  .empty{color:#5B6472;font-style:italic;}
   p{margin:6px 0;font-size:14.5px;}
-  @media print{ body{margin:0;} }
+  @media print{ body{margin:0;background:#fff;} }
 </style></head>
 <body>
   <h1>Succession Planning Summary</h1>
@@ -985,26 +1120,43 @@ function downloadSummary(){
   <h2>Knowledge Transfer &amp; Risk Mitigation</h2>
   ${knowledgeHtml}
 </body></html>`;
-
-  const blob = new Blob([doc], {type:'text/html'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'succession-plan-summary.html';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+}
+async function downloadSummary(){
+  const btn = document.getElementById('download-btn');
+  const note = document.getElementById('dl-note');
+  note.className = 'dl-note'; note.textContent = '';
+  const doc = buildSummary();
+  const filename = 'succession-plan-summary.html';
+  const dl = await getDownloads();
+  if(!dl){
+    // Outside the artifact viewer: plain browser download
+    const blob = new Blob([doc], {type:'text/html'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    return;
+  }
+  btn.disabled = true;
+  try{
+    const res = await dl.save({filename, data: new Blob([doc], {type:'text/html'})});
+    if(res && res.status==='saved') note.textContent = 'Downloaded ' + filename;
+  }catch(err){
+    const c = err && err.code;
+    if(c==='declined') note.textContent = 'Download cancelled.';
+    else if(c==='rate_limited'){ note.className='dl-note bad'; note.textContent = 'A download prompt is already open. Finish that one first.'; }
+    else { note.className='dl-note bad'; note.textContent = "Couldn't create the file. Try again."; }
+  }finally{ btn.disabled = false; }
 }
 
 /* ---------------- SHARED UI PIECES ---------------- */
 function promptCard(title, question, onYes, onNo){
   const div = document.createElement('div');
   div.className = 'prompt-card';
-  div.innerHTML = `<h3>${title}</h3><p>${question}</p>`;
-  const row = document.createElement('div');
-  row.className = 'btn-row';
-  row.style.marginTop = '0';
+  div.setAttribute('role','status');
+  div.innerHTML = `<div class="check">${I_CHECK}</div><div class="prompt-body"><h3>${title}</h3><p>${question}</p><div class="btn-row"></div></div>`;
+  const row = div.querySelector('.btn-row');
   const yes = document.createElement('button');
   yes.className = 'btn btn-primary'; yes.textContent = 'Yes, add another';
   const no = document.createElement('button');
@@ -1012,7 +1164,6 @@ function promptCard(title, question, onYes, onNo){
   yes.addEventListener('click', onYes);
   no.addEventListener('click', onNo);
   row.appendChild(yes); row.appendChild(no);
-  div.appendChild(row);
   return div;
 }
 function escapeHtml(str){
