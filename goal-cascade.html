@@ -1,367 +1,511 @@
 <title>Goal Cascade</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&display=swap">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap');
-
-  :root{
-    --bg:#EEF1F4;
-    --surface:#FFFFFF;
-    --surface-alt:#E4E9EF;
-    --ink:#1B2430;
-    --ink-soft:#5B6675;
-    --line:#D6DCE3;
-    --accent:#2F6F63;
-    --accent-deep:#176480;
-    --accent-soft:#82B3C1;
-    --error:#B3432B;
-    --font-display:'Fraunces', Georgia, serif;
-    --font-body:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    color-scheme: light;
+/* ===== Talent Workspace UI (talent-ui.css) ===== */
+/* Layout: brand row, tool header with step nav, then a single-column view per step; dashboard is three swimlanes joined by connector lines. */
+:root{
+  --font-sans:Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:22px;--space-6:28px;--space-7:32px;--space-8:56px;
+  --radius-sm:8px;--radius-md:10px;--radius-lg:12px;--radius-xl:14px;--radius-pill:999px;
+  --bg:#F7F8FA;--surface:#FFFFFF;--surface-alt:#F1F3F5;--ink:#111827;--ink-soft:#5B6472;--line:#E5E7EB;--line-strong:#8A9099;
+  --accent:#0F766E;--accent-hover:#0B5F58;--on-accent:#FFFFFF;--accent-soft:#E6F4F2;--focus-ring:rgba(15,118,110,0.25);
+  --info:#1D4ED8;--info-soft:#EEF3FF;--warning:#B54708;--warning-soft:#FEF3E2;--error:#B42318;--error-soft:#FEECEB;
+  --shadow-sm:0 1px 2px rgba(16,24,40,0.05);
+  --shadow-card:0 1px 2px rgba(16,24,40,0.04), 0 6px 20px -4px rgba(16,24,40,0.07);
+  --shadow-lift:0 2px 4px rgba(16,24,40,0.06), 0 10px 28px -6px rgba(16,24,40,0.12);
+  /* cascade tiers: company → department → function */
+  --tier-1:var(--accent);--tier-2:var(--info);--tier-3:var(--line-strong);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1113;--surface:#171B1F;--surface-alt:#1F2429;--ink:#ECEEF0;--ink-soft:#9AA3AD;--line:#2A3036;--line-strong:#6B747E;
+    --accent:#3CC4B4;--accent-hover:#62D3C6;--on-accent:#04201C;--accent-soft:rgba(60,196,180,0.13);--focus-ring:rgba(60,196,180,0.3);
+    --info:#8AB4F8;--info-soft:rgba(138,180,248,0.13);--warning:#F5B45C;--warning-soft:rgba(245,180,92,0.13);--error:#F28B82;--error-soft:rgba(242,139,130,0.13);
+    --shadow-sm:0 1px 2px rgba(0,0,0,0.4);
+    --shadow-card:0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -6px rgba(0,0,0,0.5);
+    --shadow-lift:0 2px 4px rgba(0,0,0,0.45), 0 12px 30px -6px rgba(0,0,0,0.6);
+    color-scheme:dark;
   }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1113;--surface:#171B1F;--surface-alt:#1F2429;--ink:#ECEEF0;--ink-soft:#9AA3AD;--line:#2A3036;--line-strong:#6B747E;
+  --accent:#3CC4B4;--accent-hover:#62D3C6;--on-accent:#04201C;--accent-soft:rgba(60,196,180,0.13);--focus-ring:rgba(60,196,180,0.3);
+  --info:#8AB4F8;--info-soft:rgba(138,180,248,0.13);--warning:#F5B45C;--warning-soft:rgba(245,180,92,0.13);--error:#F28B82;--error-soft:rgba(242,139,130,0.13);
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.4);
+  --shadow-card:0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -6px rgba(0,0,0,0.5);
+  --shadow-lift:0 2px 4px rgba(0,0,0,0.45), 0 12px 30px -6px rgba(0,0,0,0.6);
+  color-scheme:dark;
+}
+*{box-sizing:border-box;}
+[hidden]{display:none!important;}
+html,body{margin:0;background:var(--bg);}
+body{color:var(--ink);font-family:var(--font-sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;}
+h1,h2,h3,h4{font-weight:650;letter-spacing:-.022em;margin:0;line-height:1.2;text-wrap:balance;}
+p{margin:0;}
+button{font:inherit;cursor:pointer;}
+:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus-ring);border-radius:var(--radius-sm);}
 
-  *{box-sizing:border-box;}
-  body{background:var(--bg); color:var(--ink); font-family:var(--font-body); line-height:1.5;}
-  .view{padding:0 24px 72px; max-width:1180px; margin:0 auto;}
-  h1,h2,h3{font-family:var(--font-display); font-weight:600; text-wrap:balance; margin:0;}
-  button{font-family:var(--font-body); cursor:pointer;}
-  select, textarea, input{font-family:var(--font-body); font-size:14px;}
+/* ===== Shell ===== */
+.shell{max-width:1180px;margin:0 auto;padding-inline:32px;padding-block:28px 56px;display:flex;flex-direction:column;gap:var(--space-5);}
+.brandrow{display:flex;align-items:center;gap:10px;}
+.brand-tile{width:32px;height:32px;border-radius:var(--radius-md);background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.brand-name{flex:1;min-width:0;font-size:14px;font-weight:650;letter-spacing:-.01em;}
+.theme-toggle{width:34px;height:34px;border-radius:var(--radius-md);border:none;background:transparent;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s,color .15s;}
+.theme-toggle:hover{background:var(--surface-alt);color:var(--ink);}
 
-  /* ---------- top bar ---------- */
-  .topbar{display:flex; align-items:center; justify-content:space-between; padding:16px 24px; max-width:1180px; margin:0 auto; gap:16px; flex-wrap:wrap;}
-  .brand{display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:600; font-size:17px;}
-  .brand-mark{width:22px; height:22px; border-radius:6px; background:linear-gradient(135deg, var(--accent), var(--accent-deep)); flex:none;}
-  .nav-pills{display:flex; gap:6px; background:var(--surface-alt); padding:4px; border-radius:10px; flex-wrap:wrap;}
-  .nav-pill{padding:7px 14px; border:none; background:transparent; border-radius:7px; font-size:12.5px; font-weight:600; color:var(--ink-soft);}
-  .nav-pill.active{background:var(--surface); color:var(--ink); box-shadow:0 1px 2px rgba(27,36,48,.08);}
+/* Tool header + step nav */
+.topbar{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px 24px;}
+.brand{display:flex;flex-direction:column;gap:6px;}
+.brand .eyebrow{margin:0;}
+.brand h1{font-size:28px;line-height:1.15;}
+.nav-pills{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm);padding:4px;border-radius:var(--radius-lg);max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.nav-pills::-webkit-scrollbar{display:none;}
+.nav-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:none;background:transparent;border-radius:var(--radius-md);font-size:13.5px;font-weight:600;color:var(--ink-soft);white-space:nowrap;transition:background .15s,color .15s;}
+.nav-pill:hover{background:var(--surface-alt);color:var(--ink);}
+.nav-pill .np-num{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line-strong);font-size:11px;display:flex;align-items:center;justify-content:center;flex:none;}
+.nav-pill.active{background:var(--accent-soft);color:var(--accent);}
+.nav-pill.active .np-num{background:var(--accent);border-color:var(--accent);color:var(--on-accent);}
 
-  /* ---------- buttons ---------- */
-  .btn{border:none; border-radius:9px; padding:11px 22px; font-size:14px; font-weight:600; display:inline-flex; align-items:center; gap:8px; white-space:nowrap;}
-  .btn-primary{background:var(--accent); color:#fff;}
-  .btn-primary:hover{background:var(--accent-deep);}
-  .btn-ghost{background:var(--surface-alt); color:var(--ink);}
-  .btn-ghost:hover{background:var(--line);}
-  .btn-sm{padding:7px 13px; font-size:12.5px; border-radius:7px;}
-  .btn:disabled{opacity:.45; cursor:not-allowed;}
-  .btn-row{display:flex; justify-content:space-between; margin-top:32px; gap:10px;}
+/* ===== Buttons ===== */
+.btn{font:600 14px var(--font-sans);border-radius:var(--radius-md);padding:11px 20px;min-height:44px;
+  border:1px solid transparent;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;
+  transition:background .15s, box-shadow .15s, transform .15s, border-color .15s, color .15s;}
+.btn-primary{background:var(--accent);color:var(--on-accent);box-shadow:var(--shadow-sm);}
+.btn-primary:hover:not(:disabled){background:var(--accent-hover);transform:translateY(-1px);box-shadow:var(--shadow-lift);}
+.btn-primary:active:not(:disabled){transform:none;}
+.btn-ghost{background:var(--surface);color:var(--ink);border-color:var(--line-strong);box-shadow:var(--shadow-sm);}
+.btn-ghost:hover:not(:disabled){background:var(--surface-alt);}
+.btn-sm{min-height:34px;padding:6px 12px;font-size:13px;}
+.btn-lg{min-height:50px;padding:13px 28px;font-size:15px;}
+.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;}
+.btn:focus-visible{box-shadow:0 0 0 4px var(--focus-ring);}
+.btn-row{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:20px;}
 
-  /* ---------- landing ---------- */
-  .hero{padding:72px 0 32px; text-align:center;}
-  .eyebrow{font-size:12.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--accent-deep); margin-bottom:14px;}
-  .hero h1{font-size:44px; letter-spacing:-.01em; margin-bottom:18px;}
-  .hero p.lede{font-size:17px; color:var(--ink-soft); max-width:640px; margin:0 auto 36px; line-height:1.65;}
-  .cascade-diagram{display:flex; flex-direction:column; align-items:center; gap:0; max-width:520px; margin:0 auto 44px;}
-  .tier{width:100%; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:18px 24px; text-align:left; box-shadow:0 1px 3px rgba(27,36,48,.06);}
-  .tier .tier-label{font-weight:700; font-size:15px; margin-bottom:4px;}
-  .tier .tier-desc{font-size:13px; color:var(--ink-soft);}
-  .tier.t1{border-top:4px solid var(--accent);}
-  .tier.t2{border-top:4px solid var(--accent-deep);}
-  .tier.t3{border-top:4px solid var(--accent-soft);}
-  .arrow-down{padding:6px 0; color:var(--ink-soft); font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px;}
-  .arrow-down svg{width:14px; height:14px;}
-  .explainer{text-align:left; max-width:640px; margin:0 auto; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:30px 34px;}
-  .explainer p{color:var(--ink-soft); font-size:14.5px; margin:0 0 14px; line-height:1.7;}
-  .explainer p:last-child{margin-bottom:0;}
+/* ===== Common ===== */
+.view{display:flex;flex-direction:column;gap:20px;min-width:0;}
+.eyebrow{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-xl);padding:var(--space-7);box-shadow:var(--shadow-card);color:var(--ink);min-width:0;}
+.lede{color:var(--ink-soft);font-size:15.5px;line-height:1.6;max-width:62ch;}
 
-  /* ---------- entry pages (shared) ---------- */
-  .entry-head{padding:36px 0 4px;}
-  .entry-head .eyebrow-row{display:flex; align-items:center; gap:8px; margin-bottom:8px;}
-  .step-dot{width:24px; height:24px; border-radius:50%; color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; flex:none;}
-  .entry-head h2{font-size:26px;}
-  .entry-head p{color:var(--ink-soft); font-size:14px; margin-top:6px;}
+/* ===== Landing ===== */
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:40px;align-items:center;padding-block:24px 8px;}
+.hero-copy{display:flex;flex-direction:column;gap:16px;align-items:flex-start;}
+.hero-copy h1{font-size:40px;line-height:1.1;}
+.explainer{display:flex;flex-direction:column;gap:12px;}
+.explainer p{color:var(--ink-soft);font-size:14.5px;line-height:1.65;max-width:62ch;}
+.cascade-diagram{display:flex;flex-direction:column;align-items:stretch;}
+.tier{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:16px 18px 16px 52px;box-shadow:var(--shadow-sm);position:relative;}
+.tier::before{content:attr(data-n);position:absolute;left:16px;top:16px;width:24px;height:24px;border-radius:50%;background:var(--c);color:var(--on-accent);font-size:12px;font-weight:650;display:flex;align-items:center;justify-content:center;}
+.tier.t1{--c:var(--tier-1);}
+.tier.t2{--c:var(--tier-2);margin-left:18px;}
+.tier.t3{--c:var(--tier-3);margin-left:36px;}
+.tier .tier-label{font-weight:650;font-size:15px;letter-spacing:-.01em;margin-bottom:3px;}
+.tier .tier-desc{font-size:13.5px;color:var(--ink-soft);line-height:1.5;}
+.arrow-down{padding:6px 0 6px 27px;color:var(--ink-soft);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:6px;}
+.arrow-down.a2{padding-left:45px;}
+.arrow-down svg{width:14px;height:14px;}
 
-  .summary-panel{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:22px 24px; margin-top:22px;}
-  .summary-panel h3{font-size:14px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-soft); margin-bottom:14px;}
-  .summary-table{width:100%; border-collapse:collapse;}
-  .summary-table th{text-align:left; font-size:11.5px; text-transform:uppercase; letter-spacing:.03em; color:var(--ink-soft); font-weight:600; padding:0 10px 8px; border-bottom:1px solid var(--line);}
-  .summary-table td{padding:11px 10px; font-size:13.5px; border-bottom:1px solid var(--line); vertical-align:top;}
-  .summary-table tr:last-child td{border-bottom:none;}
-  .summary-table .col-name{font-weight:600;}
-  .summary-table .col-dates{white-space:nowrap; color:var(--ink-soft); font-variant-numeric:tabular-nums;}
-  .summary-table .col-outcomes{color:var(--ink-soft); max-width:260px;}
-  .dot{width:9px; height:9px; border-radius:50%; display:inline-block; flex:none; margin-right:7px;}
-  .align-tag{display:flex; align-items:center; font-size:12.5px; color:var(--ink-soft);}
-  .align-tag em{font-style:normal; color:var(--error);}
-  .empty-note{color:var(--ink-soft); font-size:13px; font-style:italic; padding:6px 2px;}
+/* ===== Entry pages ===== */
+.entry-head{display:flex;flex-direction:column;gap:8px;}
+.eyebrow-row{display:flex;align-items:center;gap:10px;}
+.step-dot{width:26px;height:26px;border-radius:50%;color:var(--on-accent);font-size:12.5px;font-weight:650;display:flex;align-items:center;justify-content:center;flex:none;}
+.step-dot.s1{background:var(--tier-1);}
+.step-dot.s2{background:var(--tier-2);}
+.step-dot.s3{background:var(--tier-3);}
+.entry-head h2{font-size:28px;line-height:1.15;}
+.entry-head p{color:var(--ink-soft);font-size:15px;}
 
-  .picker-bar{display:flex; align-items:flex-end; gap:14px; flex-wrap:wrap; margin-top:24px; background:var(--surface-alt); border-radius:12px; padding:16px 18px;}
-  .picker-bar .field{margin:0; flex:1; min-width:180px;}
-  .picker-bar .add-btn-wrap{flex:none;}
+.summary-panel{padding:22px 24px;}
+.summary-panel h3{font-size:15px;letter-spacing:-.01em;padding-bottom:14px;margin-bottom:6px;border-bottom:1px solid var(--line);}
+.summary-table{width:100%;border-collapse:collapse;}
+.summary-table th{text-align:left;font-size:12px;color:var(--ink-soft);font-weight:600;padding:10px 10px 8px;border-bottom:1px solid var(--line);}
+.summary-table td{padding:12px 10px;font-size:14px;border-bottom:1px solid var(--line);vertical-align:top;}
+.summary-table tr:last-child td{border-bottom:none;}
+.summary-table tbody tr:hover td{background:var(--surface-alt);}
+.summary-table .col-name{font-weight:600;}
+.summary-table .col-dates{white-space:nowrap;color:var(--ink-soft);font-variant-numeric:tabular-nums;font-size:13px;}
+.summary-table .col-outcomes{color:var(--ink-soft);max-width:280px;}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none;margin-right:7px;vertical-align:1px;}
+.align-tag{display:flex;align-items:center;font-size:13px;color:var(--ink-soft);}
+.align-tag em{font-style:normal;font-weight:600;font-size:12px;color:var(--warning);background:var(--warning-soft);padding:2px 9px;border-radius:var(--radius-pill);}
+.empty-note{border:1.5px dashed var(--line);border-radius:var(--radius-lg);padding:26px 20px;margin-top:12px;text-align:center;color:var(--ink-soft);font-size:14px;}
+.sub-dept{font-size:12px;color:var(--ink-soft);}
 
-  .field{margin-bottom:14px;}
-  .field label{display:block; font-size:12.5px; font-weight:600; color:var(--ink-soft); margin-bottom:6px;}
-  .field select, .field textarea, .field input{width:100%; border:1px solid var(--line); background:var(--bg); color:var(--ink); border-radius:8px; padding:10px 12px; resize:vertical;}
-  .field select:focus, .field textarea:focus, .field input:focus{outline:2px solid var(--accent-soft); outline-offset:1px;}
-  .field textarea{min-height:60px;}
-  .row-2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
-  @media (max-width:640px){.row-2{grid-template-columns:1fr;} .picker-bar{flex-direction:column; align-items:stretch;}}
+.picker-bar{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;background:var(--surface-alt);border:1px solid var(--line);border-radius:var(--radius-xl);padding:18px 20px;}
+.picker-bar .field{flex:1;min-width:200px;}
+.picker-bar .add-btn-wrap{flex:none;}
 
-  .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch;}
-  .table-scroll .summary-table{min-width:560px;}
-  @media (max-width:640px){
-    .view{padding:0 16px 72px;}
-    .topbar{padding:14px 16px;}
-    .hero{padding:48px 0 24px;}
-    .hero h1{font-size:32px;}
-    .dash-head{align-items:flex-start;}
-    .dash-actions{width:100%; justify-content:space-between;}
-    .btn-row{flex-direction:column-reverse;}
-    .btn-row .btn{width:100%; justify-content:center;}
-  }
-  @media (pointer:coarse){
-    .icon-btn{padding:9px 11px; font-size:17px;}
-    .drag-handle{padding:9px 12px; font-size:18px;}
-    .btn-sm{padding:9px 15px;}
-    .nav-pill{padding:10px 14px;}
-  }
-  body.dragging-active{-webkit-user-select:none; user-select:none;}
+.field{display:flex;flex-direction:column;gap:var(--space-2);}
+.field label{font-size:13px;font-weight:600;color:var(--ink);}
+.field input,.field select,.field textarea{width:100%;min-height:44px;font:400 14.5px var(--font-sans);color:var(--ink);
+  background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius-md);padding:11px 14px;outline:none;transition:border-color .15s, box-shadow .15s;}
+.field input:hover,.field select:hover,.field textarea:hover{border-color:var(--ink-soft);}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--focus-ring);}
+.field ::placeholder{color:var(--ink-soft);opacity:1;}
+.field textarea{resize:vertical;min-height:96px;line-height:1.55;}
+select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:40px!important;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%238A9099' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat:no-repeat;background-position:right 14px center;}
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
 
-  .add-form{background:var(--surface); border:1px dashed var(--accent-soft); border-radius:14px; padding:22px 24px; margin-top:16px;}
-  .add-form-head{font-size:13px; font-weight:700; color:var(--accent-deep); margin-bottom:14px; text-transform:uppercase; letter-spacing:.03em;}
-  .form-actions{display:flex; gap:10px; margin-top:6px;}
+.add-form{display:flex;flex-direction:column;gap:var(--space-5);border-color:var(--accent);box-shadow:0 0 0 3px var(--focus-ring), var(--shadow-card);}
+.add-form-head{font-size:17px;font-weight:650;letter-spacing:-.01em;padding-bottom:16px;border-bottom:1px solid var(--line);}
+.form-actions{display:flex;gap:12px;flex-wrap:wrap;}
 
-  /* ---------- dashboard ---------- */
-  .dash-head{padding:32px 0 6px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;}
-  .dash-head h2{font-size:26px;}
-  .dash-head p{color:var(--ink-soft); font-size:14px; margin-top:6px;}
-  .dash-actions{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
-  .view-mode{display:flex; align-items:center; gap:8px; background:var(--surface-alt); border-radius:9px; padding:6px 10px;}
-  .view-mode label{font-size:12px; font-weight:600; color:var(--ink-soft);}
-  .view-mode select{border:1px solid var(--line); border-radius:6px; padding:6px 8px; font-size:13px; background:var(--surface);}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.table-scroll .summary-table{min-width:600px;}
 
-  .cascade-canvas{overflow-x:auto; margin-top:8px; padding-bottom:8px;}
-  .cascade-inner{position:relative; width:max-content; min-width:100%;}
-  .connector-svg{position:absolute; top:0; left:0; pointer-events:none; overflow:visible; z-index:0;}
-  .swimlane{margin-top:26px; position:relative; z-index:1;}
-  .swimlane:first-child{margin-top:6px;}
-  .swimlane-head{display:flex; align-items:baseline; gap:10px; margin-bottom:12px;}
-  .swimlane-head h3{font-size:15px;}
-  .swimlane-head .count{font-size:12.5px; color:var(--ink-soft);}
-  .swimlane-head .auto-arrange{margin-left:auto;}
-  .swimlane-dot{width:9px; height:9px; border-radius:50%; flex:none;}
-  .lane-track{display:flex; gap:14px; padding:4px 4px 14px; position:relative;}
-  .goal-card{flex:0 0 270px; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:15px 16px; display:flex; flex-direction:column; gap:9px; transition:box-shadow .15s ease, border-color .15s ease; border-left:5px solid var(--line); position:relative;}
-  .goal-card.related{border-color:var(--accent-deep); box-shadow:0 0 0 2px var(--accent-soft) inset;}
-  .goal-card.dragging{opacity:.4;}
-  .drag-handle{cursor:grab; color:var(--ink-soft); font-size:13px; letter-spacing:1px; padding:2px 4px; border-radius:5px; flex:none; user-select:none;}
-  .drag-handle:hover{background:var(--surface-alt);}
-  .drag-handle:active{cursor:grabbing;}
-  .goal-card .card-top{display:flex; align-items:center; justify-content:space-between; gap:8px;}
-  .goal-card .card-top-left{display:flex; align-items:center; gap:7px; min-width:0;}
-  .goal-card .card-name{font-size:14.5px; font-weight:600; outline:none;}
-  .goal-card .card-name[contenteditable="true"]:focus{box-shadow:0 0 0 2px var(--accent-soft); border-radius:5px; padding:2px 4px; margin:-2px -4px;}
-  .goal-card .card-outcomes{font-size:12.5px; color:var(--ink-soft); outline:none; min-height:32px;}
-  .goal-card .card-outcomes[contenteditable="true"]:focus{box-shadow:0 0 0 2px var(--accent-soft); border-radius:5px; padding:2px 4px; margin:-2px -4px;}
-  .goal-card .card-dates{display:flex; gap:8px;}
-  .goal-card .card-dates input{flex:1; font-size:11.5px; border:1px solid var(--line); border-radius:6px; padding:5px 6px; background:var(--bg); color:var(--ink-soft);}
-  .goal-card .card-owner input{width:100%; font-size:12.5px; border:1px solid var(--line); border-radius:6px; padding:6px 8px; background:var(--bg); color:var(--ink); color-scheme:light;}
-  .goal-card .card-align select{width:100%; font-size:12px; border:1px solid var(--line); border-radius:6px; padding:6px 8px; background:var(--bg); color:var(--ink-soft);}
-  .goal-card .field-label{font-size:10.5px; text-transform:uppercase; letter-spacing:.03em; color:var(--ink-soft); font-weight:700; margin-bottom:3px;}
-  .goal-card .card-foot{font-size:11.5px; color:var(--ink-soft); display:flex; justify-content:space-between; align-items:center; gap:6px;}
-  .empty-lane{color:var(--ink-soft); font-size:13.5px; font-style:italic; border:1px dashed var(--line); border-radius:12px; padding:22px; text-align:center; flex:1;}
-  .hint-bar{margin-top:22px; font-size:12.5px; color:var(--ink-soft); background:var(--surface-alt); border-radius:9px; padding:10px 14px;}
+/* ===== Icon buttons ===== */
+.icon-btn{width:32px;height:32px;border:none;background:transparent;color:var(--ink-soft);border-radius:var(--radius-sm);display:inline-flex;align-items:center;justify-content:center;flex:none;transition:background .15s,color .15s;}
+.icon-btn svg{width:15px;height:15px;}
+.icon-btn:hover{background:var(--accent-soft);color:var(--accent);}
+.icon-btn.remove:hover{background:var(--error-soft);color:var(--error);}
+.row-actions{white-space:nowrap;text-align:right;}
 
-  .pill{display:inline-block; font-size:11px; font-weight:700; letter-spacing:.02em; text-transform:uppercase; padding:2px 8px; border-radius:99px; color:#fff; flex:none;}
-  .pill-d{background:var(--accent-deep);}
-  .pill-f{background:var(--accent-soft); color:var(--ink);}
+/* ===== Pills ===== */
+.pill{display:inline-flex;align-items:center;font-size:12px;font-weight:600;padding:3px 10px;border-radius:var(--radius-pill);flex:none;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pill-d{background:var(--info-soft);color:var(--info);}
+.pill-f{background:var(--surface-alt);color:var(--ink);border:1px solid var(--line);}
 
-  .icon-btn{border:none; background:transparent; color:var(--ink-soft); font-size:15px; line-height:1; padding:4px 6px; border-radius:6px; flex:none;}
-  .icon-btn:hover{background:var(--line); color:var(--error);}
-  [hidden]{display:none !important;}
+/* ===== Dashboard ===== */
+.dash-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.dash-head h2{font-size:28px;line-height:1.15;}
+.dash-head p{color:var(--ink-soft);font-size:15px;margin-top:6px;}
+.dash-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.view-mode{display:flex;align-items:center;gap:8px;}
+.view-mode label{font-size:13px;font-weight:600;color:var(--ink-soft);}
+.view-mode select{min-height:34px;font:500 13px var(--font-sans);color:var(--ink);background-color:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius-md);padding:6px 12px;outline:none;}
+.view-mode select:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--focus-ring);}
+.dl-status{font-size:13px;color:var(--error);}
+.dl-status:empty{display:none;}
+
+.cascade-canvas{overflow-x:auto;background:var(--surface-alt);border:1px solid var(--line);border-radius:var(--radius-xl);padding:20px 18px 10px;-webkit-overflow-scrolling:touch;}
+.cascade-inner{position:relative;width:max-content;min-width:100%;}
+.connector-svg{position:absolute;top:0;left:0;pointer-events:none;overflow:visible;z-index:0;}
+.swimlane{margin-top:30px;position:relative;z-index:1;}
+.swimlane:first-child{margin-top:0;}
+.swimlane-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;position:sticky;left:0;max-width:calc(100vw - 100px);}
+.swimlane-head h3{font-size:15px;letter-spacing:-.01em;}
+.swimlane-head .count{font-size:12.5px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+.swimlane-head .auto-arrange{margin-left:auto;}
+.swimlane-dot{width:10px;height:10px;border-radius:50%;flex:none;}
+.lane-track{display:flex;gap:14px;padding:4px 4px 14px;position:relative;}
+.goal-card{flex:0 0 272px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:14px 16px 14px 18px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow-sm);transition:box-shadow .15s ease, border-color .15s ease;position:relative;overflow:hidden;}
+.goal-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--goal-c, var(--line));}
+.goal-card:hover{box-shadow:var(--shadow-card);}
+.goal-card.related{border-color:var(--accent);box-shadow:0 0 0 3px var(--focus-ring), var(--shadow-card);}
+.goal-card.dragging{opacity:.5;box-shadow:var(--shadow-lift);}
+.drag-handle{cursor:grab;color:var(--ink-soft);font-size:14px;letter-spacing:1px;padding:2px 5px;border-radius:var(--radius-sm);flex:none;user-select:none;}
+.drag-handle:hover{background:var(--surface-alt);color:var(--ink);}
+.drag-handle:active{cursor:grabbing;}
+.goal-card .card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.goal-card .card-top-left{display:flex;align-items:center;gap:6px;min-width:0;}
+.goal-card .card-top-left .dot{margin-right:0;}
+.kind-label{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-soft);}
+.goal-card .card-name{font-size:15px;font-weight:650;letter-spacing:-.01em;line-height:1.35;outline:none;border-radius:6px;}
+.goal-card .card-outcomes{font-size:13px;color:var(--ink-soft);outline:none;min-height:32px;line-height:1.5;border-radius:6px;}
+.goal-card [contenteditable="true"]:hover{background:var(--surface-alt);}
+.goal-card [contenteditable="true"]:focus{box-shadow:0 0 0 2px var(--accent);background:var(--surface);padding:2px 4px;margin:-2px -4px;}
+.goal-card .card-dates{display:flex;gap:8px;}
+.goal-card input,.goal-card select{width:100%;min-width:0;font:400 12.5px var(--font-sans);color:var(--ink);background-color:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:6px 8px;min-height:32px;outline:none;transition:border-color .15s, box-shadow .15s;}
+.goal-card select{padding-right:30px!important;background-position:right 10px center;}
+.goal-card .card-dates input{flex:1;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+.goal-card input:hover,.goal-card select:hover{border-color:var(--line-strong);}
+.goal-card input:focus,.goal-card select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--focus-ring);}
+.goal-card input::placeholder{color:var(--ink-soft);opacity:1;}
+.goal-card .field-label{font-size:11.5px;color:var(--ink-soft);font-weight:600;margin-bottom:4px;}
+.goal-card .card-foot{font-size:12px;color:var(--ink-soft);display:flex;justify-content:space-between;align-items:center;gap:6px;padding-top:8px;border-top:1px solid var(--line);font-variant-numeric:tabular-nums;}
+.empty-lane{color:var(--ink-soft);font-size:14px;border:1.5px dashed var(--line-strong);border-radius:var(--radius-lg);padding:22px;text-align:center;flex:1;min-width:260px;background:var(--surface);}
+.hint-bar{display:flex;gap:12px;background:var(--info-soft);border-radius:var(--radius-lg);padding:14px 16px;font-size:14px;line-height:1.55;color:var(--ink);}
+.hint-bar svg{flex:none;margin-top:2px;color:var(--info);}
+.hint-bar strong{font-weight:650;}
+
+body.dragging-active{-webkit-user-select:none;user-select:none;}
+
+.fade{animation:rise .3s ease both;}
+@keyframes rise{from{opacity:.001;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;gap:28px;}
+}
+@media (max-width:800px){
+  .shell{padding-inline:16px;padding-block:16px 40px;gap:18px;}
+  .topbar{flex-direction:column;align-items:stretch;gap:12px;}
+  .brand .eyebrow{display:none;}
+  .brand h1{font-size:22px;}
+  .nav-pill{padding:8px 12px;}
+  .hero-copy h1{font-size:30px;}
+  .lede{font-size:15px;}
+  .card{padding:22px 18px;}
+  .summary-panel{padding:18px 16px;}
+  .entry-head h2,.dash-head h2{font-size:22px;}
+  .row-2{grid-template-columns:1fr;gap:var(--space-5);}
+  .picker-bar{flex-direction:column;align-items:stretch;padding:16px;}
+  .picker-bar .field{min-width:0;}
+  .picker-bar .add-btn-wrap .btn{width:100%;}
+  .field input,.field select,.field textarea{font-size:16px;min-height:48px;}
+  .field textarea{min-height:120px;}
+  .btn{min-height:48px;}
+  .btn-sm{min-height:40px;}
+  .btn-row{flex-direction:column-reverse;}
+  .btn-row .btn{width:100%;}
+  .form-actions .btn{flex:1;}
+  .dash-actions{width:100%;}
+  .view-mode{flex:1 1 100%;}
+  .view-mode select{flex:1;min-height:44px;}
+  .dash-actions .btn{flex:1;}
+  .cascade-canvas{padding:16px 12px 6px;margin-inline:-4px;}
+  .goal-card{flex-basis:250px;}
+  .tier.t2{margin-left:10px;}
+  .tier.t3{margin-left:20px;}
+  .arrow-down.a1{padding-left:27px;}
+  .arrow-down.a2{padding-left:37px;}
+}
+@media (pointer:coarse){
+  .icon-btn{width:40px;height:40px;}
+  .drag-handle{padding:9px 12px;font-size:18px;}
+  .goal-card input,.goal-card select{min-height:40px;font-size:16px;}
+}
+@media (prefers-reduced-motion:reduce){
+  .fade{animation:none;}
+  *{transition:none!important;}
+}
 </style>
 
-<div class="topbar" id="topbar" hidden>
-  <div class="brand"><span class="brand-mark"></span>Goal Cascade</div>
-  <div class="nav-pills">
-    <button class="nav-pill" id="pill-company" onclick="goTo('company')">Company Goals</button>
-    <button class="nav-pill" id="pill-department" onclick="goTo('department')">Department Goals</button>
-    <button class="nav-pill" id="pill-function" onclick="goTo('function')">Function Goals</button>
-    <button class="nav-pill" id="pill-dashboard" onclick="goTo('dashboard')">Dashboard</button>
+<div class="shell">
+  <div class="brandrow">
+    <span class="brand-tile"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg></span>
+    <span class="brand-name">Talent Workspace</span>
+    <button type="button" class="theme-toggle" aria-label="Switch theme"></button>
   </div>
+
+  <header class="topbar" id="topbar" hidden>
+    <div class="brand"><span class="eyebrow">Strategic Alignment</span><h1>Goal Cascade</h1></div>
+    <nav class="nav-pills" aria-label="Sections">
+      <button class="nav-pill" id="pill-company" onclick="goTo('company')"><span class="np-num">1</span>Company Goals</button>
+      <button class="nav-pill" id="pill-department" onclick="goTo('department')"><span class="np-num">2</span>Department Goals</button>
+      <button class="nav-pill" id="pill-function" onclick="goTo('function')"><span class="np-num">3</span>Function Goals</button>
+      <button class="nav-pill" id="pill-dashboard" onclick="goTo('dashboard')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</button>
+    </nav>
+  </header>
+
+  <!-- ===================== LANDING ===================== -->
+  <section class="view fade" id="view-landing">
+    <div class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">Strategic Alignment</span>
+        <h1>The Goal Cascading Tool</h1>
+        <p class="lede">This tool connects organizational priorities across three levels: Company Strategic Goals, Department Goals, and Business Function Goals — so every team can see how their work ladders up to company strategy.</p>
+        <div class="explainer">
+          <p>The tool helps teams translate company strategy into clear, measurable goals throughout the organization. Departments align their goals to the company strategic goals they support, and business functions create goals that contribute to their department's priorities.</p>
+          <p>This structure creates a clear line of sight from company strategy → department priorities → business function execution, helping leaders understand how work across the organization contributes to broader business outcomes.</p>
+        </div>
+        <button class="btn btn-primary btn-lg" onclick="goTo('company')">Get Started <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+
+      <div class="cascade-diagram card">
+        <div class="tier t1" data-n="1"><div class="tier-label">Company Strategic Goals</div><div class="tier-desc">Define the organization's highest-level priorities and desired business outcomes.</div></div>
+        <div class="arrow-down a1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v14M6 13l6 6 6-6"/></svg>Align</div>
+        <div class="tier t2" data-n="2"><div class="tier-label">Department Goals</div><div class="tier-desc">Define how each department will contribute to achieving company strategic goals.</div></div>
+        <div class="arrow-down a2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v14M6 13l6 6 6-6"/></svg>Align</div>
+        <div class="tier t3" data-n="3"><div class="tier-label">Business Function Goals</div><div class="tier-desc">Define the specific outcomes each business function will deliver to support its department goals.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== COMPANY GOALS ===================== -->
+  <section class="view fade" id="view-company" hidden>
+    <div class="entry-head">
+      <div class="eyebrow-row"><span class="step-dot s1">1</span><span class="eyebrow">Step 1 of 3</span></div>
+      <h2>Company Strategic Goals</h2>
+      <p>Define the organization's highest-level priorities. Add one goal at a time.</p>
+    </div>
+
+    <div class="card summary-panel">
+      <h3>Goals entered</h3>
+      <div id="summary-company"></div>
+    </div>
+
+    <div id="company-add-btn-wrap">
+      <button class="btn btn-primary" onclick="startAddCompany()">+ Add a goal</button>
+    </div>
+
+    <div class="card add-form" id="company-form" hidden>
+      <div class="add-form-head" id="company-form-head">New company strategic goal</div>
+      <div class="field"><label for="c-name">Goal Name</label><input type="text" id="c-name" placeholder="e.g., Customer Retention Growth, Employee Performance"></div>
+      <div class="field"><label for="c-outcomes">Success Measure</label><textarea id="c-outcomes" placeholder="e.g., Increase renewal rates from 90% to 95%"></textarea></div>
+      <div class="row-2">
+        <div class="field"><label for="c-start">Start date</label><input type="date" id="c-start"></div>
+        <div class="field"><label for="c-end">End date</label><input type="date" id="c-end"></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" id="company-submit-btn" onclick="submitCompanyGoal()">Submit</button>
+        <button class="btn btn-ghost" onclick="hideCompanyForm()">Cancel</button>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo('landing')">← Back to intro</button>
+      <button class="btn btn-primary" onclick="goTo('department')">Next: Department Goals →</button>
+    </div>
+  </section>
+
+  <!-- ===================== DEPARTMENT GOALS ===================== -->
+  <section class="view fade" id="view-department" hidden>
+    <div class="entry-head">
+      <div class="eyebrow-row"><span class="step-dot s2">2</span><span class="eyebrow">Step 2 of 3</span></div>
+      <h2>Department Goals</h2>
+      <p>Define how each department contributes to company strategy.</p>
+    </div>
+
+    <div class="card summary-panel">
+      <h3>Goals entered</h3>
+      <div id="summary-department"></div>
+    </div>
+
+    <div class="picker-bar">
+      <div class="field">
+        <label for="d-dept-select">Department</label>
+        <select id="d-dept-select"><option value="">Choose a department…</option></select>
+      </div>
+      <div class="add-btn-wrap"><button class="btn btn-primary" onclick="startAddDept()">+ Add a goal</button></div>
+    </div>
+
+    <div class="card add-form" id="department-form" hidden>
+      <div class="add-form-head" id="department-form-head">New department goal</div>
+      <div class="field"><label for="d-name">Goal Name</label><input type="text" id="d-name" placeholder="e.g., Customer Retention Growth, Employee Performance"></div>
+      <div class="field"><label for="d-outcomes">Success Measure</label><textarea id="d-outcomes" placeholder="e.g., Increase renewal rates from 90% to 95%"></textarea></div>
+      <div class="row-2">
+        <div class="field"><label for="d-start">Start date</label><input type="date" id="d-start"></div>
+        <div class="field"><label for="d-end">End date</label><input type="date" id="d-end"></div>
+      </div>
+      <div class="field"><label for="d-align">Aligns with company goal</label><select id="d-align"><option value="">Add a company goal first</option></select></div>
+      <div class="form-actions">
+        <button class="btn btn-primary" id="department-submit-btn" onclick="submitDeptGoal()">Submit</button>
+        <button class="btn btn-ghost" onclick="hideDeptForm()">Cancel</button>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo('company')">← Back</button>
+      <button class="btn btn-primary" onclick="goTo('function')">Next: Business Function Goals →</button>
+    </div>
+  </section>
+
+  <!-- ===================== FUNCTION GOALS ===================== -->
+  <section class="view fade" id="view-function" hidden>
+    <div class="entry-head">
+      <div class="eyebrow-row"><span class="step-dot s3">3</span><span class="eyebrow">Step 3 of 3</span></div>
+      <h2>Business Function Goals</h2>
+      <p>Define the specific outcomes each business function will deliver.</p>
+    </div>
+
+    <div class="card summary-panel">
+      <h3>Goals entered</h3>
+      <div id="summary-function"></div>
+    </div>
+
+    <div class="picker-bar">
+      <div class="field">
+        <label for="f-dept-select">Department</label>
+        <select id="f-dept-select" onchange="onFuncDeptChange()"><option value="">Choose a department…</option></select>
+      </div>
+      <div class="field">
+        <label for="f-func-select">Business function</label>
+        <select id="f-func-select"><option value="">Choose a department first</option></select>
+      </div>
+      <div class="add-btn-wrap"><button class="btn btn-primary" onclick="startAddFunc()">+ Add a goal</button></div>
+    </div>
+
+    <div class="card add-form" id="function-form" hidden>
+      <div class="add-form-head" id="function-form-head">New business function goal</div>
+      <div class="field"><label for="f-name">Goal Name</label><input type="text" id="f-name" placeholder="e.g., Customer Retention Growth, Employee Performance"></div>
+      <div class="field"><label for="f-outcomes">Success Measure</label><textarea id="f-outcomes" placeholder="e.g., Increase renewal rates from 90% to 95%"></textarea></div>
+      <div class="row-2">
+        <div class="field"><label for="f-start">Start date</label><input type="date" id="f-start"></div>
+        <div class="field"><label for="f-end">End date</label><input type="date" id="f-end"></div>
+      </div>
+      <div class="field"><label for="f-align">Aligns with department goal</label><select id="f-align"><option value="">Choose a department first</option></select></div>
+      <div class="form-actions">
+        <button class="btn btn-primary" id="function-submit-btn" onclick="submitFuncGoal()">Submit</button>
+        <button class="btn btn-ghost" onclick="hideFuncForm()">Cancel</button>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo('department')">← Back</button>
+      <button class="btn btn-primary" onclick="goTo('dashboard')">Go to Dashboard →</button>
+    </div>
+  </section>
+
+  <!-- ===================== DASHBOARD ===================== -->
+  <section class="view fade" id="view-dashboard" hidden>
+    <div class="dash-head">
+      <div><h2>Cascade dashboard</h2><p>Click any goal to edit it. Changes save back to your entries automatically.</p></div>
+      <div class="dash-actions">
+        <div class="view-mode">
+          <label for="dash-view">View</label>
+          <select id="dash-view" onchange="renderDashboard()"><option value="">All departments</option></select>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="download-xlsx-btn" onclick="handleDownloadExcel()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg><span class="lbl">Download Excel</span></button>
+        <button class="btn btn-ghost btn-sm" onclick="goTo('function')">← Edit in form</button>
+        <span class="dl-status" id="dl-status" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="cascade-canvas" id="cascade-canvas">
+      <div class="cascade-inner" id="cascade-inner">
+        <svg class="connector-svg" id="connector-svg"></svg>
+
+        <div class="swimlane">
+          <div class="swimlane-head"><span class="swimlane-dot" style="background:var(--tier-1)"></span><h3>Company Strategic Goals</h3><span class="count" id="count-company"></span></div>
+          <div class="lane-track" id="lane-company"></div>
+        </div>
+        <div class="swimlane">
+          <div class="swimlane-head"><span class="swimlane-dot" style="background:var(--tier-2)"></span><h3>Department Goals</h3><span class="count" id="count-dept"></span><button class="btn btn-ghost btn-sm auto-arrange" onclick="autoArrange('dept')">Auto-arrange</button></div>
+          <div class="lane-track" id="lane-dept"></div>
+        </div>
+        <div class="swimlane">
+          <div class="swimlane-head"><span class="swimlane-dot" style="background:var(--tier-3)"></span><h3>Business Function Goals</h3><span class="count" id="count-func"></span><button class="btn btn-ghost btn-sm auto-arrange" onclick="autoArrange('func')">Auto-arrange</button></div>
+          <div class="lane-track" id="lane-func"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hint-bar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><p>Tip: drag a goal by its <strong>⠿</strong> handle to reorder it within its row, or click "Auto-arrange" to line goals up under their parent automatically. Each company goal has its own color, carried down through the connector lines and the department and function goals aligned to it.</p></div>
+  </section>
 </div>
 
-<!-- ===================== LANDING ===================== -->
-<section class="view" id="view-landing">
-  <div class="hero">
-    <div class="eyebrow">Strategic Alignment</div>
-    <h1>The Goal Cascading Tool</h1>
-    <p class="lede">This tool connects organizational priorities across three levels: Company Strategic Goals, Department Goals, and Business Function Goals — so every team can see how their work ladders up to company strategy.</p>
-
-    <div class="cascade-diagram">
-      <div class="tier t1"><div class="tier-label">Company Strategic Goals</div><div class="tier-desc">Define the organization's highest-level priorities and desired business outcomes.</div></div>
-      <div class="arrow-down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v14M6 13l6 6 6-6"/></svg>Align</div>
-      <div class="tier t2"><div class="tier-label">Department Goals</div><div class="tier-desc">Define how each department will contribute to achieving company strategic goals.</div></div>
-      <div class="arrow-down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v14M6 13l6 6 6-6"/></svg>Align</div>
-      <div class="tier t3"><div class="tier-label">Business Function Goals</div><div class="tier-desc">Define the specific outcomes each business function will deliver to support its department goals.</div></div>
-    </div>
-
-    <div class="explainer">
-      <p>The tool helps teams translate company strategy into clear, measurable goals throughout the organization. Departments align their goals to the company strategic goals they support, and business functions create goals that contribute to their department's priorities.</p>
-      <p>This structure creates a clear line of sight from company strategy → department priorities → business function execution, helping leaders understand how work across the organization contributes to broader business outcomes.</p>
-    </div>
-
-    <div style="margin-top:36px;"><button class="btn btn-primary" style="padding:13px 30px; font-size:15px;" onclick="goTo('company')">Get Started →</button></div>
-  </div>
-</section>
-
-<!-- ===================== COMPANY GOALS ===================== -->
-<section class="view" id="view-company" hidden>
-  <div class="entry-head">
-    <div class="eyebrow-row"><span class="step-dot" style="background:var(--accent)">1</span><span class="eyebrow" style="margin:0;">Step 1 of 3</span></div>
-    <h2>Company Strategic Goals</h2>
-    <p>Define the organization's highest-level priorities. Add one goal at a time.</p>
-  </div>
-
-  <div class="summary-panel">
-    <h3>Goals entered</h3>
-    <div id="summary-company"></div>
-  </div>
-
-  <div id="company-add-btn-wrap" style="margin-top:18px;">
-    <button class="btn btn-primary" onclick="startAddCompany()">+ Add a goal</button>
-  </div>
-
-  <div class="add-form" id="company-form" hidden>
-    <div class="add-form-head" id="company-form-head">New company strategic goal</div>
-    <div class="field"><label for="c-name">Goal Name</label><input type="text" id="c-name" placeholder="e.g., Customer Retention Growth, Employee Performance"></div>
-    <div class="field"><label for="c-outcomes">Success Measure</label><textarea id="c-outcomes" placeholder="e.g., Increase renewal rates from 90% to 95%"></textarea></div>
-    <div class="row-2">
-      <div class="field"><label for="c-start">Start date</label><input type="date" id="c-start"></div>
-      <div class="field"><label for="c-end">End date</label><input type="date" id="c-end"></div>
-    </div>
-    <div class="form-actions">
-      <button class="btn btn-primary" id="company-submit-btn" onclick="submitCompanyGoal()">Submit</button>
-      <button class="btn btn-ghost" onclick="hideCompanyForm()">Cancel</button>
-    </div>
-  </div>
-
-  <div class="btn-row">
-    <button class="btn btn-ghost" onclick="goTo('landing')">← Back to intro</button>
-    <button class="btn btn-primary" onclick="goTo('department')">Next: Department Goals →</button>
-  </div>
-</section>
-
-<!-- ===================== DEPARTMENT GOALS ===================== -->
-<section class="view" id="view-department" hidden>
-  <div class="entry-head">
-    <div class="eyebrow-row"><span class="step-dot" style="background:var(--accent-deep)">2</span><span class="eyebrow" style="margin:0;">Step 2 of 3</span></div>
-    <h2>Department Goals</h2>
-    <p>Define how each department contributes to company strategy.</p>
-  </div>
-
-  <div class="summary-panel">
-    <h3>Goals entered</h3>
-    <div id="summary-department"></div>
-  </div>
-
-  <div class="picker-bar">
-    <div class="field">
-      <label for="d-dept-select">Department</label>
-      <select id="d-dept-select"><option value="">Choose a department…</option></select>
-    </div>
-    <div class="add-btn-wrap"><button class="btn btn-primary" onclick="startAddDept()">+ Add a goal</button></div>
-  </div>
-
-  <div class="add-form" id="department-form" hidden>
-    <div class="add-form-head" id="department-form-head">New department goal</div>
-    <div class="field"><label for="d-name">Goal Name</label><input type="text" id="d-name" placeholder="e.g., Customer Retention Growth, Employee Performance"></div>
-    <div class="field"><label for="d-outcomes">Success Measure</label><textarea id="d-outcomes" placeholder="e.g., Increase renewal rates from 90% to 95%"></textarea></div>
-    <div class="row-2">
-      <div class="field"><label for="d-start">Start date</label><input type="date" id="d-start"></div>
-      <div class="field"><label for="d-end">End date</label><input type="date" id="d-end"></div>
-    </div>
-    <div class="field"><label for="d-align">Aligns with company goal</label><select id="d-align"><option value="">Add a company goal first</option></select></div>
-    <div class="form-actions">
-      <button class="btn btn-primary" id="department-submit-btn" onclick="submitDeptGoal()">Submit</button>
-      <button class="btn btn-ghost" onclick="hideDeptForm()">Cancel</button>
-    </div>
-  </div>
-
-  <div class="btn-row">
-    <button class="btn btn-ghost" onclick="goTo('company')">← Back</button>
-    <button class="btn btn-primary" onclick="goTo('function')">Next: Business Function Goals →</button>
-  </div>
-</section>
-
-<!-- ===================== FUNCTION GOALS ===================== -->
-<section class="view" id="view-function" hidden>
-  <div class="entry-head">
-    <div class="eyebrow-row"><span class="step-dot" style="background:var(--accent-soft); color:var(--ink);">3</span><span class="eyebrow" style="margin:0;">Step 3 of 3</span></div>
-    <h2>Business Function Goals</h2>
-    <p>Define the specific outcomes each business function will deliver.</p>
-  </div>
-
-  <div class="summary-panel">
-    <h3>Goals entered</h3>
-    <div id="summary-function"></div>
-  </div>
-
-  <div class="picker-bar">
-    <div class="field">
-      <label for="f-dept-select">Department</label>
-      <select id="f-dept-select" onchange="onFuncDeptChange()"><option value="">Choose a department…</option></select>
-    </div>
-    <div class="field">
-      <label for="f-func-select">Business function</label>
-      <select id="f-func-select"><option value="">Choose a department first</option></select>
-    </div>
-    <div class="add-btn-wrap"><button class="btn btn-primary" onclick="startAddFunc()">+ Add a goal</button></div>
-  </div>
-
-  <div class="add-form" id="function-form" hidden>
-    <div class="add-form-head" id="function-form-head">New business function goal</div>
-    <div class="field"><label for="f-name">Goal Name</label><input type="text" id="f-name" placeholder="e.g., Customer Retention Growth, Employee Performance"></div>
-    <div class="field"><label for="f-outcomes">Success Measure</label><textarea id="f-outcomes" placeholder="e.g., Increase renewal rates from 90% to 95%"></textarea></div>
-    <div class="row-2">
-      <div class="field"><label for="f-start">Start date</label><input type="date" id="f-start"></div>
-      <div class="field"><label for="f-end">End date</label><input type="date" id="f-end"></div>
-    </div>
-    <div class="field"><label for="f-align">Aligns with department goal</label><select id="f-align"><option value="">Choose a department first</option></select></div>
-    <div class="form-actions">
-      <button class="btn btn-primary" id="function-submit-btn" onclick="submitFuncGoal()">Submit</button>
-      <button class="btn btn-ghost" onclick="hideFuncForm()">Cancel</button>
-    </div>
-  </div>
-
-  <div class="btn-row">
-    <button class="btn btn-ghost" onclick="goTo('department')">← Back</button>
-    <button class="btn btn-primary" onclick="goTo('dashboard')">Go to Dashboard →</button>
-  </div>
-</section>
-
-<!-- ===================== DASHBOARD ===================== -->
-<section class="view" id="view-dashboard" hidden>
-  <div class="dash-head">
-    <div><h2>Cascade dashboard</h2><p>Click any goal to edit it. Changes save back to your entries automatically.</p></div>
-    <div class="dash-actions">
-      <div class="view-mode">
-        <label for="dash-view">View</label>
-        <select id="dash-view" onchange="renderDashboard()"><option value="">All departments</option></select>
-      </div>
-      <button class="btn btn-ghost btn-sm" id="download-xlsx-btn" onclick="handleDownloadExcel()">⬇ Download Excel</button>
-      <button class="btn btn-ghost" onclick="goTo('function')">← Edit in form</button>
-    </div>
-  </div>
-
-  <div class="cascade-canvas" id="cascade-canvas">
-    <div class="cascade-inner" id="cascade-inner">
-      <svg class="connector-svg" id="connector-svg"></svg>
-
-      <div class="swimlane">
-        <div class="swimlane-head"><span class="swimlane-dot" style="background:var(--accent)"></span><h3>Company Strategic Goals</h3><span class="count" id="count-company"></span></div>
-        <div class="lane-track" id="lane-company"></div>
-      </div>
-      <div class="swimlane">
-        <div class="swimlane-head"><span class="swimlane-dot" style="background:var(--accent-deep)"></span><h3>Department Goals</h3><span class="count" id="count-dept"></span><button class="btn btn-ghost btn-sm auto-arrange" onclick="autoArrange('dept')">Auto-arrange</button></div>
-        <div class="lane-track" id="lane-dept"></div>
-      </div>
-      <div class="swimlane">
-        <div class="swimlane-head"><span class="swimlane-dot" style="background:var(--accent-soft)"></span><h3>Business Function Goals</h3><span class="count" id="count-func"></span><button class="btn btn-ghost btn-sm auto-arrange" onclick="autoArrange('func')">Auto-arrange</button></div>
-        <div class="lane-track" id="lane-func"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="hint-bar">Tip: drag a goal by its <strong>⠿</strong> handle to reorder it within its row, or click "Auto-arrange" to line goals up under their parent automatically. Each company goal has its own color, carried down through the connector lines and the department and function goals aligned to it.</div>
-</section>
+<script>
+/* Theme toggle (Talent Workspace) */
+(function(){
+  var ICON_SUN = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+  var ICON_MOON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+  function isDark(){
+    var t = document.documentElement.getAttribute('data-theme');
+    if (t) return t === 'dark';
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+  function paint(){
+    var dark = isDark();
+    document.querySelectorAll('.theme-toggle').forEach(function(b){
+      b.innerHTML = dark ? ICON_SUN : ICON_MOON;
+      b.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+      b.title = b.getAttribute('aria-label');
+    });
+  }
+  document.querySelectorAll('.theme-toggle').forEach(function(b){ b.addEventListener('click', function(){
+    document.documentElement.setAttribute('data-theme', isDark() ? 'light' : 'dark');
+    paint();
+  }); });
+  if (window.matchMedia) { try { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', paint); } catch (e) {} }
+  paint();
+})();
+</script>
 
 <script>
 (function(){
@@ -383,14 +527,20 @@
     "Revenue / GTM": ["Revenue Operations","Sales Operations","Marketing Operations","Customer Operations","GTM Strategy","Revenue Enablement"]
   };
 
-  var COMPANY_COLORS = ['#2F6F63','#176480','#6B4C7A','#A67C3D','#55637A','#4B7A4F','#8A4B6B','#3D7A94'];
+  /* Mid-tone hues chosen to read on both light and dark Talent Workspace surfaces. */
+  var COMPANY_COLORS = ['#14998A','#3B82C4','#8B6BC2','#C98A2E','#6F7F96','#4E9A5A','#C0577F','#3A9DB8'];
+  /* Goals saved by the original tool keep working: their old stored colors map onto this palette. */
+  var LEGACY_COLORS = {'#2F6F63':0,'#176480':1,'#6B4C7A':2,'#A67C3D':3,'#55637A':4,'#4B7A4F':5,'#8A4B6B':6,'#3D7A94':7};
+
+  var ICON_EDIT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+  var ICON_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>';
 
   var state = { company: [], departments: [], functions: [] };
   var seq = { c:0, d:0, f:0 };
   var editing = { company: null, dept: null, func: null };
 
   function uid(prefix){ seq[prefix]++; return prefix + seq[prefix]; }
-  function esc(s){ var d=document.createElement('div'); d.textContent = s==null?'':s; return d.innerHTML; }
+  function esc(s){ var d=document.createElement('div'); d.textContent = s==null?'':s; return d.innerHTML.replace(/"/g,'&quot;'); }
   function truncate(s, n){ if(!s) return ''; return s.length>n ? s.slice(0,n).trim()+'…' : s; }
   function fmtDate(s){
     if(!s) return '—';
@@ -402,6 +552,8 @@
     if(!a && !b) return '—';
     return fmtDate(a) + ' → ' + fmtDate(b);
   }
+  function editBtn(fn, id){ return '<button class="icon-btn" title="Edit" aria-label="Edit" onclick="'+fn+'(\''+id+'\')">'+ICON_EDIT+'</button>'; }
+  function removeBtn(kind, id){ return '<button class="icon-btn remove" title="Remove" aria-label="Remove" onclick="removeGoal(\''+kind+'\',\''+id+'\')">'+ICON_X+'</button>'; }
 
   function save(){ try{ localStorage.setItem('goal-cascade-state', JSON.stringify({state:state, seq:seq})); }catch(e){} }
   function load(){
@@ -410,6 +562,7 @@
       if(!raw) return;
       var parsed = JSON.parse(raw);
       if(parsed && parsed.state){ state = parsed.state; seq = parsed.seq || seq; }
+      state.company.forEach(function(c){ if(c.color && LEGACY_COLORS[c.color]!=null) c.color = COMPANY_COLORS[LEGACY_COLORS[c.color]]; });
     }catch(e){}
   }
 
@@ -425,17 +578,19 @@
     document.getElementById('topbar').hidden = (view==='landing');
     ['company','department','function','dashboard'].forEach(function(v){
       var pill = document.getElementById('pill-'+v);
-      if(pill) pill.classList.toggle('active', v===view);
+      if(pill){ pill.classList.toggle('active', v===view); if(v===view) pill.setAttribute('aria-current','page'); else pill.removeAttribute('aria-current'); }
     });
     if(view==='company') renderCompanySummary();
     if(view==='department') renderDeptPage();
     if(view==='function') renderFuncPage();
     if(view==='dashboard') renderDashboard();
+    var active = document.getElementById('pill-'+view);
+    if(active && active.scrollIntoView){ try{ active.scrollIntoView({block:'nearest', inline:'nearest'}); }catch(e){} }
     window.scrollTo({top:0});
   }
   window.goTo = goTo;
 
-  function fillDeptSelect(sel, withPlaceholder){
+  function fillDeptSelect(sel){
     Object.keys(DEPARTMENTS).forEach(function(dep){
       var opt = document.createElement('option'); opt.value = dep; opt.textContent = dep; sel.appendChild(opt);
     });
@@ -503,7 +658,7 @@
         '<td class="col-name"><span class="dot" style="background:'+g.color+'"></span>'+esc(g.name)+'</td>' +
         '<td class="col-outcomes">'+esc(g.outcomes||'—')+'</td>' +
         '<td class="col-dates">'+dateRange(g.start,g.end)+'</td>' +
-        '<td style="white-space:nowrap;"><button class="icon-btn" title="Edit" onclick="editCompanyGoal(\''+g.id+'\')">✎</button><button class="icon-btn" title="Remove" onclick="removeGoal(\'company\',\''+g.id+'\')">✕</button></td>' +
+        '<td class="row-actions">'+editBtn('editCompanyGoal', g.id)+removeBtn('company', g.id)+'</td>' +
       '</tr>';
     }).join('');
     el.innerHTML = '<div class="table-scroll"><table class="summary-table"><thead><tr><th>Goal Name</th><th>Success Measure</th><th>Timeline</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>';
@@ -596,7 +751,7 @@
         '<td class="col-outcomes">'+esc(g.outcomes||'—')+'</td>' +
         '<td class="col-dates">'+dateRange(g.start,g.end)+'</td>' +
         '<td>'+align+'</td>' +
-        '<td style="white-space:nowrap;"><button class="icon-btn" title="Edit" onclick="editDeptGoal(\''+g.id+'\')">✎</button><button class="icon-btn" title="Remove" onclick="removeGoal(\'dept\',\''+g.id+'\')">✕</button></td>' +
+        '<td class="row-actions">'+editBtn('editDeptGoal', g.id)+removeBtn('dept', g.id)+'</td>' +
       '</tr>';
     }).join('');
     el.innerHTML = '<div class="table-scroll"><table class="summary-table"><thead><tr><th>Dept</th><th>Goal Name</th><th>Success Measure</th><th>Timeline</th><th>Aligns to</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>';
@@ -692,9 +847,10 @@
   window.submitFuncGoal = submitFuncGoal;
 
   function renderFuncPage(){
-    onFuncDeptChange();
     var curDep = document.getElementById('f-dept-select').value;
-    if(curDep){ document.getElementById('f-dept-select').value = curDep; onFuncDeptChange(); }
+    var curFn = document.getElementById('f-func-select').value;
+    onFuncDeptChange();
+    if(curFn) document.getElementById('f-func-select').value = curFn;
     var el = document.getElementById('summary-function');
     if(state.functions.length===0){ el.innerHTML = '<div class="empty-note">No business function goals yet — choose a department and function above, then click "Add a goal".</div>'; return; }
     var rows = state.functions.map(function(g){
@@ -702,12 +858,12 @@
       var color = parent ? (colorForDept(parent) || null) : null;
       var align = parent ? '<span class="align-tag">'+(color?'<span class="dot" style="background:'+color+'"></span>':'')+esc(truncate(parent.name,40))+'</span>' : '<span class="align-tag"><em>No alignment</em></span>';
       return '<tr>' +
-        '<td><span class="pill pill-f">'+esc(g.func)+'</span><br><span style="font-size:11px;color:var(--ink-soft);">'+esc(g.dept)+'</span></td>' +
+        '<td><span class="pill pill-f">'+esc(g.func)+'</span><div class="sub-dept">'+esc(g.dept)+'</div></td>' +
         '<td class="col-name">'+esc(g.name)+'</td>' +
         '<td class="col-outcomes">'+esc(g.outcomes||'—')+'</td>' +
         '<td class="col-dates">'+dateRange(g.start,g.end)+'</td>' +
         '<td>'+align+'</td>' +
-        '<td style="white-space:nowrap;"><button class="icon-btn" title="Edit" onclick="editFuncGoal(\''+g.id+'\')">✎</button><button class="icon-btn" title="Remove" onclick="removeGoal(\'func\',\''+g.id+'\')">✕</button></td>' +
+        '<td class="row-actions">'+editBtn('editFuncGoal', g.id)+removeBtn('func', g.id)+'</td>' +
       '</tr>';
     }).join('');
     el.innerHTML = '<div class="table-scroll"><table class="summary-table"><thead><tr><th>Function</th><th>Goal Name</th><th>Success Measure</th><th>Timeline</th><th>Aligns to</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>';
@@ -787,7 +943,10 @@
   function clearHighlight(){ document.querySelectorAll('.goal-card.related').forEach(function(c){c.classList.remove('related');}); }
 
   function ownerFooter(kind, id, owner){
-    return '<div class="card-owner"><div class="field-label">Owner</div><input type="text" placeholder="Assign an owner" value="'+esc(owner||'')+'" data-owner-kind="'+kind+'" data-owner-id="'+id+'"></div>';
+    return '<div class="card-owner"><div class="field-label">Owner</div><input type="text" id="owner-'+id+'" placeholder="Assign an owner" value="'+esc(owner||'')+'" data-owner-kind="'+kind+'" data-owner-id="'+id+'"></div>';
+  }
+  function datesRow(g){
+    return '<div class="card-dates"><input type="date" aria-label="Start date" data-field="start" value="'+esc(g.start||'')+'"><input type="date" aria-label="End date" data-field="end" value="'+esc(g.end||'')+'"></div>';
   }
 
   function wireCommon(card, kind, id){
@@ -831,12 +990,12 @@
     var childCount = state.departments.filter(function(d){return d.companyId===g.id;}).length;
     var card = document.createElement('div');
     card.className = 'goal-card'; card.setAttribute('data-kind','company'); card.setAttribute('data-id', g.id);
-    card.style.borderLeftColor = g.color;
+    card.style.setProperty('--goal-c', g.color);
     card.innerHTML =
-      '<div class="card-top"><div class="card-top-left"><span class="drag-handle" title="Drag to reorder">⠿</span><span class="dot" style="background:'+g.color+'"></span><span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;color:var(--ink-soft);">Company</span></div><button class="icon-btn" title="Remove" onclick="removeGoal(\'company\',\''+g.id+'\')">✕</button></div>' +
+      '<div class="card-top"><div class="card-top-left"><span class="drag-handle" title="Drag to reorder">⠿</span><span class="dot" style="background:'+g.color+'"></span><span class="kind-label">Company</span></div>'+removeBtn('company', g.id)+'</div>' +
       '<div class="card-name" contenteditable="true" data-orig="'+esc(g.name)+'">'+esc(g.name)+'</div>' +
       '<div class="card-outcomes" contenteditable="true">'+esc(g.outcomes)+'</div>' +
-      '<div class="card-dates"><input type="date" data-field="start" value="'+esc(g.start||'')+'"><input type="date" data-field="end" value="'+esc(g.end||'')+'"></div>' +
+      datesRow(g) +
       ownerFooter('company', g.id, g.owner) +
       '<div class="card-foot"><span>'+childCount+' department goal'+(childCount===1?'':'s')+'</span></div>';
     wireCommon(card, 'company', g.id);
@@ -848,16 +1007,16 @@
     var color = colorForDept(g);
     var card = document.createElement('div');
     card.className = 'goal-card'; card.setAttribute('data-kind','dept'); card.setAttribute('data-id', g.id);
-    if(color) card.style.borderLeftColor = color;
+    if(color) card.style.setProperty('--goal-c', color);
     var alignOptions = '<option value="">— no alignment —</option>' + state.company.map(function(c){
       return '<option value="'+c.id+'"'+(c.id===g.companyId?' selected':'')+'>'+esc(truncate(c.name,50))+'</option>';
     }).join('');
     card.innerHTML =
-      '<div class="card-top"><div class="card-top-left"><span class="drag-handle" title="Drag to reorder">⠿</span>'+(color?'<span class="dot" style="background:'+color+'"></span>':'')+'<span class="pill pill-d">'+esc(g.dept)+'</span></div><button class="icon-btn" title="Remove" onclick="removeGoal(\'dept\',\''+g.id+'\')">✕</button></div>' +
+      '<div class="card-top"><div class="card-top-left"><span class="drag-handle" title="Drag to reorder">⠿</span>'+(color?'<span class="dot" style="background:'+color+'"></span>':'')+'<span class="pill pill-d">'+esc(g.dept)+'</span></div>'+removeBtn('dept', g.id)+'</div>' +
       '<div class="card-name" contenteditable="true" data-orig="'+esc(g.name)+'">'+esc(g.name)+'</div>' +
       '<div class="card-outcomes" contenteditable="true">'+esc(g.outcomes)+'</div>' +
-      '<div class="card-dates"><input type="date" data-field="start" value="'+esc(g.start||'')+'"><input type="date" data-field="end" value="'+esc(g.end||'')+'"></div>' +
-      '<div class="card-align"><div class="field-label">Aligns with</div><select data-realign="dept">'+alignOptions+'</select></div>' +
+      datesRow(g) +
+      '<div class="card-align"><div class="field-label">Aligns with</div><select id="align-'+g.id+'" data-realign="dept">'+alignOptions+'</select></div>' +
       ownerFooter('dept', g.id, g.owner) +
       '<div class="card-foot"><span>'+childCount+' function goal'+(childCount===1?'':'s')+'</span></div>';
     wireCommon(card, 'dept', g.id);
@@ -869,16 +1028,16 @@
     var color = colorForFunc(g);
     var card = document.createElement('div');
     card.className = 'goal-card'; card.setAttribute('data-kind','func'); card.setAttribute('data-id', g.id);
-    if(color) card.style.borderLeftColor = color;
+    if(color) card.style.setProperty('--goal-c', color);
     var alignOptions = '<option value="">— no alignment —</option>' + sameDept.map(function(d){
       return '<option value="'+d.id+'"'+(d.id===g.deptGoalId?' selected':'')+'>'+esc(truncate(d.name,50))+'</option>';
     }).join('');
     card.innerHTML =
-      '<div class="card-top"><div class="card-top-left"><span class="drag-handle" title="Drag to reorder">⠿</span>'+(color?'<span class="dot" style="background:'+color+'"></span>':'')+'<span class="pill pill-f">'+esc(g.func)+'</span></div><button class="icon-btn" title="Remove" onclick="removeGoal(\'func\',\''+g.id+'\')">✕</button></div>' +
+      '<div class="card-top"><div class="card-top-left"><span class="drag-handle" title="Drag to reorder">⠿</span>'+(color?'<span class="dot" style="background:'+color+'"></span>':'')+'<span class="pill pill-f">'+esc(g.func)+'</span></div>'+removeBtn('func', g.id)+'</div>' +
       '<div class="card-name" contenteditable="true" data-orig="'+esc(g.name)+'">'+esc(g.name)+'</div>' +
       '<div class="card-outcomes" contenteditable="true">'+esc(g.outcomes)+'</div>' +
-      '<div class="card-dates"><input type="date" data-field="start" value="'+esc(g.start||'')+'"><input type="date" data-field="end" value="'+esc(g.end||'')+'"></div>' +
-      '<div class="card-align"><div class="field-label">Aligns with</div><select data-realign="func">'+alignOptions+'</select></div>' +
+      datesRow(g) +
+      '<div class="card-align"><div class="field-label">Aligns with</div><select id="align-'+g.id+'" data-realign="func">'+alignOptions+'</select></div>' +
       ownerFooter('func', g.id, g.owner) +
       '<div class="card-foot"><span>'+esc(g.dept)+'</span></div>';
     wireCommon(card, 'func', g.id);
@@ -914,10 +1073,7 @@
     handle.style.touchAction = 'none';
     var drag = null;
 
-    // Reordering the card mid-drag (insertBefore/appendChild) makes some browsers
-    // silently release pointer capture and drop the eventual pointerup, so the
-    // move/up listeners live on `document` for the duration of the drag instead
-    // of relying on capture to keep delivering events to the handle.
+    // Listeners live on `document` for the drag so reordering the card mid-drag can't drop the pointerup.
     function onMove(e){
       if(!drag || e.pointerId !== drag.pointerId) return;
       var dx = e.clientX - drag.startX;
@@ -978,7 +1134,7 @@
   window.autoArrange = autoArrange;
 
   // ---------------- connector lines ----------------
-  var UNALIGNED_LINE_COLOR = '#D6DCE3';
+  var UNALIGNED_LINE_COLOR = 'var(--line-strong)';
   function localRect(el, refRect){
     var r = el.getBoundingClientRect();
     return {left:r.left-refRect.left, top:r.top-refRect.top, right:r.right-refRect.left, bottom:r.bottom-refRect.top, centerX:(r.left+r.right)/2-refRect.left};
@@ -996,9 +1152,9 @@
       var p = localRect(parentEl, refRect), c = localRect(childEl, refRect);
       var x1 = p.centerX, y1 = p.bottom, x2 = c.centerX, y2 = c.top;
       var midY = y1 + (y2-y1)/2;
-      return '<path d="M '+x1+' '+y1+' C '+x1+' '+midY+', '+x2+' '+midY+', '+x2+' '+y2+'" stroke="'+color+'" stroke-width="2" fill="none" opacity="0.55"/>' +
-             '<circle cx="'+x1+'" cy="'+y1+'" r="3" fill="'+color+'" opacity="0.8"/>' +
-             '<circle cx="'+x2+'" cy="'+y2+'" r="3" fill="'+color+'" opacity="0.8"/>';
+      return '<path d="M '+x1+' '+y1+' C '+x1+' '+midY+', '+x2+' '+midY+', '+x2+' '+y2+'" style="stroke:'+color+'" stroke-width="2" fill="none" opacity="0.7"/>' +
+             '<circle cx="'+x1+'" cy="'+y1+'" r="3.5" style="fill:'+color+'"/>' +
+             '<circle cx="'+x2+'" cy="'+y2+'" r="3.5" style="fill:'+color+'"/>';
     }
     document.querySelectorAll('#lane-dept .goal-card').forEach(function(depEl){
       var g = state.departments.find(function(x){return x.id===depEl.getAttribute('data-id');});
@@ -1055,18 +1211,14 @@
 
   // ---------------- native date picker popup ----------------
   function bindDatePickers(){
-    document.addEventListener('focus', function(e){
+    function open(e){
       var t = e.target;
       if(t && t.tagName==='INPUT' && t.type==='date' && typeof t.showPicker==='function'){
         try{ t.showPicker(); }catch(err){}
       }
-    }, true);
-    document.addEventListener('click', function(e){
-      var t = e.target;
-      if(t && t.tagName==='INPUT' && t.type==='date' && typeof t.showPicker==='function'){
-        try{ t.showPicker(); }catch(err){}
-      }
-    }, true);
+    }
+    document.addEventListener('focus', open, true);
+    document.addEventListener('click', open, true);
   }
 
   // ---------------- Excel export ----------------
@@ -1108,9 +1260,7 @@
     return wb;
   }
 
-  // Plain browser download: used when the page is running on an ordinary
-  // website (not inside the Claude artifact viewer), where window.claude
-  // doesn't exist and a normal <a download> blob link works fine.
+  // Plain browser download for when the page runs outside the Claude artifact viewer.
   function plainBrowserDownload(blob, filename){
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
@@ -1121,11 +1271,14 @@
     setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
   }
 
+  function setDlStatus(msg){ document.getElementById('dl-status').textContent = msg || ''; }
+
   function handleDownloadExcel(){
     var btn = document.getElementById('download-xlsx-btn');
-    var original = btn.textContent;
-    btn.disabled = true; btn.textContent = 'Preparing…';
-    function reset(){ btn.disabled = false; btn.textContent = original; }
+    var lbl = btn.querySelector('.lbl');
+    var original = lbl.textContent;
+    btn.disabled = true; lbl.textContent = 'Preparing…'; setDlStatus('');
+    function reset(){ btn.disabled = false; lbl.textContent = original; }
 
     var useCap = (window.claude && typeof window.claude.use === 'function') ? window.claude.use('downloads') : Promise.resolve(null);
 
@@ -1136,21 +1289,19 @@
       var blob = new Blob([wbArray], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
 
       if(downloads){
-        // Running inside the Claude artifact viewer: hand the file to its save capability.
         downloads.save({filename:'goal-cascade.xlsx', data: blob}).then(function(){
           reset();
         }).catch(function(err){
-          if(!err || err.code!=='declined'){ alert('Could not save the file'+(err&&err.code?' ('+err.code+')':'')+'.'); }
+          if(!err || err.code!=='declined'){ setDlStatus('Could not save the file'+(err&&err.code?' ('+err.code+')':'')+'.'); }
           reset();
         });
       } else {
-        // Running on an ordinary website: trigger a normal browser download.
         try{ plainBrowserDownload(blob, 'goal-cascade.xlsx'); }
-        catch(e){ alert('Could not start the download.'); }
+        catch(e){ setDlStatus('Could not start the download.'); }
         reset();
       }
     }).catch(function(){
-      alert('Could not load the spreadsheet library. Check your connection and try again.');
+      setDlStatus('Could not load the spreadsheet library. Check your connection and try again.');
       reset();
     });
   }
