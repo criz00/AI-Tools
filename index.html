@@ -130,6 +130,60 @@
   }
   .tool-link:hover{opacity:.88;}
 
+  /* expandable "read more" */
+  .read-more{
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:var(--bg);
+    margin:0 0 18px 0;
+  }
+  .read-more summary{
+    cursor:pointer;
+    list-style:none;
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--accent);
+    padding:12px 16px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .read-more summary::-webkit-details-marker{display:none;}
+  .read-more summary::before{
+    content:"▸";
+    display:inline-block;
+    transition:transform .15s;
+  }
+  .read-more[open] summary::before{transform:rotate(90deg);}
+  .read-more summary:hover{background:var(--accent-soft);border-radius:10px;}
+  .read-more-body{
+    padding:4px 18px 18px;
+    border-top:1px solid var(--line);
+  }
+  .read-more-body h4{
+    font-family:'Source Serif 4', Georgia, serif;
+    font-size:15px;
+    font-weight:600;
+    color:var(--ink);
+    margin:18px 0 6px;
+  }
+  .read-more-body h5{
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--ink);
+    margin:14px 0 4px;
+  }
+  .tool-card .read-more-body p{margin:0 0 10px 0;}
+  .read-more-body ul{
+    margin:0 0 10px 0;
+    padding-left:20px;
+    font-size:14px;
+    color:var(--ink-soft);
+    line-height:1.6;
+  }
+  .read-more-body li{margin-bottom:4px;}
+  .read-more-body li strong{color:var(--ink);font-weight:600;}
+
   .back-link{
     display:inline-block;
     text-decoration:none;
@@ -176,6 +230,7 @@
     <a href="#career-development">Career Development</a>
     <a href="#change-management">Change Management</a>
     <a href="#succession-planning">Succession Planning</a>
+    <a href="#workforce-planning">Workforce Planning</a>
   </div>
 
   <!-- TALENT ACQUISITION -->
@@ -309,6 +364,92 @@
       <a class="tool-link" href="succession-calibration.html">Try it</a>
     </div>
     <a class="back-link" href="https://www.crizolp.com/portfolio/succession-planning#h.apdvzzd4fc2v">← Back to Succession Planning</a>
+  </div>
+
+  <!-- WORKFORCE PLANNING -->
+  <div class="category" id="workforce-planning">
+    <h2>Workforce Planning</h2>
+
+    <div class="tool-card">
+      <h3>Skills Taxonomy</h3>
+      <p>A prototype that helps companies track the skills they have and the skills they need.</p>
+      <p>The name of the tool is SkillGraph. It reviews existing documents, such as job postings, project summaries, and course descriptions, to identify new skills, outdated skills, and changes in skill requirements. It recommends updates for approval, identifies skill gaps, and provides a shared skills list for hiring, learning, and AI tools.</p>
+      <p class="tool-note">This working prototype uses sample data from a fictional company. It is not yet connected to real company systems.</p>
+
+      <details class="read-more">
+        <summary>Read more about SkillGraph</summary>
+        <div class="read-more-body">
+          <h4>About the Prototype</h4>
+          <p>SkillGraph is a working prototype that helps companies track and manage employee skills. It maintains one shared list of skills across the organization.</p>
+          <p>It reviews existing documents, such as job postings, project summaries, course descriptions, and business plans, to identify new skills, outdated skills, and changes in skill requirements. It then recommends updates for approval.</p>
+          <p>The prototype uses sample data from a fictional company called Northwind Financial, which has engineering, HR, and sales teams. It is not yet connected to real company systems. All examples below use this sample data.</p>
+
+          <h4>What It's Designed to Do</h4>
+          <ul>
+            <li><strong>Keep skills up to date.</strong> Identify new skills and flag outdated ones. For example, SkillGraph identifies emerging skills like “people analytics” and “AI-assisted prospecting” and suggests retiring “cold calling.”</li>
+            <li><strong>Identify skill gaps.</strong> Show where the company lacks skilled employees, relies too heavily on one person, or has no qualified employees ready to fill important roles.</li>
+            <li><strong>Track skill trends.</strong> Identify which skills are becoming more or less important and how skill requirements are changing.</li>
+            <li><strong>Match employees to jobs.</strong> Compare employee skills with job requirements to support hiring, career development, and succession planning.</li>
+            <li><strong>Share skills across systems.</strong> Give hiring tools, learning platforms, and AI assistants access to the same skill names, definitions, and updates.</li>
+          </ul>
+
+          <h4>Who It's For</h4>
+          <ul>
+            <li><strong>HR and Talent Teams:</strong> Define job requirements, plan hiring, and identify internal candidates.</li>
+            <li><strong>Learning and Development Teams:</strong> Identify training needs and create learning paths that address skill gaps.</li>
+            <li><strong>Business Leaders:</strong> Determine whether their teams have the skills needed to meet business goals.</li>
+            <li><strong>Workforce Planning Teams:</strong> Identify workforce risks, critical skill shortages, and future talent needs.</li>
+            <li><strong>Sales and Engineering Managers:</strong> Find employees with the right skills for projects and assignments.</li>
+            <li><strong>IT and Product Teams:</strong> Connect SkillGraph to other company systems to keep skills information consistent.</li>
+          </ul>
+
+          <h4>How It Would Work in a Real Company</h4>
+          <p>The prototype demonstrates the following steps using sample data. In a real company, SkillGraph would connect to existing systems and use actual company information.</p>
+
+          <h5>1. Review Company Documents</h5>
+          <p>Each week, SkillGraph would review new job postings, project summaries, training courses, and business plans to identify skills and changes in skill requirements.</p>
+          <p>The prototype demonstrates this using sample documents from Northwind Financial.</p>
+
+          <h5>2. Recommend Skill Updates</h5>
+          <p>Based on the documents it reviews, SkillGraph recommends changes to the skills list. For example, it might recommend:</p>
+          <ul>
+            <li>Adding “Revenue Operations” because it frequently appears in job postings.</li>
+            <li>Merging “Recruiting” and “Talent Acquisition” because they mean the same thing.</li>
+          </ul>
+          <p>Small changes happen automatically. Larger changes require approval.</p>
+
+          <h5>3. Review and Approve Changes</h5>
+          <p>A small group of HR, learning, and business representatives would review suggested changes each week.</p>
+          <p>Each recommendation explains why the change is needed and identifies the supporting documents. Approved changes are recorded, including who approved them and why.</p>
+
+          <h5>4. Identify Workforce Skill Gaps</h5>
+          <p>Leaders can use SkillGraph to see where their teams lack important skills. For example, Northwind Financial's sample data shows:</p>
+          <ul>
+            <li>Only 60% of its customer retention skill needs are covered.</li>
+            <li>Only one employee has critical account management expertise.</li>
+            <li>Demand for people analytics is increasing, but no employees currently have that skill.</li>
+          </ul>
+          <p>These insights can help leaders prioritize hiring, training, and employee development.</p>
+
+          <h5>5. Connect to Other Company Tools</h5>
+          <p>Other systems could use SkillGraph to access consistent skill information. For example:</p>
+          <ul>
+            <li>Hiring tools could check skill names and requirements when creating job postings.</li>
+            <li>Career development tools could match employees with internal job opportunities.</li>
+            <li>AI assistants could answer questions about company skills and job requirements.</li>
+          </ul>
+          <p>The prototype demonstrates these capabilities, but no external systems are connected yet.</p>
+
+          <h5>6. Save and Track Changes</h5>
+          <p>Every quarter, the company could save an updated version of its skills list.</p>
+          <p>This allows teams to track changes, compare versions, and use a consistent list while new updates are being reviewed.</p>
+          <p>The prototype already supports this feature.</p>
+        </div>
+      </details>
+
+      <a class="tool-link" href="SkillsTaxonomy.html">Try it</a>
+    </div>
+    <a class="back-link" href="https://www.crizolp.com/portfolio/workforce-planning#h.kbnezkelb81n">← Back to Workforce Planning</a>
   </div>
 
   <footer>
