@@ -112,6 +112,51 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-sans)
 .send-btn:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus-ring);}
 .send-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
 
+/* ---------- Bloom's verb helper ---------- */
+.verb-picker{flex-shrink:0;border-top:1px solid var(--line);background:var(--surface);padding:12px 24px 2px;display:none;}
+.verb-picker.show{display:block;}
+.verb-picker.show + .chat-input-row{border-top:none;padding-top:10px;}
+.vp-head{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.vp-title{font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
+.vp-toggle{background:none;border:none;color:var(--accent);font:600 12.5px var(--font-sans);cursor:pointer;padding:4px 8px;border-radius:var(--radius-sm);}
+.vp-toggle:hover{background:var(--accent-soft);}
+.vp-toggle:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus-ring);}
+.vp-tabs{display:flex;gap:4px;overflow-x:auto;margin-top:8px;padding-bottom:2px;scrollbar-width:none;}
+.vp-tabs::-webkit-scrollbar{display:none;}
+.vp-tab{flex:0 0 auto;font:600 12.5px var(--font-sans);padding:6px 10px;border-radius:var(--radius-pill);border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);cursor:pointer;display:inline-flex;gap:5px;align-items:center;transition:background .15s,color .15s,border-color .15s;}
+.vp-tab .n{font-variant-numeric:tabular-nums;opacity:.65;font-size:11px;}
+.vp-tab:hover{color:var(--ink);border-color:var(--line-strong);}
+.vp-tab.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);}
+.vp-tab:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus-ring);}
+.vp-desc{font-size:12.5px;color:var(--ink-soft);margin:8px 0 7px;}
+.vp-verbs{display:flex;flex-wrap:wrap;gap:6px;max-height:100px;overflow-y:auto;padding-bottom:8px;}
+.vp-verb{font:500 13px var(--font-sans);padding:5px 11px;border-radius:var(--radius-sm);border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);cursor:pointer;transition:background .15s,color .15s,border-color .15s;}
+.vp-verb:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
+.vp-verb:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus-ring);}
+.verb-picker.collapsed .vp-body{display:none;}
+.vp-head-actions{display:flex;gap:2px;align-items:center;}
+.vp-howto{display:none;background:var(--surface-alt);border:1px solid var(--line);border-radius:var(--radius-md);padding:10px 12px;margin-top:8px;font-size:12.5px;line-height:1.5;color:var(--ink);}
+.vp-howto.show{display:block;}
+.vp-howto ol{margin:4px 0 6px;padding-left:18px;}
+.vp-howto li{margin-bottom:2px;}
+.vp-howto .ex{color:var(--ink-soft);}
+.vp-example{display:block;margin-top:2px;color:var(--ink-soft);font-style:italic;}
+.obj-steps{margin:8px 0 4px;padding-left:20px;}
+.obj-steps li{margin-bottom:6px;}
+.obj-formula{display:block;margin:10px 0;padding:9px 12px;border-radius:var(--radius-md);background:var(--accent-soft);color:var(--accent);font-weight:600;font-size:13.5px;}
+.obj-example{display:block;padding:9px 12px;border-left:3px solid var(--accent);background:var(--surface-alt);border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:13.5px;}
+.obj-example .seg{font-weight:650;}
+.verb-picker.collapsed{padding-bottom:8px;}
+.obj-hint{font-size:12.5px;color:var(--ink-soft);margin-top:6px;display:none;}
+.obj-hint.show{display:block;}
+.obj-hint.ok{color:var(--accent);}
+.obj-hint.warn{color:var(--warning);}
+.bloom-pill{display:inline-block;margin-left:8px;font-size:11px;font-weight:600;padding:1px 8px;border-radius:var(--radius-pill);background:var(--accent-soft);color:var(--accent);vertical-align:1px;white-space:nowrap;}
+.bloom-pill.warn{background:var(--warning-soft);color:var(--warning);}
+.bloom-coverage{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center;font-size:11.5px;color:var(--ink-soft);}
+.bloom-coverage .lvl{padding:2px 9px;border-radius:var(--radius-pill);border:1px dashed var(--line-strong);}
+.bloom-coverage .lvl.on{border:1px solid transparent;background:var(--accent-soft);color:var(--accent);font-weight:600;}
+
 /* ---------- RIGHT: DOCUMENT ---------- */
 .doc-side{display:flex;flex-direction:column;min-height:0;min-width:0;}
 .doc-toolbar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 40px;border-bottom:1px solid var(--line);background:var(--bg);}
@@ -174,6 +219,10 @@ ul.tags li::marker{color:var(--accent);}
 .empty-doc .big{font-size:20px;font-weight:650;letter-spacing:-.018em;color:var(--ink);margin-bottom:8px;}
 .empty-doc .glyph{width:44px;height:44px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
 
+.add-btn{display:inline-flex;align-items:center;gap:6px;font:600 13px var(--font-sans);color:var(--accent);background:transparent;border:1.5px dashed var(--accent);border-radius:var(--radius-md);padding:8px 14px;min-height:38px;cursor:pointer;margin:2px 0 18px;transition:background .15s;}
+.add-btn:hover{background:var(--accent-soft);}
+.add-btn:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus-ring);}
+.add-btn.block{width:100%;justify-content:center;margin:0 0 20px;}
 .doc-footer{margin-top:28px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-soft);}
 
 /* ---------- Phone ---------- */
@@ -195,6 +244,8 @@ ul.tags li::marker{color:var(--accent);}
   .rail-label{font-size:10.5px;}
   .chat-log{padding:16px;}
   .chat-input-row{padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));}
+  .verb-picker{padding:10px 16px 2px;}
+  .vp-verbs{max-height:72px;}
   .chat-input-row textarea{font-size:16px;min-height:48px;}
   .send-btn{width:48px;height:48px;}
   .choice-btn{min-height:44px;}
@@ -236,10 +287,21 @@ ul.tags li::marker{color:var(--accent);}
       <div class="levels" id="railTrack" aria-label="Outline level"></div>
     </div>
     <div class="chat-log" id="chatLog" aria-live="polite"></div>
+    <div class="verb-picker" id="verbPicker" aria-label="Bloom's taxonomy verb helper">
+      <div class="vp-head">
+        <span class="vp-title">Bloom's verb helper</span>
+      </div>
+      <div class="vp-body">
+        <div class="vp-tabs" id="vpTabs" role="tablist"></div>
+        <div class="vp-desc" id="vpDesc"></div>
+        <div class="vp-verbs" id="vpVerbs"></div>
+      </div>
+    </div>
     <div class="chat-input-row">
       <div class="input-wrap">
         <textarea id="inputBox" rows="1" placeholder="Type your answer…" aria-label="Your answer"></textarea>
         <div class="list-hint" id="listHint" style="display:none;">Separate multiple items with commas.</div>
+        <div class="obj-hint" id="objHint" aria-live="polite"></div>
       </div>
       <button class="send-btn" id="sendBtn" title="Send" aria-label="Send">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
@@ -317,7 +379,8 @@ const data = {
   capstone:'', finalAssessment:'', createdAt:''
 };
 
-const LEVELS = ['Course','Module','Lesson','Topic','Activity','Assessment'];
+const ALL_LEVELS = ['Course','Module','Lesson','Topic','Activity','Assessment'];
+let LEVELS = ALL_LEVELS.slice();
 let activeLevel = 0;
 
 const EDIT_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`;
@@ -337,38 +400,78 @@ function botSay(html){ addMsg('bot', html); }
 function fieldTag(label){ return `<span class="field-tag">${label}</span><br>`; }
 
 function startSequence(){
-  botSay(fieldTag('Welcome') + `I'm here to help you build a learning outline. I'll ask a series of questions, working through each level of the course in turn:<br><br>
-  <strong>Program</strong> — a multi-course journey toward a role or outcome<br>
+  botSay(fieldTag('Welcome') + `I'm here to help you build a learning outline. I'll ask a series of questions, working through each level in turn:<br><br>
   <strong>Course</strong> — a full learning experience made of modules<br>
   <strong>Module</strong> — related lessons organized around a topic<br>
   <strong>Lesson</strong> — teaches one concept or skill<br>
   <strong>Topic</strong> — an individual idea within a lesson<br>
   <strong>Activity</strong> — practice that reinforces learning<br>
   <strong>Assessment</strong> — how you measure learning<br><br>
-  Select <strong>Start</strong> to begin.`);
-  showChoices([{label:'Start', value:'start', primary:true}]);
+  What would you like to build?`);
+  showBuildChoices();
+}
+function showBuildChoices(){
+  showChoices([{label:'Course', value:'course'},{label:'Module', value:'module'},{label:'Lesson', value:'lesson'}]);
+}
+function beginBuild(t){
+  buildType = t;
+  data.createdAt = new Date().toLocaleDateString('en-US',{month:'long', day:'numeric', year:'numeric'});
+  if(t==='module'){
+    data.modules.push({name:'',purpose:'',duration:'',objectives:[],lessons:[],assessment:''});
+    modIdx = 0;
+  } else if(t==='lesson'){
+    data.modules.push({name:'',purpose:'',duration:'',objectives:[],assessment:'',
+      lessons:[{name:'',purpose:'',duration:'',objective:'',topics:[],activities:[],assessment:''}]});
+    modIdx = 0; lesIdx = 0;
+  }
+  buildRail();
+  step='author'; askAuthor();
 }
 
-/* ---- Course-level questions ---- */
-function askAuthor(){ setLevel(0); botSay(fieldTag('Author') + 'Who will be building this course?'); }
-function askName(){ botSay(fieldTag('Course Name') + 'What is the name of your course?'); }
-function askPurpose(){ botSay(fieldTag('Purpose') + 'What is the purpose of the course?'); }
+/* ---- Basic questions (tailored to what's being built) ---- */
+let buildType = 'course';
+const OBJ_INSTRUCTIONS = `Now, let’s create your learning objectives.<br><br>Choose a verb from one of six categories: Remember, Understand, Apply, Analyze, Evaluate, or Create. Then, complete the sentence by describing what learners will be able to do after the training.<br><br>Click Submit to add the objective to your learning outline.`;
+const LESSON_OBJ_INSTRUCTIONS = `Now, let’s create your learning objective.<br><br>Choose a verb from one of six categories: Remember, Understand, Apply, Analyze, Evaluate, or Create. Then, complete the sentence by describing what learners will be able to do after the training.<br><br>Click Submit to add the objective to your learning outline.`;
+const BASIC_UNIT_KEYS = ['name','purpose','duration'];
+function basicTarget(k){
+  if(buildType==='module' && BASIC_UNIT_KEYS.includes(k)) return data.modules[0];
+  if(buildType==='lesson' && BASIC_UNIT_KEYS.includes(k)) return data.modules[0].lessons[0];
+  return data;
+}
+function basicPath(k){
+  if(buildType==='module' && BASIC_UNIT_KEYS.includes(k)) return ['modules',0,k];
+  if(buildType==='lesson' && BASIC_UNIT_KEYS.includes(k)) return ['modules',0,'lessons',0,k];
+  return [k];
+}
+function setBasic(k, v){ basicTarget(k)[k] = v; }
+function docTitle(){ return basicTarget('name').name || ''; }
+function lessonNum(mi, li){ return buildType==='module' ? String(li+1) : `${mi+1}.${li+1}`; }
+
+function askAuthor(){ setLevel(0); botSay(fieldTag('Author') + `Who will be building this ${buildType}?`); }
+function askName(){ botSay(fieldTag(`${capFirst(buildType)} Name`) + `What is the name of your ${buildType}?`); }
+function askPurpose(){ botSay(fieldTag('Purpose') + `What is the purpose of the ${buildType}?`); }
 function askAudience(){ botSay(fieldTag('Target Audience') + 'Who is the target audience?'); }
-function askDuration(){ botSay(fieldTag('Duration') + 'What is the estimated duration of the course? You can update this later.'); }
+function askDuration(){ botSay(fieldTag('Duration') + `What is the estimated duration of the ${buildType}? You can update this later.`); }
 function askDelivery(){ botSay(fieldTag('Delivery Methods') + 'What delivery methods will be used to transfer knowledge and skills (e.g., instructor-led, virtual instructor-led, self-paced, blended)?'); }
-function askPrereq(){ botSay(fieldTag('Prerequisites') + 'What does a participant need to know before taking this course?'); }
+function askPrereq(){ botSay(fieldTag('Prerequisites') + `What does a participant need to know before taking this ${buildType}?`); }
+function startObjectives(){
+  if(buildType==='module') askModuleObjective();
+  else if(buildType==='lesson') askStandaloneLessonObjective();
+  else askCourseObjective();
+}
 
 function askCourseObjective(){
   step='objectives.entry';
   const n = data.objectives.length + 1;
   const msg = n === 1
-    ? `Now, let's define the learning objectives for your course. Starting with your first objective, what will participants be able to do by the end of the course? Begin with an action verb.`
+    ? OBJ_INSTRUCTIONS
     : `Learning Objective ${n}: By the end of the course, what will participants be able to do? Start with an action verb.`;
   botSay(fieldTag('Course Learning Objectives') + msg);
+  showVerbPicker(true);
 }
-function askCourseObjectiveContinue(){
+function askCourseObjectiveContinue(note){
   step='objectives.continue';
-  botSay(`Add another course learning objective?`);
+  botSay((note||'') + `Add another course learning objective?`);
   showChoices([{label:'+ Add another objective', value:'yes'},{label:"No, that's all", value:'no'}]);
 }
 
@@ -390,14 +493,15 @@ function askModuleDuration(){ botSay(fieldTag('Duration') + 'What is the estimat
 function askModuleObjective(){
   step='module.objectives.entry';
   const n = currentModule().objectives.length + 1;
-  const msg = n === 1
+  const msg = (n === 1 && buildType === 'module') ? OBJ_INSTRUCTIONS : n === 1
     ? `Module Learning Objective 1: By the end of this module, what will participants be able to do? Your objective should support at least one of your course learning objectives and begin with an action verb.`
     : `Module Learning Objective ${n}: By the end of this module, what will participants be able to do? Start with an action verb.`;
   botSay(fieldTag('Module Learning Objectives') + msg);
+  showVerbPicker(true);
 }
-function askModuleObjectiveContinue(){
+function askModuleObjectiveContinue(note){
   step='module.objectives.continue';
-  botSay(`Add another module learning objective?`);
+  botSay((note||'') + `Add another module learning objective?`);
   showChoices([{label:'+ Add another objective', value:'yes'},{label:"No, that's all", value:'no'}]);
 }
 
@@ -408,7 +512,7 @@ function newLesson(){
   setLevel(2);
   showListHint(false);
   step='lesson.name';
-  botSay(fieldTag(`Lesson ${modIdx+1}.${lesIdx+1} Name`) + `What is the name of Lesson ${modIdx+1}.${lesIdx+1}?`);
+  botSay(fieldTag(`Lesson ${lessonNum(modIdx,lesIdx)} Name`) + `What is the name of Lesson ${lessonNum(modIdx,lesIdx)}?`);
 }
 function askLessonObjective(){
   step='lesson.objective';
@@ -442,18 +546,34 @@ function askLessonActivities(){
 function askLessonContinue(){
   showListHint(false);
   step='lesson.continue';
-  botSay(`That completes Lesson ${modIdx+1}.${lesIdx+1}. What would you like to do next?`);
-  showChoices([{label:'+ Add another lesson', value:'continue'},{label:'Move on to Module Assessment', value:'done'}]);
+  botSay(`That completes Lesson ${lessonNum(modIdx,lesIdx)}. What would you like to do next?`);
+  showChoices([{label:'+ Add another lesson', value:'continue'},
+    addMode === 'lesson' ? {label:'Finish', value:'finish'} : {label:'Move on to Module Assessment', value:'done'}]);
 }
 function askModuleAssessment(){
   setLevel(5);
   step='module.assessment';
-  botSay(fieldTag('Assessment') + `How will you assess the knowledge and skills participants gained in Module ${modIdx+1} (e.g., assessment questions, peer feedback)?`);
+  botSay(fieldTag('Assessment') + `How will you assess the knowledge and skills participants gained in ${buildType==='module' ? 'this module' : 'Module '+(modIdx+1)} (e.g., assessment questions, peer feedback)?`);
 }
 function askModuleContinue(){
   step='module.continue';
   botSay(`We've now gathered all the information for Module ${modIdx+1}. What would you like to do next?`);
-  showChoices([{label:'+ Add another module', value:'continue'},{label:'Move on to Course Wrap-Up', value:'done'}]);
+  showChoices([{label:'+ Add another module', value:'continue'},
+    addMode === 'module' ? {label:'Finish', value:'finish'} : {label:'Move on to Course Wrap-Up', value:'done'}]);
+}
+
+/* ---- Standalone lesson ---- */
+function askStandaloneLessonObjective(){
+  setLevel(2);
+  step='lesson.objective.entry';
+  botSay(fieldTag('Learning Objective') + LESSON_OBJ_INSTRUCTIONS);
+  showVerbPicker(true);
+}
+function askLessonAssessment(){
+  showListHint(false);
+  setLevel(5);
+  step='lesson.assessment';
+  botSay(fieldTag('Assessment') + 'How will you assess the knowledge and skills participants gained in this lesson (e.g., knowledge checks, observation, practice exercises)?');
 }
 
 /* ---- Wrap-up ---- */
@@ -467,9 +587,55 @@ function askFinalAssessment(){
   step='finalAssessment';
   botSay(fieldTag('Final Assessment') + 'How will you assess the knowledge and skills participants gained across the entire course (e.g., knowledge assessments, practical assessments)?');
 }
+let addMode = null;
+function offerAddMore(){
+  const opts = buildType === 'course'
+    ? [{label:'+ Add a module', value:'add:module'},{label:'+ Add a lesson', value:'add:lesson'}]
+    : buildType === 'module' ? [{label:'+ Add a lesson', value:'add:lesson'}] : [];
+  opts.push({label:'Start a new outline', value:'new'});
+  showChoices(opts);
+}
+function resetBuilder(){
+  Object.assign(data, {author:'', name:'', purpose:'', audience:'', duration:'', delivery:'', prerequisites:'',
+    objectives:[], modules:[], capstone:'', finalAssessment:'', createdAt:''});
+  step = 'welcome'; modIdx = -1; lesIdx = -1; buildType = 'course'; addMode = null; pendingObj = null;
+  chatLog.innerHTML = '';
+  showVerbPicker(false); showListHint(false);
+  inputBox.value = ''; inputBox.disabled = false; sendBtn.disabled = false; inputBox.placeholder = 'Type your answer…';
+  buildRail();
+  lastDocHtml = '';
+  docDot.classList.remove('on');
+  setView('chat');
+  docPanel.scrollTop = 0;
+  startSequence();
+}
+function backToDone(){
+  addMode = null;
+  step = 'done';
+  setLevel(5);
+  botSay('Your outline has been updated.');
+  offerAddMore();
+}
+function startAddModule(){
+  addMode = 'module';
+  modIdx = data.modules.length - 1;
+  newModule();
+}
+function startAddLesson(mi){
+  addMode = 'lesson';
+  modIdx = mi;
+  lesIdx = data.modules[mi].lessons.length - 1;
+  newLesson();
+}
+function pickModuleForLesson(){
+  step = 'add.pickModule';
+  botSay('Which module should the new lesson go in?');
+  showChoices(data.modules.map((m,i)=>({label:`Module ${i+1}: ${m.name || '—'}`, value:String(i)})));
+}
 function finish(){
   step='done';
   botSay(`Your outline is complete. Take a moment to review it and select <strong>Edit</strong> to make any changes. When you're ready, click <strong>Download as Word</strong> above the document to save an editable copy that you can continue updating anytime.`);
+  offerAddMore();
 }
 
 /* ---------------- ANSWER HANDLER ---------------- */
@@ -477,28 +643,27 @@ function handleAnswer(raw, displayText){
   const text = (raw||'').trim();
   if(!text) return;
   addMsg('user', escapeHtml(displayText!==undefined ? displayText : text));
+  showVerbPicker(false);
 
   switch(step){
-    case 'welcome':
-      if(/^start$/i.test(text)){
-        data.createdAt = new Date().toLocaleDateString('en-US',{month:'long', day:'numeric', year:'numeric'});
-        step='author'; askAuthor();
-      }
-      else { botSay('Select <strong>Start</strong> to begin.'); showChoices([{label:'Start', value:'start', primary:true}]); }
+    case 'welcome': {
+      const t = text.toLowerCase();
+      if(['course','module','lesson'].includes(t)){ beginBuild(t); }
+      else { botSay('Choose <strong>Course</strong>, <strong>Module</strong>, or <strong>Lesson</strong> to begin.'); showBuildChoices(); }
       return;
+    }
     case 'author': data.author=text; step='name'; askName(); return;
-    case 'name': data.name=text; step='purpose'; askPurpose(); return;
-    case 'purpose': data.purpose=text; step='audience'; askAudience(); return;
+    case 'name': setBasic('name', text); step='purpose'; askPurpose(); return;
+    case 'purpose': setBasic('purpose', text); step='audience'; askAudience(); return;
     case 'audience': data.audience=text; step='duration'; askDuration(); return;
-    case 'duration': data.duration=text; step='delivery'; askDelivery(); return;
+    case 'duration': setBasic('duration', text); step='delivery'; askDelivery(); return;
     case 'delivery': data.delivery=text; step='prerequisites'; askPrereq(); return;
-    case 'prerequisites': data.prerequisites=text; askCourseObjective(); return;
+    case 'prerequisites': data.prerequisites=text; startObjectives(); return;
+    case 'lesson.objective.entry': reviewObjective('lesson', text); return;
+    case 'lesson.assessment': currentLesson().assessment=text; finish(); return;
 
-    case 'objectives.entry':
-      data.objectives.push(text);
-      if(data.objectives.length >= 8){ beginModules(); }
-      else { askCourseObjectiveContinue(); }
-      return;
+    case 'objectives.entry': reviewObjective('course', text); return;
+    case 'objective.review': handleReviewChoice(text); return;
     case 'objectives.continue':
       if(text==='yes'){ askCourseObjective(); } else { beginModules(); }
       return;
@@ -507,11 +672,7 @@ function handleAnswer(raw, displayText){
     case 'module.purpose': currentModule().purpose=text; step='module.duration'; askModuleDuration(); return;
     case 'module.duration': currentModule().duration=text; askModuleObjective(); return;
 
-    case 'module.objectives.entry':
-      currentModule().objectives.push(text);
-      if(currentModule().objectives.length >= 5){ newLesson(); }
-      else { askModuleObjectiveContinue(); }
-      return;
+    case 'module.objectives.entry': reviewObjective('module', text); return;
     case 'module.objectives.continue':
       if(text==='yes'){ askModuleObjective(); } else { newLesson(); }
       return;
@@ -525,15 +686,15 @@ function handleAnswer(raw, displayText){
     case 'lesson.topics.continue':
       if(text==='yes'){ askLessonTopic(); } else { step='lesson.activities'; askLessonActivities(); }
       return;
-    case 'lesson.activities': currentLesson().activities=splitList(text); askLessonContinue(); return;
+    case 'lesson.activities': currentLesson().activities=splitList(text); if(buildType==='lesson') askLessonAssessment(); else askLessonContinue(); return;
 
     case 'lesson.continue':
-      if(text==='continue'){ newLesson(); } else { askModuleAssessment(); }
+      if(text==='continue'){ newLesson(); } else if(text==='finish'){ backToDone(); } else { askModuleAssessment(); }
       return;
 
-    case 'module.assessment': currentModule().assessment=text; askModuleContinue(); return;
+    case 'module.assessment': currentModule().assessment=text; if(buildType==='module') finish(); else askModuleContinue(); return;
     case 'module.continue':
-      if(text==='continue'){ newModule(); } else { beginWrapUp(); }
+      if(text==='continue'){ newModule(); } else if(text==='finish'){ backToDone(); } else { beginWrapUp(); }
       return;
 
     case 'capstone.choice':
@@ -543,10 +704,298 @@ function handleAnswer(raw, displayText){
     case 'capstone.description': data.capstone=text; askFinalAssessment(); return;
     case 'finalAssessment': data.finalAssessment=text; finish(); return;
 
+    case 'add.pickModule': startAddLesson(Number(text)); return;
+    case 'confirm.new':
+      if(text === 'yes'){ resetBuilder(); } else { step = 'done'; offerAddMore(); }
+      return;
     case 'done':
+      if(text === 'new'){
+        step = 'confirm.new';
+        botSay('This will clear your current outline. Download it first if you want to keep a copy.');
+        showChoices([{label:'Start new outline', value:'yes'},{label:'Cancel', value:'no'}]);
+        return;
+      }
+      if(text === 'add:module'){ startAddModule(); return; }
+      if(text === 'add:lesson'){
+        if(buildType === 'module' || data.modules.length === 1) startAddLesson(0); else pickModuleForLesson();
+        return;
+      }
       botSay("The outline is complete — feel free to keep exploring the document on the right, or use the edit icons to make changes.");
       return;
   }
+}
+
+/* ---------------- BLOOM'S TAXONOMY ---------------- */
+const BLOOM = [
+  {level:'Remember',   desc:'Recall facts, terms and basic concepts.',
+   verbs:['Define','Identify','List','Name','Recall','Recognize','Label','State','Match','Locate','Repeat','Reproduce']},
+  {level:'Understand', desc:'Explain ideas or concepts in their own words.',
+   verbs:['Describe','Explain','Summarize','Classify','Interpret','Paraphrase','Discuss','Illustrate','Restate','Exemplify','Infer','Report']},
+  {level:'Apply',      desc:'Use information or a skill in a new situation.',
+   verbs:['Apply','Demonstrate','Use','Implement','Execute','Solve','Perform','Calculate','Operate','Complete','Configure','Conduct','Navigate','Prepare','Practice','Administer']},
+  {level:'Analyze',    desc:'Break information into parts and see how they relate.',
+   verbs:['Analyze','Compare','Contrast','Differentiate','Distinguish','Examine','Organize','Categorize','Deconstruct','Diagnose','Investigate','Outline','Prioritize','Troubleshoot']},
+  {level:'Evaluate',   desc:'Justify a decision or judge against criteria.',
+   verbs:['Evaluate','Assess','Critique','Judge','Justify','Recommend','Defend','Argue','Appraise','Select','Validate','Verify','Rate','Decide']},
+  {level:'Create',     desc:'Produce new or original work.',
+   verbs:['Create','Design','Develop','Construct','Formulate','Compose','Plan','Produce','Generate','Propose','Build','Draft','Write','Devise']}
+];
+const BLOOM_EXAMPLES = [
+  'List the five steps of the incident-reporting process',
+  'Explain how the approval workflow routes a purchase request',
+  'Calculate shipping costs using the current rate table',
+  'Compare two vendor proposals against the selection criteria',
+  'Recommend a pricing option and justify it with customer data',
+  'Design a 30-day onboarding plan for a new team member'
+];
+const VERB_INDEX = {};
+BLOOM.forEach((b,i)=> b.verbs.forEach(v=>{ VERB_INDEX[v.toLowerCase()] = i; }));
+
+// Vague, hard-to-measure openings (longest first) with stronger suggestions
+const VAGUE = [
+  ['gain an understanding of',['Explain','Describe','Summarize']],
+  ['develop an understanding of',['Explain','Describe','Summarize']],
+  ['have an understanding of',['Explain','Describe','Summarize']],
+  ['gain knowledge of',['Identify','Describe','Explain']],
+  ['have knowledge of',['Identify','Describe','Explain']],
+  ['become familiar with',['Identify','Describe','Recognize']],
+  ['be familiar with',['Identify','Describe','Recognize']],
+  ['become aware of',['Identify','Recognize','Describe']],
+  ['be aware of',['Identify','Recognize','Describe']],
+  ['be exposed to',['Identify','Describe','Recognize']],
+  ['be introduced to',['Identify','Describe','Recognize']],
+  ['learn about',['Describe','Explain','Identify']],
+  ['understand',['Explain','Describe','Summarize']],
+  ['comprehend',['Explain','Interpret','Summarize']],
+  ['appreciate',['Explain','Justify','Describe']],
+  ['grasp',['Explain','Interpret','Summarize']],
+  ['realize',['Recognize','Explain','Identify']],
+  ['know',['Identify','List','Describe']],
+  ['learn',['Identify','Describe','Explain']],
+  ['master',['Demonstrate','Perform','Apply']],
+  ['internalize',['Apply','Demonstrate','Use']],
+  ['explore',['Examine','Investigate','Compare']],
+  ['see',['Identify','Recognize','Describe']],
+  ['think about',['Analyze','Evaluate','Examine']]
+];
+
+const PREFIX_RE = /^(?:by the end of (?:this|the) (?:course|module|lesson|session|training|program)[,:]?\s*)?(?:(?:the\s+)?(?:participants?|learners?|students?|trainees?|employees?|attendees?|you|they)\s+)?(?:will\s+|should\s+|can\s+)?(?:be\s+able\s+to\s+)?(?:(?:know|learn|understand)\s+how\s+to\s+|learn\s+to\s+)?(?:to\s+)?/i;
+
+function capFirst(s){ return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+function lookupVerb(w){
+  w = (w||'').toLowerCase().replace(/[^a-z]/g,'');
+  if(w in VERB_INDEX) return {verb:w, lvl:VERB_INDEX[w]};
+  if(w.endsWith('es') && w.slice(0,-2) in VERB_INDEX) return {verb:w.slice(0,-2), lvl:VERB_INDEX[w.slice(0,-2)]};
+  if(w.endsWith('s') && w.slice(0,-1) in VERB_INDEX) return {verb:w.slice(0,-1), lvl:VERB_INDEX[w.slice(0,-1)]};
+  return null;
+}
+
+/* Returns {status:'empty'|'ok'|'vague'|'compound'|'unknown', text, changed, level, replaceLen, ...} */
+function analyzeObjective(raw){
+  const original = (raw||'').trim();
+  let text = original.replace(PREFIX_RE, '').trim();
+  if(!text) text = original;
+  const changed = text.toLowerCase() !== original.toLowerCase();
+  text = capFirst(text);
+  if(!text) return {status:'empty', text};
+  const lower = text.toLowerCase();
+
+  for(const [phrase, suggest] of VAGUE){
+    if(lower === phrase || lower.startsWith(phrase + ' ')){
+      return {status:'vague', text, changed, phrase, suggest, replaceLen:phrase.length};
+    }
+  }
+  const comp = text.match(/^([A-Za-z]+),?\s+(?:and|&|or)\s+([A-Za-z]+)\b/);
+  if(comp){
+    const a = lookupVerb(comp[1]), b = lookupVerb(comp[2]);
+    if(a && b){
+      const hi = b.lvl > a.lvl ? comp[2] : comp[1];
+      return {status:'compound', text, changed, v1:comp[1], v2:comp[2], higher:capFirst(hi.toLowerCase()),
+              level:Math.max(a.lvl,b.lvl), replaceLen:comp[0].length};
+    }
+  }
+  const first = text.split(/\s+/)[0];
+  const hit = lookupVerb(first);
+  if(hit) return {status:'ok', text, changed, level:hit.lvl, replaceLen:first.length};
+  return {status:'unknown', text, changed, first:first.replace(/[^A-Za-z'-]/g,''), replaceLen:0};
+}
+
+function articleFor(word){ return /^[AEIOU]/i.test(word) ? 'an' : 'a'; }
+
+let pendingObj = null;
+function reviewObjective(ctx, raw){
+  const a = analyzeObjective(raw);
+  if(a.status === 'ok' && a.text.trim().split(/\s+/).length < 2){
+    botSay(`Good verb choice — <strong>${escapeHtml(a.text.trim())}</strong> is ${articleFor(BLOOM[a.level].level)} ${BLOOM[a.level].level}-level verb. Now finish the sentence: what will participants ${escapeHtml(a.text.trim().toLowerCase())}?`);
+    showVerbPicker(true);
+    inputBox.value = a.text.trim() + ' ';
+    autosizeInput(); updateObjHint(); inputBox.focus();
+    return;
+  }
+  if(a.status === 'ok'){ acceptObjective(ctx, a.text, a.changed); return; }
+
+  pendingObj = {ctx, a};
+  step = 'objective.review';
+  const opts = [];
+  if(a.status === 'vague'){
+    botSay(fieldTag('Strengthen this objective') +
+      `“${escapeHtml(capFirst(a.phrase))}” describes something happening inside the learner's head, so it's hard to observe or measure. Try a verb that shows what they'll actually <em>do</em>:`);
+    a.suggest.forEach(v=> opts.push({label:`Use “${v}”`, value:'verb:'+v}));
+  } else if(a.status === 'compound'){
+    botSay(fieldTag('Strengthen this objective') +
+      `This objective has two actions (“${escapeHtml(a.v1)}” and “${escapeHtml(a.v2)}”). One verb per objective makes it easier to assess. Keep the higher-level one, <strong>${a.higher}</strong> (${BLOOM[a.level].level})?`);
+    opts.push({label:`Use “${a.higher}” only`, value:'verb:'+a.higher});
+  } else {
+    botSay(fieldTag('Check the verb') +
+      `I don't recognize “${escapeHtml(a.first || a.text.split(/\s+/)[0])}” as a Bloom's action verb. If it's an observable action, you can keep it — otherwise, choose a measurable verb from the helper.`);
+  }
+  opts.push({label:'Edit it myself', value:'edit'});
+  opts.push({label:'Keep as written', value:'keep'});
+  showChoices(opts);
+}
+
+function handleReviewChoice(val){
+  if(!pendingObj) return;
+  const {ctx, a} = pendingObj;
+  pendingObj = null;
+  if(val.startsWith('verb:')){
+    const v = val.slice(5);
+    const rest = a.text.slice(a.replaceLen).replace(/^\s*/, ' ');
+    const fixed = (v + rest).trim();
+    acceptObjective(ctx, fixed, true);
+  } else if(val === 'edit'){
+    step = ctx === 'course' ? 'objectives.entry' : ctx === 'module' ? 'module.objectives.entry' : 'lesson.objective.entry';
+    botSay('Edit your objective below — tap a verb in the helper to swap the opening verb.');
+    showVerbPicker(true);
+    inputBox.value = a.text;
+    autosizeInput();
+    updateObjHint();
+    inputBox.focus();
+  } else {
+    acceptObjective(ctx, a.text, a.changed);
+  }
+}
+
+function acceptObjective(ctx, text, changed){
+  const a = analyzeObjective(text);
+  let note = '';
+  if(changed) note += `Updated to: <strong>${escapeHtml(text)}</strong><br>`;
+  if(a.status === 'ok' || a.status === 'compound'){
+    const lvl = BLOOM[a.level].level;
+    note += `That's ${articleFor(lvl)} <strong>${lvl}</strong>-level objective (level ${a.level+1} of 6).<br><br>`;
+  } else if(note){ note += '<br>'; }
+
+  const trimNote = ()=> note.replace(/(<br>)+$/,'');
+  if(ctx === 'lesson'){
+    currentLesson().objective = text;
+    if(note) botSay(trimNote());
+    askLessonTopic();
+    return;
+  }
+  if(ctx === 'course'){
+    data.objectives.push(text);
+    if(data.objectives.length >= 8){ if(note) botSay(trimNote()); beginModules(); }
+    else askCourseObjectiveContinue(note);
+  } else {
+    currentModule().objectives.push(text);
+    if(currentModule().objectives.length >= 5){ if(note) botSay(trimNote()); newLesson(); }
+    else askModuleObjectiveContinue(note);
+  }
+}
+
+/* ---- Verb picker UI ---- */
+const verbPicker = document.getElementById('verbPicker');
+const vpTabs = document.getElementById('vpTabs');
+const vpDesc = document.getElementById('vpDesc');
+const vpVerbs = document.getElementById('vpVerbs');
+let vpActive = 2; // start on Apply
+const SMALL_WORDS = ['the','a','an','how','what','why','when','where','their','your','its','basic','key','common','all','each','different','various','appropriate'];
+
+function renderPicker(){
+  vpTabs.innerHTML = '';
+  BLOOM.forEach((b,i)=>{
+    const t = document.createElement('button');
+    t.type = 'button';
+    t.className = 'vp-tab' + (i===vpActive ? ' active' : '');
+    t.setAttribute('role','tab');
+    t.setAttribute('aria-selected', i===vpActive);
+    t.innerHTML = `<span class="n">${i+1}</span>${b.level}`;
+    t.addEventListener('click', ()=>{ vpActive = i; renderPicker(); });
+    vpTabs.appendChild(t);
+  });
+  const b = BLOOM[vpActive];
+  vpDesc.innerHTML = `<strong>${b.level}</strong> · ${b.desc}${vpActive<2 ? ' Lower-order thinking.' : vpActive>2 ? ' Higher-order thinking.' : ''}`;
+  vpVerbs.innerHTML = '';
+  b.verbs.forEach(v=>{
+    const c = document.createElement('button');
+    c.type = 'button';
+    c.className = 'vp-verb';
+    c.textContent = v;
+    c.addEventListener('click', ()=> insertVerb(v));
+    vpVerbs.appendChild(c);
+  });
+}
+function insertVerb(v){
+  const cur = inputBox.value.trim();
+  let next;
+  if(!cur){ next = v + ' '; }
+  else {
+    const a = analyzeObjective(cur);
+    if(a.status === 'ok' || a.status === 'vague' || a.status === 'compound'){
+      next = v + a.text.slice(a.replaceLen).replace(/^\s*/, ' ');
+    } else {
+      let body = a.text;
+      const fw = body.split(/\s+/)[0];
+      if(SMALL_WORDS.includes(fw.toLowerCase())) body = body.charAt(0).toLowerCase() + body.slice(1);
+      next = v + ' ' + body;
+    }
+  }
+  inputBox.value = next;
+  autosizeInput();
+  updateObjHint();
+  inputBox.focus();
+  inputBox.selectionStart = inputBox.selectionEnd = inputBox.value.length;
+}
+function showVerbPicker(v){
+  verbPicker.classList.toggle('show', !!v);
+  objHint.classList.toggle('show', !!v);
+  if(v){ renderPicker(); updateObjHint(); chatLog.scrollTop = chatLog.scrollHeight; }
+}
+
+const objHint = document.getElementById('objHint');
+function updateObjHint(){
+  if(!verbPicker.classList.contains('show')) return;
+  const a = analyzeObjective(inputBox.value);
+  objHint.classList.remove('ok','warn');
+  if(a.status === 'empty' || (a.status === 'ok' && a.text.trim().split(/\s+/).length === 1)){
+    objHint.textContent = '';
+  } else if(a.status === 'ok'){
+    objHint.classList.add('ok');
+    objHint.textContent = `✓ Measurable verb · ${BLOOM[a.level].level} level`;
+  } else if(a.status === 'vague'){
+    objHint.classList.add('warn');
+    objHint.textContent = `“${capFirst(a.phrase)}” is hard to measure — try ${a.suggest.join(', ')}.`;
+  } else if(a.status === 'compound'){
+    objHint.classList.add('warn');
+    objHint.textContent = `Two verbs — consider keeping just “${a.higher}”.`;
+  } else {
+    objHint.classList.add('warn');
+    objHint.textContent = `“${a.first || 'This'}” isn't on the Bloom's verb list — pick a verb above if you can.`;
+  }
+}
+
+function bloomPill(text){
+  const a = analyzeObjective(text);
+  if(a.status === 'ok') return `<span class="bloom-pill">${BLOOM[a.level].level}</span>`;
+  if(a.status === 'compound') return `<span class="bloom-pill warn">2 verbs</span>`;
+  if(a.status === 'vague') return `<span class="bloom-pill warn">Vague verb</span>`;
+  return '';
+}
+function bloomCoverage(list){
+  if(!list || !list.length) return '';
+  const on = new Set();
+  list.forEach(t=>{ const a = analyzeObjective(t); if(a.status==='ok'||a.status==='compound') on.add(a.level); });
+  return `<div class="bloom-coverage"><span>Bloom's levels:</span>${BLOOM.map((b,i)=>`<span class="lvl${on.has(i)?' on':''}">${b.level}</span>`).join('')}</div>`;
 }
 
 /* ---------------- UI: CHAT ---------------- */
@@ -582,10 +1031,11 @@ sendBtn.addEventListener('click', submit);
 inputBox.addEventListener('keydown', e=>{
   if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); submit(); }
 });
-inputBox.addEventListener('input', ()=>{
+function autosizeInput(){
   inputBox.style.height='auto';
   inputBox.style.height = Math.min(inputBox.scrollHeight,120)+'px';
-});
+}
+inputBox.addEventListener('input', ()=>{ autosizeInput(); updateObjHint(); });
 
 function showChoices(options){
   const row = document.createElement('div');
@@ -614,6 +1064,7 @@ function showChoices(options){
 /* ---------------- UI: LEVEL STEPPER ---------------- */
 const railTrack = document.getElementById('railTrack');
 function buildRail(){
+  LEVELS = ALL_LEVELS.slice(buildType==='module' ? 1 : buildType==='lesson' ? 2 : 0);
   railTrack.innerHTML='';
   LEVELS.forEach((lvl,i)=>{
     const item = document.createElement('div');
@@ -631,6 +1082,7 @@ function buildRail(){
 }
 let levelStarted = false;
 function setLevel(i){
+  i = Math.max(0, i - (ALL_LEVELS.length - LEVELS.length));
   activeLevel = i;
   levelStarted = true;
   railTrack.classList.add('has-label');
@@ -668,6 +1120,21 @@ docPanel.addEventListener('click', e=>{
   const container = btn.closest('[data-editable]');
   if(!container) return;
   openEditor(container, path, isList);
+});
+
+docPanel.addEventListener('click', e=>{
+  const b = e.target.closest('.add-btn');
+  if(!b || step !== 'done') return;
+  chatLog.querySelectorAll('.choice-row').forEach(r=> r.remove());
+  inputBox.disabled = false; sendBtn.disabled = false; inputBox.placeholder = 'Type your answer…';
+  setView('chat');
+  if(b.dataset.add === 'module'){ addMsg('user', 'Add a module'); startAddModule(); }
+  else {
+    const mi = Number(b.dataset.mi);
+    addMsg('user', buildType === 'course' ? `Add a lesson to Module ${mi+1}` : 'Add a lesson');
+    startAddLesson(mi);
+  }
+  inputBox.focus();
 });
 
 function openEditor(container, path, isList){
@@ -731,15 +1198,15 @@ function openEditor(container, path, isList){
 const emptyDoc = document.getElementById('emptyDoc');
 const downloadBtn = document.getElementById('downloadBtn');
 
-function fieldHtml(label, value, isList, path){
+function fieldHtml(label, value, isList, path, bloom){
   const filled = isList ? (value && value.length) : (value && value.trim());
   let inner;
   if(!filled){
     inner = `<div class="field-value empty">—</div>`;
   } else if(isList){
-    inner = `<ul class="tags">${value.map(v=>`<li>${escapeHtml(v)}</li>`).join('')}</ul>`;
+    inner = `<ul class="tags">${value.map(v=>`<li>${escapeHtml(v)}</li>`).join('')}</ul>` + (bloom ? bloomCoverage(value) : '');
   } else {
-    inner = `<div class="field-value">${escapeHtml(value)}</div>`;
+    inner = `<div class="field-value">${escapeHtml(value)}</div>` + (bloom ? bloomCoverage([value]) : '');
   }
   return `<div class="field" data-editable>
     <div class="field-label-row"><div class="field-label">${label}</div>${editIconHtml(path, !!isList)}</div>
@@ -749,7 +1216,7 @@ function fieldHtml(label, value, isList, path){
 
 let lastDocHtml = '';
 function renderDoc(){
-  const hasStarted = data.author || data.name || data.purpose || data.modules.length;
+  const hasStarted = data.author || data.name || data.purpose || (buildType==='course' && data.modules.length);
   if(!hasStarted){
     docContent.innerHTML = '';
     docContent.appendChild(emptyDoc);
@@ -759,58 +1226,94 @@ function renderDoc(){
   }
   emptyDoc.style.display='none';
 
+  const U = capFirst(buildType);
   let html = `<div class="doc-topbar">
       <div style="min-width:0;">
         <div class="eyebrow" style="margin-bottom:10px;">Learning Outline · Draft</div>
         <div class="heading-row" data-editable>
-          <h2>${data.name ? escapeHtml(data.name) : 'Untitled Course'}</h2>
-          ${editIconHtml(['name'], false)}
+          <h2>${docTitle() ? escapeHtml(docTitle()) : 'Untitled ' + U}</h2>
+          ${editIconHtml(basicPath('name'), false)}
         </div>
       </div>
       <div class="rev">Revised ${new Date().toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'})}</div>
     </div>`;
 
-  html += `<div class="card"><div class="card-head">Course Information</div><div class="card-body">
+  const infoRows = `
     ${fieldHtml('Author', data.author, false, ['author'])}
-    ${fieldHtml('Purpose', data.purpose, false, ['purpose'])}
+    ${fieldHtml('Purpose', basicTarget('purpose').purpose, false, basicPath('purpose'))}
     ${fieldHtml('Target Audience', data.audience, false, ['audience'])}
-    ${fieldHtml('Duration', data.duration, false, ['duration'])}
+    ${fieldHtml('Duration', basicTarget('duration').duration, false, basicPath('duration'))}
     ${fieldHtml('Delivery Methods', data.delivery, false, ['delivery'])}
-    ${fieldHtml('Prerequisites', data.prerequisites, false, ['prerequisites'])}
-    ${fieldHtml('Course Learning Objectives', data.objectives, true, ['objectives'])}
-  </div></div>`;
+    ${fieldHtml('Prerequisites', data.prerequisites, false, ['prerequisites'])}`;
 
-  data.modules.forEach((m, mi)=>{
-    html += `<div class="card"><div class="card-head">Module ${mi+1}</div><div class="card-body">
-      <div class="heading-row module-head-wrap" data-editable>
-        <p class="module-name-head">${m.name ? escapeHtml(m.name) : '—'}</p>
-        ${editIconHtml(['modules', mi, 'name'], false)}
+  const lessonCard = (l, mi, li) => `<div class="lesson-card">
+      <div class="heading-row" data-editable>
+        <div class="lesson-name">Lesson ${lessonNum(mi,li)}: ${l.name ? escapeHtml(l.name) : '—'}</div>
+        ${editIconHtml(['modules', mi, 'lessons', li, 'name'], false)}
       </div>
-      ${fieldHtml('Purpose', m.purpose, false, ['modules', mi, 'purpose'])}
-      ${fieldHtml('Duration', m.duration, false, ['modules', mi, 'duration'])}
-      ${fieldHtml('Module Learning Objectives', m.objectives, true, ['modules', mi, 'objectives'])}`;
+      ${fieldHtml('Objective', l.objective, false, ['modules', mi, 'lessons', li, 'objective'])}
+      ${fieldHtml('Topics', l.topics, true, ['modules', mi, 'lessons', li, 'topics'])}
+      ${fieldHtml('Activities', l.activities, true, ['modules', mi, 'lessons', li, 'activities'])}
+    </div>`;
 
-    m.lessons.forEach((l, li)=>{
-      html += `<div class="lesson-card">
-        <div class="heading-row" data-editable>
-          <div class="lesson-name">Lesson ${mi+1}.${li+1}: ${l.name ? escapeHtml(l.name) : '—'}</div>
-          ${editIconHtml(['modules', mi, 'lessons', li, 'name'], false)}
+  const canAdd = step === 'done';
+  if(buildType === 'course'){
+    html += `<div class="card"><div class="card-head">Course Information</div><div class="card-body">
+      ${infoRows}
+      ${fieldHtml('Course Learning Objectives', data.objectives, true, ['objectives'], true)}
+    </div></div>`;
+
+    data.modules.forEach((m, mi)=>{
+      html += `<div class="card"><div class="card-head">Module ${mi+1}</div><div class="card-body">
+        <div class="heading-row module-head-wrap" data-editable>
+          <p class="module-name-head">${m.name ? escapeHtml(m.name) : '—'}</p>
+          ${editIconHtml(['modules', mi, 'name'], false)}
         </div>
-        ${fieldHtml('Objective', l.objective, false, ['modules', mi, 'lessons', li, 'objective'])}
-        ${fieldHtml('Topics', l.topics, true, ['modules', mi, 'lessons', li, 'topics'])}
-        ${fieldHtml('Activities', l.activities, true, ['modules', mi, 'lessons', li, 'activities'])}
-      </div>`;
+        ${fieldHtml('Purpose', m.purpose, false, ['modules', mi, 'purpose'])}
+        ${fieldHtml('Duration', m.duration, false, ['modules', mi, 'duration'])}
+        ${fieldHtml('Module Learning Objectives', m.objectives, true, ['modules', mi, 'objectives'], true)}
+        ${m.lessons.map((l, li)=> lessonCard(l, mi, li)).join('')}
+        ${canAdd ? `<button type="button" class="add-btn" data-add="lesson" data-mi="${mi}">+ Add lesson</button>` : ''}
+        ${fieldHtml('Assessment', m.assessment, false, ['modules', mi, 'assessment'])}
+      </div></div>`;
     });
+    if(canAdd) html += `<button type="button" class="add-btn block" data-add="module">+ Add module</button>`;
 
-    html += fieldHtml('Assessment', m.assessment, false, ['modules', mi, 'assessment']);
-    html += `</div></div>`;
-  });
-
-  const wrapStarted = ['capstone.choice','capstone.description','finalAssessment','done'].includes(step) || data.capstone || data.finalAssessment;
-  if(wrapStarted){
-    html += `<div class="card"><div class="card-head">Course Wrap-Up</div><div class="card-body">
-      ${fieldHtml('Capstone', data.capstone, false, ['capstone'])}
-      ${fieldHtml('Final Assessment', data.finalAssessment, false, ['finalAssessment'])}
+    const wrapStarted = ['capstone.choice','capstone.description','finalAssessment','done'].includes(step) || data.capstone || data.finalAssessment;
+    if(wrapStarted){
+      html += `<div class="card"><div class="card-head">Course Wrap-Up</div><div class="card-body">
+        ${fieldHtml('Capstone', data.capstone, false, ['capstone'])}
+        ${fieldHtml('Final Assessment', data.finalAssessment, false, ['finalAssessment'])}
+      </div></div>`;
+    }
+  } else if(buildType === 'module'){
+    const m = data.modules[0];
+    html += `<div class="card"><div class="card-head">Module Information</div><div class="card-body">
+      ${infoRows}
+      ${fieldHtml('Module Learning Objectives', m.objectives, true, ['modules', 0, 'objectives'], true)}
+    </div></div>`;
+    if(m.lessons.length){
+      html += `<div class="card"><div class="card-head">Lessons</div><div class="card-body">
+        ${m.lessons.map((l, li)=> lessonCard(l, 0, li)).join('')}
+        ${canAdd ? `<button type="button" class="add-btn" data-add="lesson" data-mi="0" style="margin-bottom:0;">+ Add lesson</button>` : ''}
+      </div></div>`;
+    }
+    if(m.assessment || ['module.assessment','done'].includes(step)){
+      html += `<div class="card"><div class="card-head">Module Assessment</div><div class="card-body">
+        ${fieldHtml('Assessment', m.assessment, false, ['modules', 0, 'assessment'])}
+      </div></div>`;
+    }
+  } else {
+    const l = data.modules[0].lessons[0];
+    const P = ['modules', 0, 'lessons', 0];
+    html += `<div class="card"><div class="card-head">Lesson Information</div><div class="card-body">
+      ${infoRows}
+      ${fieldHtml('Learning Objective', l.objective, false, [...P, 'objective'], true)}
+    </div></div>`;
+    html += `<div class="card"><div class="card-head">Lesson Content</div><div class="card-body">
+      ${fieldHtml('Topics', l.topics, true, [...P, 'topics'])}
+      ${fieldHtml('Activities', l.activities, true, [...P, 'activities'])}
+      ${fieldHtml('Assessment', l.assessment, false, [...P, 'assessment'])}
     </div></div>`;
   }
 
@@ -843,57 +1346,53 @@ function listRowW(label, arr){
   </tr>`;
 }
 
+function outlineSections(){
+  const S = [];
+  const info = (objLabel, objVal) => [
+    ['Author', data.author], ['Purpose', basicTarget('purpose').purpose], ['Target Audience', data.audience],
+    ['Duration', basicTarget('duration').duration], ['Delivery Methods', data.delivery],
+    ['Prerequisites', data.prerequisites], [objLabel, objVal]];
+  const lessonRows = l => [['Objective', l.objective], ['Topics', l.topics], ['Activities', l.activities]];
+  if(buildType === 'course'){
+    S.push({h:'Course Information', lvl:2, rows:info('Course Learning Objectives', data.objectives)});
+    data.modules.forEach((m, mi)=>{
+      S.push({h:`Module ${mi+1}: ${m.name || '—'}`, lvl:2, rows:[['Purpose', m.purpose], ['Duration', m.duration], ['Module Learning Objectives', m.objectives]]});
+      m.lessons.forEach((l, li)=> S.push({h:`Lesson ${lessonNum(mi,li)}: ${l.name || '—'}`, lvl:3, rows:lessonRows(l)}));
+      S.push({h:null, rows:[['Assessment', m.assessment]]});
+    });
+    if(data.capstone || data.finalAssessment){
+      S.push({h:'Course Wrap-Up', lvl:2, rows:[['Capstone', data.capstone], ['Final Assessment', data.finalAssessment]]});
+    }
+  } else if(buildType === 'module'){
+    const m = data.modules[0];
+    S.push({h:'Module Information', lvl:2, rows:info('Module Learning Objectives', m.objectives)});
+    if(m.lessons.length) S.push({h:'Lessons', lvl:2, rows:null});
+    m.lessons.forEach((l, li)=> S.push({h:`Lesson ${lessonNum(0,li)}: ${l.name || '—'}`, lvl:3, rows:lessonRows(l)}));
+    S.push({h:'Module Assessment', lvl:2, rows:[['Assessment', m.assessment]]});
+  } else {
+    const l = data.modules[0].lessons[0];
+    S.push({h:'Lesson Information', lvl:2, rows:info('Learning Objective', l.objective)});
+    S.push({h:'Lesson Content', lvl:2, rows:[['Topics', l.topics], ['Activities', l.activities], ['Assessment', l.assessment]]});
+  }
+  return S;
+}
+function outlineTitle(){ return docTitle() || ('Untitled ' + capFirst(buildType)); }
+
 function buildWordHtml(){
   const H2 = `font-family:${W_FONT};font-size:14pt;color:#0F766E;margin-top:22pt;`;
+  const H3 = `font-family:${W_FONT};font-size:12pt;color:#111827;margin-top:14pt;`;
   const TBL = `border-collapse:collapse;width:100%;font-family:${W_FONT};`;
-  let body = `<h1 style="font-family:${W_FONT};font-size:22pt;color:#111827;margin-bottom:2pt;">${escW(data.name)||'Untitled Course'}</h1>
-  <p style="font-family:${W_FONT};font-size:9pt;color:#5B6472;margin-top:0;">Learning Outline &nbsp;·&nbsp; Created ${escW(data.createdAt)}</p>
-
-  <h2 style="${H2}margin-top:20pt;">Course Information</h2>
-  <table style="${TBL}">
-    ${rowW('Author', data.author)}
-    ${rowW('Purpose', data.purpose)}
-    ${rowW('Target Audience', data.audience)}
-    ${rowW('Duration', data.duration)}
-    ${rowW('Delivery Methods', data.delivery)}
-    ${rowW('Prerequisites', data.prerequisites)}
-    ${listRowW('Course Learning Objectives', data.objectives)}
-  </table>`;
-
-  data.modules.forEach((m, mi)=>{
-    body += `<h2 style="${H2}">Module ${mi+1}: ${escW(m.name)||'—'}</h2>
-    <table style="${TBL}">
-      ${rowW('Purpose', m.purpose)}
-      ${rowW('Duration', m.duration)}
-      ${listRowW('Module Learning Objectives', m.objectives)}
-    </table>`;
-
-    m.lessons.forEach((l, li)=>{
-      body += `<h3 style="font-family:${W_FONT};font-size:12pt;color:#111827;margin-top:14pt;">Lesson ${mi+1}.${li+1}: ${escW(l.name)||'—'}</h3>
-      <table style="${TBL}">
-        ${rowW('Objective', l.objective)}
-        ${listRowW('Topics', l.topics)}
-        ${listRowW('Activities', l.activities)}
-      </table>`;
-    });
-
-    body += `<table style="${TBL}margin-top:8pt;">
-      ${rowW('Assessment', m.assessment)}
-    </table>`;
+  const title = outlineTitle();
+  let body = `<h1 style="font-family:${W_FONT};font-size:22pt;color:#111827;margin-bottom:2pt;">${escW(title)}</h1>
+  <p style="font-family:${W_FONT};font-size:9pt;color:#5B6472;margin-top:0;">Learning Outline &nbsp;·&nbsp; Created ${escW(data.createdAt)}</p>`;
+  outlineSections().forEach((sec, i)=>{
+    if(sec.h) body += sec.lvl === 3 ? `<h3 style="${H3}">${escW(sec.h)}</h3>` : `<h2 style="${H2}${i===0 ? 'margin-top:20pt;' : ''}">${escW(sec.h)}</h2>`;
+    if(sec.rows) body += `<table style="${TBL}${sec.h ? '' : 'margin-top:8pt;'}">${sec.rows.map(([k, v])=> Array.isArray(v) ? listRowW(k, v) : rowW(k, v)).join('')}</table>`;
   });
-
-  if(data.capstone || data.finalAssessment){
-    body += `<h2 style="${H2}">Course Wrap-Up</h2>
-    <table style="${TBL}">
-      ${rowW('Capstone', data.capstone)}
-      ${rowW('Final Assessment', data.finalAssessment)}
-    </table>`;
-  }
-
   body += `<p style="font-family:${W_FONT};font-size:9pt;color:#5B6472;margin-top:24pt;border-top:1px solid #E5E7EB;padding-top:8pt;">Outline created ${escW(data.createdAt)}</p>`;
 
   return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
-  <head><meta charset="utf-8"><title>${escW(data.name)||'Learning Outline'}</title>
+  <head><meta charset="utf-8"><title>${escW(title)}</title>
   <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->
   </head><body>${body}</body></html>`;
 }
@@ -924,44 +1423,14 @@ function buildDocx(){
     children:[new D.TextRun({text, font:FONT, size:18, color:SOFT})]});
 
   const kids = [
-    h(data.name || 'Untitled Course', 44, INK, 0),
-    small(`Learning Outline  ·  Created ${data.createdAt || ''}`),
-    h('Course Information', 28, ACCENT, 400),
-    table([
-      row('Author', valueParas(data.author)),
-      row('Purpose', valueParas(data.purpose)),
-      row('Target Audience', valueParas(data.audience)),
-      row('Duration', valueParas(data.duration)),
-      row('Delivery Methods', valueParas(data.delivery)),
-      row('Prerequisites', valueParas(data.prerequisites)),
-      row('Course Learning Objectives', listParas(data.objectives))
-    ])
+    h(outlineTitle(), 44, INK, 0),
+    small(`Learning Outline  ·  Created ${data.createdAt || ''}`)
   ];
-  data.modules.forEach((m, mi)=>{
-    kids.push(h(`Module ${mi+1}: ${m.name || '—'}`, 28, ACCENT, 440));
-    kids.push(table([
-      row('Purpose', valueParas(m.purpose)),
-      row('Duration', valueParas(m.duration)),
-      row('Module Learning Objectives', listParas(m.objectives))
-    ]));
-    m.lessons.forEach((l, li)=>{
-      kids.push(h(`Lesson ${mi+1}.${li+1}: ${l.name || '—'}`, 24, INK, 280));
-      kids.push(table([
-        row('Objective', valueParas(l.objective)),
-        row('Topics', listParas(l.topics)),
-        row('Activities', listParas(l.activities))
-      ]));
-    });
-    kids.push(new D.Paragraph({spacing:{before:160, after:0}, children:[]}));
-    kids.push(table([row('Assessment', valueParas(m.assessment))]));
+  outlineSections().forEach((sec, i)=>{
+    if(sec.h) kids.push(sec.lvl === 3 ? h(sec.h, 24, INK, 280) : h(sec.h, 28, ACCENT, i===0 ? 400 : 440));
+    else kids.push(new D.Paragraph({spacing:{before:160, after:0}, children:[]}));
+    if(sec.rows) kids.push(table(sec.rows.map(([k, v])=> row(k, Array.isArray(v) ? listParas(v) : valueParas(v)))));
   });
-  if(data.capstone || data.finalAssessment){
-    kids.push(h('Course Wrap-Up', 28, ACCENT, 440));
-    kids.push(table([
-      row('Capstone', valueParas(data.capstone)),
-      row('Final Assessment', valueParas(data.finalAssessment))
-    ]));
-  }
   kids.push(small(`Outline created ${data.createdAt || ''}`, 480));
 
   return new D.Document({
@@ -976,7 +1445,7 @@ const downloadsReady = (window.claude && typeof window.claude.use === 'function'
   : Promise.resolve(null);
 
 async function downloadWord(){
-  const safeName = (data.name || 'learning-outline').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'learning-outline';
+  const safeName = (docTitle() || 'learning-outline').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'learning-outline';
   const dl = downloadsApi !== undefined ? downloadsApi : (window.claude ? await downloadsReady : null);
   if(dl && window.docx){
     const original = downloadBtn.innerHTML;
