@@ -100,7 +100,7 @@ a{color:var(--primary)}
 /* INFORMATION style: tinted, flat, never outlined */
 .fig{margin:0;max-width:72ch}.fig img{display:block;width:100%;height:auto;border-radius:var(--r)}.fig.hero img{mix-blend-mode:multiply;border-radius:0;width:auto;max-width:100%;max-height:340px}.fig.hero.scene img{mix-blend-mode:normal;border-radius:var(--r)}.fig figcaption{font-size:.88rem;color:var(--muted);margin-top:6px}
 .info{background:var(--info);border-radius:var(--r);padding:16px 20px;max-width:72ch}
-.info.tip{display:flex;gap:14px;align-items:flex-start;background:#fdf1ef;border-left:4px solid #d93a32}
+.info.tip{display:flex;gap:14px;align-items:flex-start;background:#F2E9D8;border-left:4px solid #c9a35a}
 .info.tip .pinwrap{flex:none;width:30px;height:30px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 1px 2px rgba(0,0,0,.12)}
 .info.tip .pin{width:20px;height:20px}
 .info.tip .tipbody{min-width:0;display:flex;flex-direction:column;gap:4px}
@@ -247,7 +247,11 @@ textarea{min-height:96px;resize:vertical}
 .model{background:var(--good-soft);border-radius:var(--r);padding:14px 18px;max-width:72ch;display:flex;flex-direction:column;gap:8px}
 .check{display:flex;flex-direction:column;gap:10px;max-width:72ch}
 .check label{display:flex;gap:12px;align-items:flex-start;cursor:pointer;padding:12px 14px;min-height:52px}
-.check input{margin-top:3px;accent-color:var(--primary);width:22px;height:22px;flex:none}
+.check input{margin-top:1px;width:22px;height:22px;flex:none;appearance:none;-webkit-appearance:none;border:2px solid var(--primary);border-radius:5px;background:#fff;display:grid;place-items:center;cursor:pointer}
+.check input:checked{background:#eef0f3;border-color:#b9c0cb}
+.check input:checked::after{content:'';width:6px;height:11px;border:solid var(--ink);border-width:0 2.5px 2.5px 0;transform:translateY(-1px) rotate(45deg)}
+.check input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.check label:has(input:checked){background:#f7f8fa}
 .order{display:flex;flex-direction:column;gap:8px;max-width:72ch}
 .orow{display:flex;gap:10px;align-items:center;background:var(--panel);border:2px solid var(--primary);border-radius:10px;padding:8px 10px;box-shadow:var(--shadow)}
 .orow span{flex:1}
@@ -462,7 +466,7 @@ COURSE.push({name:'Understanding Performance Calibration',screens:[
   {type:'info',label:'Moving Through the Course',html:'<ul><li>Select <b>Next</b> at the bottom of the screen to move on. Activities are there to help you learn, so try as many as you find useful.</li><li>Knowledge checks are the exception. Answer every question and pass to unlock the rest of the course.</li><li>Use <b>Key Terms</b> at the top of the screen at any time to look up a word.</li><li>Use <b>Menu</b> to see your progress and jump between sections. You can hide the menu to give the lesson more room.</li><li>Look for <b>Download</b> buttons. They give you Word documents you can edit, print or save as PDF.</li></ul>'}]},
 {h:'What You’ll Learn in This Module',nav:'What You’ll Learn',blocks:[
   {type:'lead',html:'By the end of this module, you’ll be able to:'},
-  {type:'list',ordered:true,items:['Define calibration and explain what it is and isn’t','Identify at least three consequences of inconsistent performance ratings','Explain where calibration fits into the annual review cycle and why draft ratings remain confidential','Compare common rating scales, timelines, and session formats']}]},
+  {type:'list',ordered:true,items:['Define calibration and explain what it is and isn’t','Identify at least three consequences of inconsistent performance ratings','Explain calibration’s place in the review cycle and why draft ratings are confidential','Compare common rating scales, timelines, and session formats']}]},
 {h:'Key Terms',nav:'Key Terms',blocks:[
   {type:'lead',html:'These are the terms used throughout the course. Read through them now. You can open this list again at any time with the <b>Key Terms</b> button at the top of the screen.'},
   {type:'glossary'}]},
@@ -474,7 +478,7 @@ COURSE.push({name:'Understanding Performance Calibration',screens:[
    '<b>Goal 3, quarterly business reviews (QBRs) with 90% of accounts:</b> Completed 75%. Focused on at-risk accounts in Q3 instead.',
    '<b>Peers:</b> Helpful; the checklist “saved me hours”; sometimes slow to reply in team channels.',
    '<b>Customers:</b> Satisfaction score (CSAT) of 4.6 out of 5, against a team average of 4.4.']},
-  {type:'rate',key:'jordan',why:true,ins:'Select the rating you would give Jordan, then write one sentence about why.'}]},
+  {type:'rate',key:'jordan',why:true,ins:'Select a rating for Jordan, then write one sentence explaining your decision.'}]},
 {h:'Same Evidence. Different Ratings.',nav:'Same Evidence, Different Ratings',blocks:[
   {type:'recall',key:'jordan',label:'You Rated Jordan'},
   {type:'spread',key:'jordan',label:'How Other Managers Rated Jordan',bars:[['Exceptional',5],['Exceeds',40],['Meets',45],['Partially meets',10],['Does not meet',0]]},
@@ -484,8 +488,8 @@ COURSE.push({name:'Understanding Performance Calibration',screens:[
   {type:'image',src:'calib',alt:'A facilitator leads a discussion with three managers seated around a table with notebooks and a laptop.'},
   {type:'text',html:'<p>During a calibration session, managers responsible for similar roles meet with a facilitator to review proposed performance ratings. For each employee:</p><ol><li>The manager shares the proposed rating and supporting evidence.</li><li>Peers ask questions and compare performance against similar cases.</li><li>The group agrees on a rating based on shared standards and documents the reasons for any changes.</li></ol><p>This process takes place before ratings are finalized or communicated to employees.</p>'}]},
 {h:'Calibration: What It Is and What It Isn’t',nav:'What It Is and Isn’t',blocks:[
-  {type:'lead',html:'Calibration is easy to misunderstand. Sort each statement into the box where it belongs.'},
-  {type:'sort',buckets:['Calibration Is','Calibration Is Not'],ok:' Calibration ensures ratings are fair and consistent by comparing performance against shared standards, reviewing supporting evidence, and documenting any changes.',cards:[
+  {type:'lead',html:'Calibration is easy to misunderstand.'},
+  {type:'sort',ins:'Select each card, then select the box where it belongs. To move a card back, select it again.',buckets:['Calibration Is','Calibration Is Not'],ok:' Calibration ensures ratings are fair and consistent by comparing performance against shared standards, reviewing supporting evidence, and documenting any changes.',cards:[
    ['Checking ratings against shared level definitions',0,'This is the core of calibration.'],
    ['Comparing similar roles side by side',0,'Cross-checking similar roles is part of calibration.'],
    ['Changing a rating when the evidence supports it',0,'Calibration exists to make these changes.'],
@@ -571,7 +575,7 @@ COURSE.push({name:'Understanding Performance Calibration',screens:[
    {q:'Which is the strongest argument in a calibration discussion?',opts:['“I’ve managed people for 15 years and know a top performer.”','“She’s the hardest worker on my team.”','“She cut onboarding time from 45 to 30 days, and three other teams adopted her process.”','“He’ll leave if he doesn’t get this rating.”'],a:2,fb:'Specific, observable results persuade. Experience, effort and threats to leave do not.'},
    {q:'A problem raised in calibration is news to the employee. What went wrong?',opts:['Nothing; calibration is the right place to raise it','Feedback wasn’t given during check-ins earlier in the year','The self-review should have caught it','The facilitator should have screened it out'],a:1,fb:'Nothing raised in calibration should be the first time an employee hears it.'}]}]},
 {h:'Summary and Next Steps',nav:'Summary',blocks:[
-  {type:'takeaways',items:['Calibration applies one standard across all managers, before ratings are final.','Ratings that are not calibrated cost pay equity, retention, trust and legal safety.','Keep draft ratings private, and calibrate before compensation.','This course uses a five-level scale, annual year-end calibration with peer managers and an HRBP facilitator, and guided pay ranges afterward.']},
+  {type:'takeaways',items:['Calibration applies one standard across all managers, before ratings are final.','Uncalibrated ratings put pay equity, retention, trust, and legal compliance at risk.','Keep draft ratings private, and calibrate before compensation.','This course uses a five-level scale, annual year-end calibration with peer managers and an HRBP facilitator, and guided pay ranges afterward.']},
   {type:'image',hero:true,src:'summary',w:1200,h:698,alt:'A clipboard checklist with three completed items and an arrow rising toward a goal flag.'},
   {type:'resources',label:'Download for Later',items:['glance','hrbp']}]}
 ]});
@@ -603,15 +607,15 @@ COURSE.push({name:'The Calibration Process',screens:[
    {h:'Rule 3',f:'What if results and behaviors point different ways?',b:'<b>Weigh the “what” and the “how”.</b> Results establish the initial rating, but behaviors can raise or lower it. Serious conduct issues can outweigh strong results.'},
    {h:'Rule 4',f:'What does the middle of the scale mean?',b:'<b>“Meets” is a good rating.</b> It means the person fully delivered a demanding job.'}]}]},
 {h:'Rules in Action',nav:'Rules in Action',blocks:[
-  {type:'series',label:'Case',okLabel:'Right.',noLabel:'Not quite.',first:'<p class="lead">Apply each of the four rating rules to a case.</p>',ins:'Read each case, select your answer, and review the explanation. Then select Next Case to continue.',items:[
+  {type:'series',label:'Case',okLabel:'Right.',noLabel:'Not quite.',ins:'Read each case, apply the four rating rules, and select your answer. Review the explanation, then select Next Case to continue.',items:[
    {q:'Maya is the top performer on your team, but she met her goals without exceeding them. What rating is most appropriate?',fb:' Ratings are based on role expectations, not how an employee compares to teammates.',opts:[['Meets',true],['Exceeds',false]]},
    {q:'Tom earned an “Exceptional” rating last year. This year, he met his goals, but his planning errors delayed a major project by two quarters.',fb:' Rate Tom’s performance this year, not last year. His previous “Exceptional” rating doesn’t outweigh the impact of this year’s planning errors.',opts:[['Meets or lower',true],['Exceptional again',false]]},
    {q:'Marcus achieved 140% of his sales target, but colleagues repeatedly report that he takes credit for shared deals. Despite coaching, his behavior hasn’t improved.',fb:' Under the “what and how” rule, results and behaviors both matter. Marcus exceeded his sales target, but his repeated behavior issues, despite coaching, prevent him from earning a higher rating.',opts:[['Exceptional',false],['Meets or lower',true]]},
    {q:'Priya delivered every feature on time and met quality standards, but her performance did not exceed expectations.',fb:' Priya met all expectations by delivering quality work on time. “Meets Expectations” reflects solid, successful performance and is a positive rating.',opts:[['Meets',true],['Partially meets',false]]}]}]},
 {h:'Tricky Cases and Common Objections',nav:'Tricky Cases',blocks:[
-  {type:'lead',html:'Some situations come up every cycle. Here’s how to handle the most common ones, and how to respond when managers push back.'},
+  {type:'lead',html:'Some situations come up every cycle. Here’s how to handle the most common ones, and how to respond when managers push back. Select each item below to view the guidance.'},
   {type:'text',html:'<h3>Tricky Cases</h3>'},
-  {type:'reveal',style:'accordion',ins:'Select each item to open it and read the guidance.',items:[
+  {type:'reveal',style:'accordion',ins:false,items:[
    {h:'New Hire or Partial Year',b:'<p>Rate on the time worked, against the goals set for that time. Many organizations set a minimum, such as being hired before October 1, to receive a rating.</p>'},
    {h:'Leave of Absence',b:'<p>Rate the time worked. Protected leave never lowers a rating. Talk to your HRBP if you are unsure.</p>'},
    {h:'Role Change or Promotion',b:'<p>Rate against the current role, weighted toward the longer period. Note the change in your prep summary.</p>'}]},
@@ -632,7 +636,7 @@ COURSE.push({name:'The Calibration Process',screens:[
    ['Exceeds','Net revenue retention of 110% or more · Builds a playbook other CSMs adopt · Resolves escalations before leadership needs to step in'],
    ['Meets','Net revenue retention at or near the 105% target · Onboards customers within the 30-day standard · Holds QBRs with most accounts · Escalates risks early'],
    ['Partially meets','Retention below target for reasons within their control · Onboarding regularly runs past 45 days · Risks surface late']]},
-  {type:'info',pin:true,label:'Notice',html:'<p>Each “Exceeds” anchor describes impact beyond normal role expectations, not simply doing more of the same work. Every anchor also includes observable evidence that others can verify.</p>'}]},
+  {type:'info',pin:true,label:'Notice',html:'<p>Each “Exceeds” anchor describes impact beyond normal role expectations, supported by observable, verifiable evidence.</p>'}]},
 {h:'Write Anchors for a Role You Manage',nav:'Write Your Anchors',blocks:[
   {type:'lead',html:'Now it’s your turn to create performance anchors for a role you manage. Your work is saved automatically, and you can download your anchors as a Word document at the end of this module.'},
   {type:'info',label:'How to Do It',html:'<ol><li>Enter the job title and level.</li><li>Consider the role’s key goals and responsibilities.</li><li>For “Meets”, write 2–3 examples of performance that fully meets expectations.</li><li>For “Exceeds”, write 2–3 examples of performance that goes beyond expectations.</li><li>For each rating, include at least one measurable result and one observable behavior.</li></ol>'},
@@ -642,7 +646,7 @@ COURSE.push({name:'The Calibration Process',screens:[
 {h:'Check Your Anchors',nav:'Check Your Anchors',blocks:[
   {type:'lead',html:'Review your anchors using the four criteria below. If an anchor doesn’t meet a criterion, return to the previous section and revise it.'},
   {type:'checklist',required:false,prompt:'Click each statement that applies to your anchors.',items:['My anchors include at least one measurable result.','Each anchor describes observable performance.','My anchors focus on results and behaviors, not just effort or attitude.','My “Exceeds” anchors demonstrate impact beyond “Meets” expectations.']},
-  {type:'info',pin:true,html:'<p><b>Remember:</b> Bring your anchors to your calibration preparation. They’ll help you explain and support your proposed ratings.</p>'}]},
+  {type:'info',pin:true,html:'<p><b>Remember:</b> Bring your anchors to calibration. They’ll help you explain and support your proposed ratings.</p>'}]},
 {h:'Practice Applying Performance Ratings',nav:'Practice Applying Ratings',blocks:[
   {type:'series',label:'Case',okLabel:'That matches the expert view.',noLabel:'The expert view is different.',first:'<p class="lead">Apply the rating scale and four rating rules to six realistic scenarios. After each decision, review the feedback to see how well your rating aligns with the standards.</p>',ins:false,items:[
    {q:'<b>Lena, HR Coordinator,</b> joined in September. In three months she cleared an onboarding backlog and meets every expectation set when she was hired.',fb:' The suggested rating is Meets Expectations. For a partial year, evaluate performance against the goals and expectations established for the time worked.',fbOk:' For a partial year, evaluate performance against the goals and expectations established for the time worked.',opts:[['Exceeds',false],['Meets',true],['Partially meets',false]]},
@@ -662,7 +666,7 @@ COURSE.push({name:'The Calibration Process',screens:[
    {q:'Which of the following is valid evidence for an employee’s performance rating this year?',opts:['Last year’s rating','High potential','Cutting onboarding from 45 to 28 days this year','Ten years of service'],a:2,
     fb:'Reducing onboarding time from 45 to 28 days is measurable evidence of this year’s performance. Ratings should reflect current results, not past ratings, potential, or years of service.'}]}]},
 {h:'Key Takeaways',nav:'Key Takeaways',blocks:[
-  {type:'takeaways',label:false,items:['Rate against role expectations, using observable results and behaviors.','Focus on the current review period, considering both results (the “what”) and behaviors (the “how”).','“Meets Expectations” is a strong rating that reflects successfully fulfilling role requirements.','Use performance anchors to help managers interpret and apply rating standards consistently.']},
+  {type:'takeaways',label:false,items:['Rate against role expectations, using observable results and behaviors.','Focus on the current review period, considering both results (the “what”) and behaviors (the “how”).','“Meets Expectations” is a strong rating that reflects successfully fulfilling role requirements.','Use performance anchors to apply rating standards consistently.']},
   {type:'image',hero:true,src:'m2kt',w:1200,h:680,alt:'A glowing light bulb surrounded by three cards with checkmarks.'},
   {type:'resources',label:'Download for Later',items:['scale','anchors','anchorsheet','hrbp']}]}
 ]});
@@ -705,12 +709,12 @@ COURSE.push({name:'Gather the Evidence',screens:[
    ['Has a great attitude',1,'A judgment. What did they do?'],['Isn’t a team player',1,'A judgment. What happened?'],['Works harder than anyone',1,'Effort, not a result.'],['Seems disengaged lately',1,'An impression, not a behavior.']]}]},
 {h:'Rewrite Practice',nav:'Rewrite Practice',blocks:[
   {type:'info',label:'SBI Reminder',html:'<p><b>S · Situation:</b> When and where it happened. <b>B · Behavior:</b> What the person did that someone could observe. <b>I · Impact:</b> What changed as a result.</p>'},
-  {type:'lead',html:'Use the SBI model to rewrite each vague statement with specific evidence. You can invent realistic details for practice. If you can’t identify supporting evidence, write “unsupported.”'},
-  {type:'entry',ins:'Rewrite as many statements as you like, then select Compare With Model Rewrites to review your answers.',compare:'Compare With Model Rewrites',fields:[{label:'1. “Great attitude.”',min:10},{label:'2. “Not a team player.”',min:10},{label:'3. “Goes above and beyond.”',min:10},{label:'4. “Struggles with deadlines.”',min:10},{label:'5. “Natural leader.”',min:10}],
+  {type:'lead',html:'Use the SBI model to rewrite each vague statement below with specific evidence. Add realistic details for practice, or write “unsupported” if evidence is missing. Then select Compare With Model Rewrites to review your answers.'},
+  {type:'entry',ins:false,compare:'Compare With Model Rewrites',fields:[{label:'1. “Great attitude.”',min:10},{label:'2. “Not a team player.”',min:10},{label:'3. “Goes above and beyond.”',min:10},{label:'4. “Struggles with deadlines.”',min:10},{label:'5. “Natural leader.”',min:10}],
    model:'<b>Model rewrites</b><ol style="margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px"><li>“Volunteered to cover on-call during two colleagues’ leave in Q3, with no missed incidents.”</li><li>“Declined three of four code-review requests in Q2 and Q3; two releases were delayed waiting on reviews.”</li><li>“Built a reporting template outside her role that the finance team now uses monthly.”</li><li>“Delivered four of seven quarterly reports late, by an average of six days.”</li><li>Unsupported as written. Replace it with specific behavior, for example “Ran the Q4 planning process for a team of eight.”</li></ol><p><b>Check each of yours:</b> Does it name a specific action? Could someone else verify it? Is there a time frame?</p>'}]},
 {h:'Flag Cases That Need Discussion',nav:'Flag Cases',blocks:[
-  {type:'lead',html:'Some cases will take more discussion time. Flag them in your summary so the facilitator can plan, and so you go in with your strongest evidence ready. A flag isn’t a weakness. It shows you have thought ahead.'},
-  {type:'practices',label:'Flag These Cases',items:['Borderline ratings','Your highest and lowest ratings','Promotion candidates','A change of more than one level from last cycle','Partial year, leave or role change','Peer input that disagrees with yours']},
+  {type:'lead',html:'Some cases may need more discussion. Flag them in your summary to help the facilitator plan and ensure you’re prepared with strong evidence. Flagging a case shows preparation.'},
+  {type:'practices',label:'Flag These Cases',items:['Borderline ratings','Highest and lowest ratings','Promotion candidates','Change of 2+ rating levels from last cycle','Partial year, leave, or role changes','Conflicting peer feedback']},
   {type:'mcq',q:'You are proposing “Exceeds” for someone you rated “Partially meets” last year. What should you do?',opts:[
    ['Nothing; last year doesn’t matter.',false,'Last year’s rating isn’t evidence, but a big change will draw questions. Be ready.'],
    ['Flag it and include evidence showing what changed this year.',true,'Lead with the evidence of change.'],
@@ -762,8 +766,7 @@ COURSE.push({name:'Check for Bias',screens:[
   {type:'rate',key:'alex',ins:'Select the rating you would give Alex.'}]},
 {h:'What Just Happened?',nav:'What Just Happened?',blocks:[
   {type:'recall',key:'alex',label:'You Rated Alex'},
-  {type:'key',html:'One recent mistake. A full year of results.'},
-  {type:'text',html:'<p>Alex met every goal and delivered three improvements beyond role expectations. The December error was significant but was quickly identified and corrected.</p><p>The December event was intentionally highlighted and shown first to demonstrate how recent events can influence judgment. If it lowered your rating, you may have experienced <b>recency bias</b>. A fair rating considers performance across the entire review period.</p><p>Recency bias is one of eight common rating biases. Each can be recognized and challenged by asking the right questions.</p>'}]},
+  {type:'text',html:'<p>Alex met every goal and delivered three improvements beyond role expectations. The December error was significant but quickly identified and corrected.</p><p>The December error was highlighted and listed first to show how recent events can influence ratings. If it lowered your rating, <b>recency bias</b> may have influenced your decision. Fair ratings consider performance across the entire review period.</p><p>Recency bias is one of eight common rating biases. Learning to recognize these biases and ask the right questions helps you make fairer decisions.</p>'}]},
 {h:'Eight Biases in Four Groups',nav:'Eight Biases',blocks:[
   {type:'lead',html:'Rater biases are common judgment errors that can distort performance ratings. They fall into four groups.'},
   {type:'text',html:'<p>Over the next four sections, you’ll explore each group and learn a simple self-check question to help recognize and prevent each bias.</p>'},
@@ -795,7 +798,7 @@ COURSE.push({name:'Check for Bias',screens:[
    {h:'Coded Language',f:'“He’s a bit abrasive.” “She can be emotional.”',b:'<b>Looks like:</b> Subjective personality labels are used and may be applied unevenly across groups.',q:'Is this word tied to a specific behavior and its impact?'}]},
   {type:'resources',label:'All Eight Quick Self-Checks on One Page',items:['bias']}]},
 {h:'Spot the Bias',nav:'Spot the Bias',blocks:[
-  {type:'series',label:'Write-Up',first:'<p class="lead">Here are four short write-ups from managers preparing for calibration. Each one shows one main bias.</p>',okLabel:'Correct.',noLabel:'Not this one.',ins:'Read each write-up, choose the main bias, then read the explanation.',end:'This practice is not scored.',items:[
+  {type:'series',label:'Write-Up',first:'<p class="lead">Read each of the four manager write-ups and identify the bias.</p>',okLabel:'Correct.',noLabel:'Not this one.',ins:false,end:'This practice is not scored.',items:[
    {q:'“Proposing Exceeds for Ben. He nailed the client presentation last month, and leadership loved it. That’s the kind of performance I want to reward.”',fb:' Recency: one recent event drives the rating. What did Ben deliver in the other eleven months?',opts:[['Recency',true],['Visibility',false],['Halo',false],['Coded language',false]]},
    {q:'“Proposing Meets for Hana. She works remotely and I rarely hear from her, so it’s hard to say she’s done more than the basics.”',fb:' Visibility: not hearing from someone isn’t evidence. Check her goals, output and peer input.',opts:[['Recency',false],['Visibility',true],['Halo',false],['Coded language',false]]},
    {q:'“Proposing Exceeds for Luis across the board. His technical skills are the best on the team, so the rest follows.”',fb:' Halo: one strength is being applied to every part of the rating. Rate each goal on its own evidence.',opts:[['Recency',false],['Visibility',false],['Halo',true],['Coded language',false]]},
@@ -832,7 +835,7 @@ COURSE.push({name:'The Calibration Session',screens:[
   lead:'You’ve learned how to apply rating standards, gather supporting evidence, and check for bias. Now it’s time to explore the session itself. In this module, you’ll see how calibration sessions work, practice three essential skills, and participate in a simulated session.'}]},
 {h:'What You’ll Learn',nav:'What You’ll Learn',blocks:[
   {type:'lead',html:'By the end of this module, you will be able to:'},
-  {type:'list',ordered:true,items:['Describe the calibration process from start to finish','Present a rating in two minutes using supporting evidence','Ask neutral, evidence-based questions about proposed ratings','Respond constructively to challenges and adjust ratings when evidence supports a change','For facilitators: Manage time, encourage participation, address bias, and flag unresolved cases']}]},
+  {type:'list',ordered:true,items:['Describe the calibration process from start to finish','Present a rating in two minutes using supporting evidence','Ask neutral, evidence-based questions about proposed ratings','Respond constructively to challenges and adjust ratings when evidence supports a change','For facilitators: Manage time, engage participants, address bias, and flag unresolved cases']}]},
 {h:'The Six Stages of a Session',nav:'Six Stages',blocks:[
   {type:'lead',html:'Most sessions follow the same six stages and last 60 to 120 minutes.'},
   {type:'reveal',style:'timeline',ins:'Select each stage to learn what happens.',items:[
@@ -1151,7 +1154,7 @@ R.roadmap=(b)=>{const rmap=h('div',{class:'roadmap','aria-label':'The four-step 
   [['Step 1','Know the Standard'],['Step 2','Gather the Evidence'],['Step 3','Check for Bias'],['Step 4','Calibrate Together']].forEach(([n,t],i)=>rmap.append(h('div',{class:'rm'+(b.on===i+1?' on':(b.on>i+1?' done':''))},h('span',{class:'n'},n+(b.on===i+1?' · '+(b.here||'You Are Here'):'')),h('b',{},t))));return rmap;};
 R.lead=(b)=>h('p',{class:'lead',html:b.html});
 R.text=(b)=>h('div',{class:'prose',html:b.html});
-R.info=(b)=>b.pin?h('div',{class:'info tip'},h('span',{class:'pinwrap',html:'<svg class="pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 2.5l6 6-2.2 1-3.6 3.6.6 4.6-1.6 1.6-4.2-4.2L5 20.6 3.4 19l5.5-5.5-4.2-4.2 1.6-1.6 4.6.6 3.6-3.6z" fill="#d93a32" stroke="#a8241e" stroke-width="1" stroke-linejoin="round"/></svg>'}),h('div',{class:'tipbody'},b.label?h('span',{class:'lab'},b.label):null,h('div',{class:'prose',html:b.html}))):h('div',{class:'info'},b.label?h('span',{class:'lab'},b.label):null,h('div',{class:'prose',html:b.html}));
+R.info=(b)=>b.pin?h('div',{class:'info tip'},h('span',{class:'pinwrap',html:'<svg class="pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 2.5l6 6-2.2 1-3.6 3.6.6 4.6-1.6 1.6-4.2-4.2L5 20.6 3.4 19l5.5-5.5-4.2-4.2 1.6-1.6 4.6.6 3.6-3.6z" fill="#c9a35a" stroke="#9a7633" stroke-width="1" stroke-linejoin="round"/></svg>'}),h('div',{class:'tipbody'},b.label?h('span',{class:'lab'},b.label):null,h('div',{class:'prose',html:b.html}))):h('div',{class:'info'},b.label?h('span',{class:'lab'},b.label):null,h('div',{class:'prose',html:b.html}));
 R.image=(b)=>h('figure',{class:'fig'+(b.hero?' hero':'')},h('img',{src:IMG[b.src]||b.src,alt:b.alt||'',loading:'lazy',width:b.w||1200,height:b.h||800}),b.cap?h('figcaption',{},b.cap):null);
 R.key=(b)=>h('div',{class:'key',html:b.html});
 R.note=(b)=>h('div',{class:'note',html:b.html});
@@ -1209,7 +1212,7 @@ R.rate=(b,gate)=>{const w=h('div',{class:'mcq'},ins(b.ins||'Select the rating yo
   LEVELS.forEach(L=>{const c=h('button',{class:'ix chip','aria-pressed':String(L===picked),onclick:()=>{picked=L;S.rating[b.key]=L;save();
     lv.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===c?'true':'false'));
     if(b.fb){const hi=['Exceptional','Exceeds','Meets'].includes(L)?b.fb.high:b.fb.low;fb.replaceChildren(h('div',{class:'fb neu',html:hi}));}check();}},L);lv.append(c);});
-  w.append(lv);if(reason){w.append(h('div',{class:'field'},h('label',{for:'why-'+b.key},'Optional: in one sentence, what evidence drove your rating?'),reason,err));reason.addEventListener('input',check);}
+  w.append(lv);if(reason){reason.setAttribute('aria-label','One sentence explaining your rating');w.append(h('div',{class:'field'},reason,err));reason.addEventListener('input',check);}
   w.append(fb);if(picked)setTimeout(check);return w;};
 R.sort=(b,gate)=>{const w=h('div',{class:'sort'},ins(b.ins||'Select a card, then select the box where it belongs. To move a placed card back, select it again.'));let sel=null;const place={};const pool=h('div',{class:'pool','aria-label':'Cards to sort'});
   const bks=b.buckets.map((name,i)=>{const list=h('div',{style:'display:flex;flex-direction:column;gap:8px'});
