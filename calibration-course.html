@@ -157,6 +157,7 @@ th{font:600 .76rem var(--head);letter-spacing:.05em;text-transform:uppercase;col
 .g9.hi{background:var(--good-soft)} .g9.lo{background:var(--bad-soft)}
 .g9ax{font:600 .72rem var(--head);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;justify-content:center;text-align:center;padding:4px}
 .g9ax.v{writing-mode:vertical-rl;transform:rotate(180deg)}
+.glosswrap{display:flex;flex-direction:column;gap:12px;max-width:72ch}.gsearch{width:100%;min-height:48px;padding:10px 14px;border:2px solid var(--line);border-radius:10px;font:inherit;background:#fff}.gsearch:focus{border-color:var(--primary);outline:none;box-shadow:0 0 0 3px var(--primary-soft)}.gmsg{margin:0;color:var(--muted);font-size:.92rem}.gmsg:empty{display:none}.gacc{max-width:none}.gacc .gcount{margin-left:auto;margin-right:10px;font-weight:500;font-size:.85rem;color:var(--muted)}.gacc summary{gap:8px}.gacc dl{margin:0;display:flex;flex-direction:column;gap:10px}.gacc dt{font-weight:700}.gacc dd{margin:0;font-size:.95rem}.gacc mark{background:#F2E9D8;color:inherit;border-radius:3px;padding:0 1px}
 .gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px}
 .ggroup{background:var(--info);border-radius:var(--r);padding:16px 18px}
 .ggroup h2{font-size:1rem;margin-bottom:8px;color:var(--primary)}
@@ -463,12 +464,12 @@ COURSE.push({name:'Understanding Performance Calibration',screens:[
   {type:'lead',html:'This course is self-paced and has six modules. You can stop at any time; your progress is saved on this device.'},
   {type:'info',label:'Two Kinds of Boxes',html:'<p>Boxes look different depending on whether they’re selectable. Learn how to tell the difference so you know when to take action.</p>'},
   {type:'legend'},
-  {type:'info',label:'Moving Through the Course',html:'<ul><li>Select <b>Next</b> at the bottom of the screen to move on. Activities are there to help you learn, so try as many as you find useful.</li><li>Knowledge checks are the exception. Answer every question and pass to unlock the rest of the course.</li><li>Use <b>Key Terms</b> at the top of the screen at any time to look up a word.</li><li>Use <b>Menu</b> to see your progress and jump between sections. You can hide the menu to give the lesson more room.</li><li>Look for <b>Download</b> buttons. They give you Word documents you can edit, print or save as PDF.</li></ul>'}]},
+  {type:'info',label:'Moving Through the Course',html:'<ul><li>Select <b>Next</b> at the bottom of the screen to move on. Activities are there to help you learn, so try as many as you find useful.</li><li>Knowledge checks are the exception. Answer every question and pass to unlock the rest of the course.</li><li>Use <b>Key Terms</b> at the top of the screen at any time to search for a word and see its definition.</li><li>Use <b>Menu</b> to see your progress and jump between sections. You can hide the menu to give the lesson more room.</li><li>Look for <b>Download</b> buttons. They give you Word documents you can edit, print or save as PDF.</li></ul>'}]},
 {h:'What You’ll Learn in This Module',nav:'What You’ll Learn',blocks:[
   {type:'lead',html:'By the end of this module, you’ll be able to:'},
   {type:'list',ordered:true,items:['Define calibration and explain what it is and isn’t','Identify at least three consequences of inconsistent performance ratings','Explain calibration’s place in the review cycle and why draft ratings are confidential','Compare common rating scales, timelines, and session formats']}]},
 {h:'Key Terms',nav:'Key Terms',blocks:[
-  {type:'lead',html:'These are the terms used throughout the course. Read through them now. You can open this list again at any time with the <b>Key Terms</b> button at the top of the screen.'},
+  {type:'lead',html:'These are the terms used throughout the course. Open each category to read them, or search for a term. You can do the same from any screen with the <b>Key Terms</b> button at the top of the screen.'},
   {type:'glossary'}]},
 {h:'Rate This Employee',nav:'Rate This Employee',blocks:[
   {type:'lead',html:'Before we define calibration, let’s put your judgment to the test. Review Jordan’s performance over the past year, select a rating, and explain your reasoning in one sentence. There’s no right or wrong answer at this stage.'},
@@ -1179,7 +1180,22 @@ R.grid9=(b)=>{const g=h('div',{class:'grid9',lang:'en',role:'table','aria-label'
   const list=h('div',{class:'g9list'},rows.map(([lab,cells])=>h('div',{class:'g9grp'},h('span',{class:'lab'},lab),cells.map(([t,d,c],i)=>h('div',{class:'g9 '+c},h('b',{},t),h('span',{},perf[i]+' · '+d))))));
   return h('div',{style:'display:flex;flex-direction:column;gap:6px;min-width:0'},h('div',{class:'lab g9cap'},'Potential (Rows) by Performance (Columns)'),h('div',{class:'g9wrap'},g),list);};
 R.drop=(b)=>{const d=h('details',{class:'ix'},h('summary',{},b.label),h('div',{class:'ab'},b.blocks.map(x=>R[x.type](x,()=>{}))));d.addEventListener('toggle',()=>{if(d.open)d.classList.add('seen');});return h('div',{class:'acc drop'},d);};
-R.glossary=()=>h('div',{class:'gloss'},GLOSSARY.map(g=>h('section',{class:'ggroup'},h('h2',{},g.group),h('dl',{},g.terms.flatMap(([t,d])=>[h('dt',{},t),h('dd',{html:d})])))));
+R.glossary=()=>{const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  const hl=(txt,q)=>{if(!q)return esc(txt);const i=txt.toLowerCase().indexOf(q);if(i<0)return esc(txt);return esc(txt.slice(0,i))+'<mark>'+esc(txt.slice(i,i+q.length))+'</mark>'+esc(txt.slice(i+q.length));};
+  const sid='gsearch-'+Math.random().toString(36).slice(2,7);
+  const inp=h('input',{type:'search',id:sid,class:'gsearch',placeholder:'Type a term, for example “anchor” or “bias”',autocomplete:'off'});
+  const msg=h('p',{class:'gmsg',role:'status','aria-live':'polite'});
+  const groups=GLOSSARY.map(g=>{const rows=g.terms.map(([t,d])=>{const dt=h('dt',{}),dd=h('dd',{});return {t,d,dt,dd};});
+    const dl=h('dl',{},rows.flatMap(r=>[r.dt,r.dd]));const cnt=h('span',{class:'gcount'});
+    const det=h('details',{class:'ix'},h('summary',{},h('span',{},g.group),cnt),h('div',{class:'ab'},dl));
+    det.addEventListener('toggle',()=>{if(det.open)det.classList.add('seen');});return {g,rows,det,cnt};});
+  function run(){const q=inp.value.trim().toLowerCase();let total=0;
+    groups.forEach(G=>{let n=0;G.rows.forEach(r=>{const hit=!q||r.t.toLowerCase().includes(q)||r.d.toLowerCase().includes(q);r.dt.hidden=r.dd.hidden=!hit;if(hit)n++;
+        r.dt.innerHTML=hl(r.t,q);r.dd.innerHTML=hl(r.d,q);});
+      total+=n;G.det.hidden=n===0;G.cnt.textContent=q?(n+(n===1?' match':' matches')):(G.rows.length+' terms');G.det.open=!!q&&n>0;});
+    msg.textContent=q?(total?total+(total===1?' term matches “':' terms match “')+inp.value.trim()+'”.':'No terms match “'+inp.value.trim()+'”. Try a shorter word.'):'';}
+  inp.addEventListener('input',run);run();
+  return h('div',{class:'glosswrap'},h('div',{class:'field'},h('label',{for:sid},'Search Key Terms'),inp),msg,h('div',{class:'acc gacc'},groups.map(G=>G.det)));};
 R.legend=()=>h('div',{class:'legend'},
   h('div',{class:'ix rcard',style:'cursor:default'},h('div',{class:'rh'},'Interactive'),h('div',{class:'rb'},'White boxes with a blue outline are things you select: buttons, cards, tabs and answers. They show a “Select” cue.'),cue('Select')),
   h('div',{class:'info'},h('span',{class:'lab'},'Information'),h('div',{},'Tinted boxes with no outline are for reading only. Nothing happens when you select them.')));
@@ -1422,7 +1438,7 @@ window.addEventListener('resize',applyMenu);
 $('scrim').onclick=closeMenu;
 $('termsBtn').onclick=()=>{const close=()=>{ov.remove();$('termsBtn').focus();};const ov=h('div',{class:'overlay',role:'dialog','aria-modal':'true','aria-label':'Key Terms',onclick:e=>{if(e.target===ov)close();}},
   h('div',{class:'sheet'},h('div',{class:'sheet-h'},h('h2',{},'Key Terms'),h('button',{class:'btn sm',onclick:close},'Close')),R.glossary()));
-  ov.addEventListener('keydown',e=>{if(e.key==='Escape')close();});document.body.append(ov);ov.querySelector('button').focus();};
+  ov.addEventListener('keydown',e=>{if(e.key==='Escape')close();});document.body.append(ov);(ov.querySelector('.gsearch')||ov.querySelector('button')).focus();};
 $('next').onclick=()=>go(1);$('back').onclick=()=>go(-1);
 $('unlockBtn').onclick=()=>setReview(!S.review);$('revOff').onclick=()=>setReview(false);
 if(location.hash==='#review'){S.review=true;save();}
