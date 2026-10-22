@@ -152,6 +152,8 @@ body{margin:0;}
 .input-wrap{position:relative;}
 .input-wrap .prefix{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--ink-soft);font-size:14.5px;pointer-events:none;}
 .tw .input-wrap.has-prefix input{padding-left:28px;}
+.input-wrap.has-prefix:has(input:placeholder-shown) .prefix{visibility:hidden;}
+.tw .input-wrap.has-prefix input:placeholder-shown{padding-left:14px;}
 .field .error{display:none;color:var(--error);font-size:12.5px;font-weight:500;margin-top:6px;}
 .field.invalid .error{display:block;}
 .tw .field.invalid input{border-color:var(--error);}
@@ -186,6 +188,9 @@ body{margin:0;}
 .recap-total{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin-top:18px;background:var(--accent-soft);border-radius:var(--radius-md);padding:18px 20px;}
 .recap-total .rc-label{font-size:15px;font-weight:650;}
 .recap-total .rc-amt{font-size:30px;font-weight:650;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--accent);}
+.scope-note a{color:var(--accent);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+.scope-note a:hover{color:var(--accent-hover);}
+.scope-note a:focus-visible{outline:none;border-radius:4px;box-shadow:0 0 0 4px var(--focus-ring);}
 .scope-note{margin-top:16px;padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius-md);font-size:13.5px;color:var(--ink-soft);line-height:1.6;}
 
 .nav-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:var(--space-6);}
@@ -335,10 +340,10 @@ const STEPS = {
     title:'Design & Development Cost Analysis',
     help:"Answer a few questions about your project, and we’ll calculate the costs as you go. This section covers design and development costs only. Delivery costs will be captured separately.",
     fields:[
-      {key:'salary', label:"Designer's annual salary", prefix:'$', placeholder:'40000', full:true},
-      {key:'hours', label:'Hours spent designing & developing this solution', placeholder:'100', hint:'Exclude SME time, admin support, vendor fees, materials, and pilots.', full:true},
-      {key:'hrsWk', label:'Hours the designer typically works per week', placeholder:'40', note:RATE_NOTE},
-      {key:'wksYr', label:'Weeks the designer typically works per year', placeholder:'50'}
+      {key:'salary', label:"Designer's annual salary", prefix:'$', placeholder:'e.g., $40,000', full:true},
+      {key:'hours', label:'Hours spent designing & developing this solution', placeholder:'e.g., 100', hint:'Exclude SME time, admin support, vendor fees, materials, and pilots.', full:true},
+      {key:'hrsWk', label:'Hours the designer typically works per week', placeholder:'e.g., 40', note:RATE_NOTE},
+      {key:'wksYr', label:'Weeks the designer typically works per year', placeholder:'e.g., 50'}
     ],
     preview(v){
       const r = rate(v.salary, v.hrsWk, v.wksYr);
@@ -364,11 +369,11 @@ const STEPS = {
     title:'SME support',
     help:"Tell us how many SMEs helped and how much time they gave. We'll work out their hourly rate and total cost.",
     fields:[
-      {key:'count', label:'How many SMEs contributed?', placeholder:'4'},
-      {key:'hoursEach', label:'Average hours each SME contributed', placeholder:'1'},
-      {key:'salary', label:'Average SME annual salary', prefix:'$', placeholder:'40000', full:true},
-      {key:'hrsWk', label:'Hours SMEs typically work per week', placeholder:'40', note:RATE_NOTE},
-      {key:'wksYr', label:'Weeks SMEs typically work per year', placeholder:'50'}
+      {key:'count', label:'How many SMEs contributed?', placeholder:'e.g., 4'},
+      {key:'hoursEach', label:'Average hours each SME contributed', placeholder:'e.g., 1'},
+      {key:'salary', label:'Average SME annual salary', prefix:'$', placeholder:'e.g., $40,000', full:true},
+      {key:'hrsWk', label:'Hours SMEs typically work per week', placeholder:'e.g., 40', note:RATE_NOTE},
+      {key:'wksYr', label:'Weeks SMEs typically work per year', placeholder:'e.g., 50'}
     ],
     preview(v){
       const r = rate(v.salary, v.hrsWk, v.wksYr);
@@ -393,7 +398,7 @@ const STEPS = {
     eyebrow:'Section 3 of 6',
     title:'Vendor & consulting fees',
     help:'Enter the combined total of any vendor fees, consulting fees, and other related fees.',
-    fields:[ {key:'total', label:'Total vendor & consulting fees', prefix:'$', placeholder:'5000', full:true} ],
+    fields:[ {key:'total', label:'Total vendor & consulting fees', prefix:'$', placeholder:'e.g., $5,000', full:true} ],
     preview(v){ return { label:'Total vendor & consulting fees', rateLabel:null, value: v.total ? parseFloat(v.total) : null }; },
     onSubmit(v){ state.costs.vendor = parseFloat(v.total); },
     next:'materials_gate'
@@ -413,7 +418,7 @@ const STEPS = {
     eyebrow:'Section 4 of 6',
     title:'Cost of materials',
     help:'Enter the total cost of materials purchased for this learning solution.',
-    fields:[ {key:'total', label:'Total materials cost', prefix:'$', placeholder:'1000', full:true} ],
+    fields:[ {key:'total', label:'Total materials cost', prefix:'$', placeholder:'e.g., $1,000', full:true} ],
     preview(v){ return { label:'Total materials cost', rateLabel:null, value: v.total ? parseFloat(v.total) : null }; },
     onSubmit(v){ state.costs.materials = parseFloat(v.total); },
     next:'admin_gate'
@@ -434,11 +439,11 @@ const STEPS = {
     title:'Admin & support',
     help:"Tell us about the admin or support staff time. We'll work out an hourly rate and total cost.",
     fields:[
-      {key:'count', label:'How many admin/support staff contributed?', placeholder:'1'},
-      {key:'hoursEach', label:'Average hours each staff member contributed', placeholder:'5'},
-      {key:'salary', label:'Average annual salary', prefix:'$', placeholder:'40000', full:true},
-      {key:'hrsWk', label:'Hours staff typically work per week', placeholder:'40', note:RATE_NOTE},
-      {key:'wksYr', label:'Weeks staff typically work per year', placeholder:'50'}
+      {key:'count', label:'How many admin/support staff contributed?', placeholder:'e.g., 1'},
+      {key:'hoursEach', label:'Average hours each staff member contributed', placeholder:'e.g., 5'},
+      {key:'salary', label:'Average annual salary', prefix:'$', placeholder:'e.g., $40,000', full:true},
+      {key:'hrsWk', label:'Hours staff typically work per week', placeholder:'e.g., 40', note:RATE_NOTE},
+      {key:'wksYr', label:'Weeks staff typically work per year', placeholder:'e.g., 50'}
     ],
     preview(v){
       const r = rate(v.salary, v.hrsWk, v.wksYr);
@@ -464,11 +469,11 @@ const STEPS = {
     title:'Alpha pilot',
     help:'Tell us about the first pilot. We’ll work out participant/facilitator hourly rate and total cost.',
     fields:[
-      {key:'duration', label:'Duration of the pilot, in hours', placeholder:'1'},
-      {key:'count', label:'Number of participants and facilitators involved', placeholder:'4'},
-      {key:'salary', label:'Average annual salary of participants/facilitators', prefix:'$', placeholder:'40000', full:true},
-      {key:'hrsWk', label:'Number of hours the person works each week', placeholder:'40', note:RATE_NOTE},
-      {key:'wksYr', label:'Number of weeks the person typically works each year', placeholder:'50'}
+      {key:'duration', label:'Duration of the pilot, in hours', placeholder:'e.g., 1'},
+      {key:'count', label:'Number of participants and facilitators involved', placeholder:'e.g., 4'},
+      {key:'salary', label:'Average annual salary of participants/facilitators', prefix:'$', placeholder:'e.g., $40,000', full:true},
+      {key:'hrsWk', label:'Number of hours the person works each week', placeholder:'e.g., 40', note:RATE_NOTE},
+      {key:'wksYr', label:'Number of weeks the person typically works each year', placeholder:'e.g., 50'}
     ],
     preview(v){
       const r = rate(v.salary, v.hrsWk, v.wksYr);
@@ -493,11 +498,11 @@ const STEPS = {
     title:'Beta pilot',
     help:'Tell us about the second pilot. We’ll work out participant/facilitator hourly rate and total cost.',
     fields:[
-      {key:'duration', label:'Duration of the pilot, in hours', placeholder:'1'},
-      {key:'count', label:'Number of participants and facilitators involved', placeholder:'4'},
-      {key:'salary', label:'Average annual salary of participants/facilitators', prefix:'$', placeholder:'40000', full:true},
-      {key:'hrsWk', label:'Number of hours the person works each week', placeholder:'40', note:RATE_NOTE},
-      {key:'wksYr', label:'Number of weeks the person typically works each year', placeholder:'50'}
+      {key:'duration', label:'Duration of the pilot, in hours', placeholder:'e.g., 1'},
+      {key:'count', label:'Number of participants and facilitators involved', placeholder:'e.g., 4'},
+      {key:'salary', label:'Average annual salary of participants/facilitators', prefix:'$', placeholder:'e.g., $40,000', full:true},
+      {key:'hrsWk', label:'Number of hours the person works each week', placeholder:'e.g., 40', note:RATE_NOTE},
+      {key:'wksYr', label:'Number of weeks the person typically works each year', placeholder:'e.g., 50'}
     ],
     preview(v){
       const r = rate(v.salary, v.hrsWk, v.wksYr);
@@ -660,7 +665,7 @@ function renderCard(animate){
         <span class="rc-label">Total design &amp; development cost</span>
         <span class="rc-amt">${money(grandTotal())}</span>
       </div>
-      <div class="scope-note">This total covers instructional design &amp; development only. It doesn't yet include the cost of <em>delivering</em> the solution (facilitator time, LMS hosting, travel, printing, etc.). That can be added as a separate section.</div>`;
+      <div class="scope-note">This total includes instructional design and development costs only. Delivery expenses, such as facilitator time, LMS hosting, travel, and materials, can be calculated using the <a href="https://tools.crizolp.com/cost-benefit-analysis-generator.html" target="_blank" rel="noopener">Cost-Benefit Analysis &amp; ROI Generator</a>.</div>`;
     nextBtn.hidden = true;
     wireJump(card, '.recap-row.clickable');
     renderProgress(); renderReceipt();
