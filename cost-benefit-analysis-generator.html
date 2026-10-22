@@ -15,7 +15,7 @@
   --radius-sm:8px;--radius-md:10px;--radius-lg:12px;--radius-xl:14px;--radius-pill:999px;
   --bg:#F7F8FA;--surface:#FFFFFF;--surface-alt:#F1F3F5;--ink:#111827;--ink-soft:#5B6472;--line:#E5E7EB;--line-strong:#8A9099;
   --accent:#0F766E;--accent-hover:#0B5F58;--on-accent:#FFFFFF;--accent-soft:#E6F4F2;--focus-ring:rgba(15,118,110,0.25);
-  --info:#1D4ED8;--info-soft:#EEF3FF;--warning:#B54708;--warning-soft:#FEF3E2;--error:#B42318;--error-soft:#FEECEB;
+  --info:#1D4ED8;--info-soft:#EEF3FF;--warning:#B54708;--warning-soft:#FEF3E2;--error:#B42318;--error-soft:#FEECEB;--success:#067647;
   --shadow-sm:0 1px 2px rgba(16,24,40,0.05);
   --shadow-card:0 1px 2px rgba(16,24,40,0.04), 0 6px 20px -4px rgba(16,24,40,0.07);
   --shadow-lift:0 2px 4px rgba(16,24,40,0.06), 0 10px 28px -6px rgba(16,24,40,0.12);
@@ -25,7 +25,7 @@
   :root:not([data-theme="light"]){
     --bg:#0E1113;--surface:#171B1F;--surface-alt:#1F2429;--ink:#ECEEF0;--ink-soft:#9AA3AD;--line:#2A3036;--line-strong:#6B747E;
     --accent:#3CC4B4;--accent-hover:#62D3C6;--on-accent:#04201C;--accent-soft:rgba(60,196,180,0.13);--focus-ring:rgba(60,196,180,0.3);
-    --info:#8AB4F8;--info-soft:rgba(138,180,248,0.13);--warning:#F5B45C;--warning-soft:rgba(245,180,92,0.13);--error:#F28B82;--error-soft:rgba(242,139,130,0.13);
+    --info:#8AB4F8;--info-soft:rgba(138,180,248,0.13);--warning:#F5B45C;--warning-soft:rgba(245,180,92,0.13);--error:#F28B82;--error-soft:rgba(242,139,130,0.13);--success:#5FD49A;
     --shadow-sm:0 1px 2px rgba(0,0,0,0.4);
     --shadow-card:0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -6px rgba(0,0,0,0.5);
     --shadow-lift:0 2px 4px rgba(0,0,0,0.45), 0 12px 30px -6px rgba(0,0,0,0.6);
@@ -35,7 +35,7 @@
 :root[data-theme="dark"]{
   --bg:#0E1113;--surface:#171B1F;--surface-alt:#1F2429;--ink:#ECEEF0;--ink-soft:#9AA3AD;--line:#2A3036;--line-strong:#6B747E;
   --accent:#3CC4B4;--accent-hover:#62D3C6;--on-accent:#04201C;--accent-soft:rgba(60,196,180,0.13);--focus-ring:rgba(60,196,180,0.3);
-  --info:#8AB4F8;--info-soft:rgba(138,180,248,0.13);--warning:#F5B45C;--warning-soft:rgba(245,180,92,0.13);--error:#F28B82;--error-soft:rgba(242,139,130,0.13);
+  --info:#8AB4F8;--info-soft:rgba(138,180,248,0.13);--warning:#F5B45C;--warning-soft:rgba(245,180,92,0.13);--error:#F28B82;--error-soft:rgba(242,139,130,0.13);--success:#5FD49A;
   --shadow-sm:0 1px 2px rgba(0,0,0,0.4);
   --shadow-card:0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -6px rgba(0,0,0,0.5);
   --shadow-lift:0 2px 4px rgba(0,0,0,0.45), 0 12px 30px -6px rgba(0,0,0,0.6);
@@ -131,6 +131,10 @@ body{margin:0;}
 .total-net .tn-label{font-size:12.5px;font-weight:600;color:var(--ink-soft);}
 .total-net .tn-amt{font-size:20px;font-weight:650;letter-spacing:-.01em;font-variant-numeric:tabular-nums;}
 .neg{color:var(--error);}
+.pos{color:var(--success);}
+.text-link{color:var(--accent);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+.text-link:hover{color:var(--accent-hover);}
+.text-link:focus-visible{outline:none;border-radius:4px;box-shadow:0 0 0 4px var(--focus-ring);}
 
 /* Mobile header */
 .mobile-header{display:none;position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line);box-shadow:var(--shadow-sm);}
@@ -385,11 +389,11 @@ const STEPS = {
     title:'Background data',
     help:"Tell us about the learning solution and who's completing it. We'll work out an hourly rate to use throughout the rest of this analysis.",
     fields:[
-      {key:'length', label:'How long does it take a participant to complete the learning?', hintUnit:'hours', placeholder:'1'},
-      {key:'numParticipants', label:'How many participants are targeted to complete the learning?', placeholder:'20'},
-      {key:'salary', label:"Average annual salary of the participants (include the facilitator's salary in the average, if one is required)", prefix:'$', placeholder:'40000', full:true},
-      {key:'hrsWk', label:'Hours participants typically work per week', placeholder:'40', note:'This isn’t related to the learning itself. We use this information to calculate an accurate hourly rate.'},
-      {key:'wksYr', label:'Weeks participants typically work per year', placeholder:'50'}
+      {key:'length', label:'How long does it take a participant to complete the learning?', hintUnit:'hours', placeholder:'e.g., 1'},
+      {key:'numParticipants', label:'How many participants are targeted to complete the learning?', placeholder:'e.g., 20'},
+      {key:'salary', label:"Average annual salary of the participants (include the facilitator's salary in the average, if one is required)", prefix:'$', placeholder:'e.g., 40000', full:true},
+      {key:'hrsWk', label:'Hours participants typically work per week', placeholder:'e.g., 40', note:'This isn’t related to the learning itself. We use this information to calculate an accurate hourly rate.'},
+      {key:'wksYr', label:'Weeks participants typically work per year', placeholder:'e.g., 50'}
     ],
     preview(v){
       const r = rate(v.salary, v.hrsWk, v.wksYr);
@@ -440,7 +444,7 @@ const STEPS = {
     eyebrow:'Section 2 of 5 · Delivery cost',
     title:'Travel expenses',
     help:'Enter the total travel cost for this learning solution.',
-    fields:[ {key:'total', label:'Total travel expenses', prefix:'$', placeholder:'0', full:true} ],
+    fields:[ {key:'total', label:'Total travel expenses', prefix:'$', placeholder:'e.g., 0', full:true} ],
     preview(v){ return { label:'Total travel expenses', display: v.total ? money(parseFloat(v.total)) : '····' }; },
     onSubmit(v){ state.delivery.travel = parseFloat(v.total); },
     next:'delivery_other_gate'
@@ -461,7 +465,7 @@ const STEPS = {
     help:'Tell us what the expense is and its total cost.',
     fields:[
       {key:'name', label:'Expense name', type:'text', placeholder:'e.g., Printed workbooks', full:true},
-      {key:'cost', label:'Total cost', prefix:'$', placeholder:'0', full:true}
+      {key:'cost', label:'Total cost', prefix:'$', placeholder:'e.g., 0', full:true}
     ],
     preview(v){ return { label:'Other expenses', display: v.cost ? money(parseFloat(v.cost)) : '····' }; },
     onSubmit(v){ state.delivery.otherAmt = parseFloat(v.cost); state.delivery.otherName = v.name||''; },
@@ -476,7 +480,7 @@ const STEPS = {
     rows(){
       const d = state.delivery;
       return [
-        ['Salary of employees to be trained', d.salaryCost],
+        ['Employee Training Cost', d.salaryCost],
         ['Employee benefit costs', d.benefits],
         ['Lost production / replacement cost', d.lostProd],
         ['Travel expenses', d.travel],
@@ -494,8 +498,8 @@ const STEPS = {
     section:'dd', type:'calc',
     eyebrow:'Section 3 of 5',
     title:'Design & development cost',
-    help:"Enter what it cost to design and develop this learning solution. If you need help calculating this, the Learning Development Cost Generator can walk you through it.",
-    fields:[ {key:'cost', label:'Design & development cost', prefix:'$', placeholder:'13000', full:true} ],
+    help:"Enter what it cost to design and develop this learning solution. If you need help calculating this, the <a class='text-link' href='https://tools.crizolp.com/learning-solution-cost-calculator.html' target='_blank' rel='noopener'>Learning Development Cost Generator</a> can walk you through it.",
+    fields:[ {key:'cost', label:'Design & development cost', prefix:'$', placeholder:'e.g., 13000', full:true} ],
     preview(v){ return { label:'Design & development cost', display: v.cost ? money(parseFloat(v.cost)) : '····' }; },
     onSubmit(v){ state.costs.dd = parseFloat(v.cost); },
     next:'total_cost_recap'
@@ -555,8 +559,8 @@ const STEPS = {
     title:'Participants',
     help:'Tell us how many participants were involved, and over what period these benefits are measured.',
     fields:[
-      {key:'completed', label:'How many participants completed the learning?', placeholder:'50'},
-      {key:'applied', label:'How many participants successfully applied what they learned?', placeholder:'40'},
+      {key:'completed', label:'How many participants completed the learning?', placeholder:'e.g., 50'},
+      {key:'applied', label:'How many participants successfully applied what they learned?', placeholder:'e.g., 40'},
       {key:'period', label:'Over what period were or will these benefits be measured?', type:'period', full:true}
     ],
     preview(v){
@@ -588,7 +592,7 @@ const STEPS = {
       {key:'tasks', label:'What task(s) were taught through the learning?', type:'textarea', full:true},
       {key:'benefit', label:'What measurable business benefit resulted from the learning solution?', type:'textarea', full:true},
       {key:'valueType', label:'This value is…', type:'valuetype', full:true},
-      {key:'value', label:'What is the total estimated dollar value of the benefit?', prefix:'$', placeholder:'18000', full:true},
+      {key:'value', label:'What is the total estimated dollar value of the benefit?', prefix:'$', placeholder:'e.g., 18000', full:true},
       {key:'period', label:'Over what period were or will these benefits be measured?', type:'period', full:true}
     ],
     preview(v){ return { label:'Total benefits of training', display: v.value ? money(parseFloat(v.value)) : '····' }; },
@@ -878,7 +882,7 @@ function renderCard(animate){
                 <div class="field">
                   <label for="tl-value-${t.id}">Dollar value per participant</label>
                   <div class="input-wrap has-prefix"><span class="prefix">$</span>
-                    <input type="number" inputmode="decimal" min="0" step="any" id="tl-value-${t.id}" class="tl-value" data-id="${t.id}" placeholder="450" value="${esc(t.value)}">
+                    <input type="number" inputmode="decimal" min="0" step="any" id="tl-value-${t.id}" class="tl-value" data-id="${t.id}" placeholder="e.g., 450" value="${esc(t.value)}">
                   </div>
                 </div>
               </div>
@@ -972,7 +976,7 @@ function renderCard(animate){
         </div>
         <div class="metric">
           <span class="metric-label">ROI</span>
-          <span class="metric-value ${roi<0?'neg':''}">${roi.toFixed(2)}%</span>
+          <span class="metric-value ${roi>0?'pos':'neg'}">${roi.toFixed(2)}%</span>
           <p class="metric-desc">The percentage return generated after accounting for the total investment.</p>
         </div>
       </div>
