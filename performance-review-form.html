@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Performance Review Assistant</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -157,6 +162,8 @@ html, body{margin:0;background:var(--bg);}
 }
 </style>
 
+</head>
+<body>
 <div class="tw">
 <div class="shell" id="app">
 
@@ -483,8 +490,42 @@ Keep option labels short (a few words) since they're rendered as tappable button
     }
   }
 
+  // Where the form sends questions when it is NOT running as a claude.ai artifact
+  // (e.g. on your own website). Point this at your own server endpoint that adds your API key.
+  const API_ENDPOINT = 'https://api.anthropic.com/v1/messages';
+
+  // Inside a claude.ai artifact, Claude is reached through the viewer's own account.
+  let samplePromise = null;
+  function getSample() {
+    if (!samplePromise) {
+      samplePromise = (window.claude && typeof window.claude.use === 'function')
+        ? window.claude.use('sample').catch(() => null)
+        : Promise.resolve(null);
+    }
+    return samplePromise;
+  }
+
+  const SAMPLE_ERROR_COPY = {
+    not_granted: 'This page needs your permission to use Claude. Reload the page and choose Allow when asked',
+    sampling_disabled: 'Claude isn\'t available for this account',
+    rate_limited: 'Too many requests right now. Wait a moment',
+    session_expired: 'Your claude.ai session has expired. Sign in again',
+    refused: 'Claude couldn\'t answer that. Try rewording your response'
+  };
+
   async function callClaude() {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const sample = await getSample();
+    if (sample) {
+      try {
+        const turns = [{ role: 'user', content: SYSTEM_PROMPT }].concat(history);
+        const result = await sample(turns, { cache: false });
+        return result.text;
+      } catch (e) {
+        const code = e && e.code;
+        throw new Error(SAMPLE_ERROR_COPY[code] || (e && e.message) || 'Request failed');
+      }
+    }
+    const response = await fetch(API_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -698,3 +739,5 @@ Keep option labels short (a few words) since they're rendered as tappable button
   // Kick off the scripted opening automatically, without showing a hidden trigger bubble
   sendTurn('plan for a performance review', { silent: true });
 </script>
+</body>
+</html>
