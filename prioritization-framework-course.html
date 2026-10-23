@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prioritization Framework Course</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..700;1,14..32,400..700&display=swap" rel="stylesheet">
+<style>
+/* Layout: e-learning player matching the Performance Calibration course. Course menu drawer, one lesson card per screen,
+   sticky Back/Next bar. Interactive boxes = white, blue outline, lift. Information boxes = tinted, flat, no outline. Light only. */
+:root{
+  color-scheme:light;
+  --bg:#eef3f8; --panel:#ffffff; --ink:#243042; --muted:#55627a; --line:#d4dce8;
+  --primary:#1f5fbf; --primary-hover:#174a96; --on-primary:#ffffff; --primary-soft:#e7f0fc; --focus:#e89b00;
+  --info:#f3f6fb; --info-strong:#e3eaf4; --note:#fff6e2; --note-ink:#6b4a00; --note-line:#e7b23c;
+  --tip:#E6F3F0; --tip-border:#9ACBC1; --tip-accent:#24776D; --tip-ink:#243449;
+  --lav:#F0ECF8; --lav-border:#DCD3EF; --lav-head:#4B3A82; --lav-ink:#2F2948;
+  --good:#1b7a46; --good-soft:#e4f4ea; --bad:#b0341f; --bad-soft:#fdeae6; --mid:#8a5a00; --mid-soft:#fff2d9;
+  --shadow:0 1px 2px rgba(31,52,90,.06),0 4px 14px rgba(31,52,90,.07);
+  --head:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+  --body:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+  --r:12px;
+  /* Talent Workspace tool colors, used only inside the tool mock-up */
+  --m-bg:#F7F8FA; --m-surface:#FFFFFF; --m-alt:#F1F3F5; --m-ink:#111827; --m-soft:#5B6472; --m-line:#E5E7EB; --m-strong:#8A9099;
+  --m-accent:#0F766E; --m-accent-soft:#E6F4F2; --m-warn:#B54708; --m-warn-soft:#FEF3E2; --m-err:#B42318; --m-caution:#8A6A00;
+}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16.5px/1.6 var(--body);-webkit-text-size-adjust:100%;font-feature-settings:"cv11","ss01"}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+h1,h2,h3{font-family:var(--head);font-weight:600;text-wrap:balance;margin:0}
+p{margin:0}
+/* top bar */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:15;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding-inline:16px;padding-block:10px}
+.topbar .name{font:600 1rem/1.2 var(--head);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tbtn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 14px;border-radius:999px;border:2px solid var(--line);background:var(--panel);cursor:pointer;font-weight:700;font-size:.92rem}
+.tbtn:hover{border-color:var(--primary);color:var(--primary)}
+.tbtn svg{width:18px;height:18px;flex:none}
+.menu-only{display:none}
+#unlockBtn[aria-pressed="true"]{background:var(--note);border-color:var(--note-line);color:var(--note-ink)}
+.revbar{position:sticky;top:calc(65px + env(safe-area-inset-top,0px));z-index:14;background:var(--note);color:var(--note-ink);border-bottom:1px solid var(--note-line);display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding-inline:16px;padding-block:8px;font-size:.92rem;text-align:center}
+.revbar .btn{min-height:38px;padding:6px 14px}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr);min-height:calc(100% - 65px)}
+/* menu */
+.side{background:var(--panel);border-right:1px solid var(--line);padding:16px 12px 28px;position:sticky;top:calc(65px + env(safe-area-inset-top,0px));height:calc(100vh - 65px);overflow:auto}
+.side-h{font:500 .78rem var(--head);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:4px 8px 10px}
+.overall{margin:0 8px 16px}
+.overall .t{display:flex;justify-content:space-between;font-size:.85rem;color:var(--muted);margin-bottom:6px}
+.meter{height:8px;background:var(--info-strong);border-radius:99px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--primary);border-radius:99px;transition:width .3s}
+.mod-btn{width:100%;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;text-align:left;background:none;border:0;padding:10px 8px;border-radius:10px;cursor:pointer;min-height:48px}
+.mod-btn:hover{background:var(--info)}
+.mod-badge{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:600 .85rem var(--head);background:var(--info-strong);color:var(--ink)}
+.mod-badge.done{background:var(--good);color:#fff}
+.mod-badge.cur{background:var(--primary);color:var(--on-primary)}
+.mod-name{font-weight:700;line-height:1.25}
+.mod-meta{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.scr-list{list-style:none;margin:2px 0 10px;padding:0 0 0 18px;border-left:2px solid var(--line);margin-left:22px}
+.scr{width:100%;display:flex;gap:10px;align-items:center;text-align:left;background:none;border:0;padding:8px 10px;border-radius:8px;font-size:.92rem;color:var(--muted);cursor:pointer;min-height:40px}
+.scr:hover:not(:disabled){background:var(--info);color:var(--ink)}
+.scr:disabled{cursor:not-allowed;opacity:.5}
+.scr.cur{background:var(--primary-soft);color:var(--ink);font-weight:700}
+.dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--line);flex:none}
+.scr.done .dot{background:var(--good);border-color:var(--good)}
+.scr.cur .dot{border-color:var(--primary)}
+.scrim{display:none}
+/* main */
+.main{min-width:0;padding-inline:24px;padding-block:20px 120px}
+.wrap{max-width:900px;margin:0 auto}
+.crumb{font-size:.88rem;color:var(--muted);margin-bottom:10px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
+.lesson{background:var(--panel);border-radius:16px;box-shadow:var(--shadow);overflow:visible}
+.lesson>.meter{border-radius:16px 16px 0 0;height:6px}
+.lesson>.meter i{border-radius:0}
+.slide{padding:30px 36px 36px;display:flex;flex-direction:column;gap:20px}
+.slide>h1{font-size:clamp(1.5rem,3vw,2rem);line-height:1.2}
+.lead{font-size:1.06rem;max-width:68ch}
+a.lnk{color:var(--primary);font-weight:600;text-decoration:none;border-radius:4px}
+a.lnk:hover{color:var(--primary-hover);background:var(--primary-soft)}
+.note a.lnk{color:var(--lav-head)}
+.note a.lnk:hover{background:rgba(75,58,130,.1)}
+.prose{display:flex;flex-direction:column;gap:12px;max-width:70ch}
+/* bottom nav */
+.navbar{position:fixed;left:300px;right:0;bottom:0;z-index:12;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(6px);border-top:1px solid var(--line);padding-inline:24px;padding-block:12px calc(12px + env(safe-area-inset-bottom,0px))}
+.navbar .in{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.navbar .msg{flex:1;text-align:center;font-size:.92rem;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 22px;border-radius:999px;border:2px solid var(--line);background:var(--panel);cursor:pointer;font-weight:700}
+.btn:hover:not(:disabled){border-color:var(--primary);color:var(--primary)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.pri{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.btn.pri:hover:not(:disabled){background:var(--primary-hover);border-color:var(--primary-hover);color:var(--on-primary)}
+.btn.sm{min-height:42px;padding:8px 18px;font-size:.95rem}
+.btn svg{width:18px;height:18px}
+.ins{font-weight:600;color:var(--ink);font-size:.98rem;max-width:70ch}
+/* INFORMATION style: tinted, flat, never outlined */
+.info{background:var(--info);border-radius:var(--r);padding:16px 20px;max-width:72ch}
+.info.tip{display:flex;gap:14px;align-items:flex-start;background:var(--tip);color:var(--tip-ink);border:1px solid var(--tip-border);border-left:4px solid var(--tip-accent)}
+.info.tip .lab{color:var(--tip-accent)}
+.info.tip .pinwrap{flex:none;width:30px;height:30px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.info.tip .pin{width:18px;height:18px;color:var(--tip-accent)}
+.info.tip .tipbody{min-width:0;display:flex;flex-direction:column;gap:4px}
+.lab{font:600 .74rem var(--head);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);display:block}
+.note{background:var(--lav);color:var(--lav-ink);border:1px solid var(--lav-border);border-radius:var(--r);padding:14px 18px;max-width:72ch;font-size:.95rem;display:flex;flex-direction:column;gap:6px}
+.note h2{font-size:1.02rem;color:var(--lav-head)}
+.note .fill{background:#fff;border:1px dashed var(--lav-head);border-radius:6px;padding:0 6px;font-weight:700}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px}
+.col{background:var(--info);border-radius:var(--r);padding:16px 18px;min-width:0;display:flex;flex-direction:column;gap:8px}
+.col h2{font-size:1.02rem;display:flex;gap:10px;align-items:center}
+.col .num{flex:none;width:26px;height:26px;border-radius:50%;background:var(--primary);color:var(--on-primary);display:grid;place-items:center;font:600 .8rem var(--head)}
+.col p{font-size:.97rem}
+.blist{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px;font-size:.97rem}
+.tbl-wrap{overflow-x:auto;max-width:100%;border-radius:var(--r);background:var(--info)}
+table{border-collapse:collapse;font-size:.95rem;width:100%;min-width:560px}
+th,td{padding:10px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{font:600 .76rem var(--head);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--info-strong)}
+td.pt,th.pt{text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.pt b{display:inline-grid;place-items:center;min-width:28px;height:28px;padding:0 6px;border-radius:99px;background:var(--primary-soft);color:var(--primary)}
+td.neg b{background:var(--bad-soft);color:var(--bad)}
+td .ans{font-weight:700;white-space:nowrap}
+tr.total td{background:var(--info-strong);font-weight:700}
+.opts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px}
+.ocard{background:var(--info);border-radius:var(--r);padding:16px 18px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.ocard h3{font-size:1.02rem}
+.ocard .stat{font:600 1.6rem/1.1 var(--head);font-variant-numeric:tabular-nums}
+.ocard .statl{font-size:.9rem;color:var(--muted)}
+.ocard.crit{background:var(--bad-soft)} .ocard.crit .stat{color:var(--bad)}
+.ocard.low{background:var(--good-soft)} .ocard.low .stat{color:var(--good)}
+.key{background:var(--primary-soft);border-radius:var(--r);padding:16px 20px;font-size:1.05rem;font-weight:700;max-width:72ch}
+/* INTERACTIVE style */
+.ix{background:var(--panel);border:2px solid var(--primary);border-radius:var(--r);box-shadow:var(--shadow);cursor:pointer;text-align:left;transition:transform .12s,box-shadow .12s,background .12s;position:relative}
+.ix:hover:not(:disabled){transform:translateY(-1px);background:var(--primary-soft)}
+.acc{display:flex;flex-direction:column;gap:10px;max-width:72ch}
+.acc details{padding:0}
+.acc details.seen{border-color:var(--good)}
+.acc summary{cursor:pointer;font-weight:700;padding:14px 18px;list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:center;min-height:52px}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary::after{content:"+";font:600 1.3rem var(--head);color:var(--primary)}
+.acc details[open] summary::after{content:"–"}
+.acc .ab{padding:0 18px 16px;display:flex;flex-direction:column;gap:6px}
+.acc .formula{background:var(--info);border-radius:8px;padding:8px 12px;font-size:.93rem}
+.counter{font-size:.88rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.titlecard{display:flex;flex-direction:column;gap:14px;padding:24px 0 10px}
+.titlecard .eyebrow{font:600 .85rem var(--head);letter-spacing:.08em;text-transform:uppercase;color:var(--primary)}
+.titlecard h1{font-size:clamp(2rem,4.6vw,2.8rem);line-height:1.1}
+.titlecard .meta{color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 16px}
+.roadmap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:6px}
+.rm{background:var(--info);border-radius:10px;padding:12px;font-size:.9rem;display:flex;flex-direction:column;gap:2px;min-width:0}
+.rm b{font-family:var(--head);font-weight:600}
+.rm .n{font:600 .72rem var(--head);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.banner{background:var(--primary);color:var(--on-primary);border-radius:var(--r);padding:24px;display:flex;flex-direction:column;gap:6px}
+.banner h2{font-size:1.5rem;color:inherit}
+.recap{display:flex;flex-direction:column;gap:12px;max-width:72ch;padding:0;margin:0;list-style:none;counter-reset:r}
+.recap li{background:var(--info);border-radius:var(--r);padding:14px 16px 14px 56px;position:relative;counter-increment:r}
+.recap li::before{content:counter(r);position:absolute;left:16px;top:14px;width:28px;height:28px;border-radius:50%;background:var(--primary);color:var(--on-primary);display:grid;place-items:center;font:600 .85rem var(--head)}
+.recap b{display:block;font-family:var(--head);font-weight:600}
+/* key terms overlay */
+.overlay{position:fixed;inset:0;z-index:40;background:rgba(10,15,30,.45);display:flex;justify-content:flex-end}
+.overlay .sheet{background:var(--bg);width:min(560px,100%);height:100%;overflow:auto;padding-inline:20px;padding-block:calc(18px + env(safe-area-inset-top,0px)) calc(24px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px}
+.sheet-h{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sheet-h h2{font-size:1.3rem}
+.ggroup{background:var(--panel);border-radius:var(--r);padding:16px 18px}
+.ggroup dl{margin:0;display:flex;flex-direction:column;gap:12px}
+.ggroup dt{font-weight:700}
+.ggroup dd{margin:0;font-size:.95rem}
+.slide.enter{animation:rise .3s ease}
+#slide:focus{outline:none}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ===== Hotspot screen ===== */
+.mock.tour{position:relative}
+.hs-pop{position:absolute;z-index:8;width:min(340px,calc(100% - 24px));background:var(--primary);color:var(--on-primary);border-radius:14px;padding:14px 16px 16px;box-shadow:0 14px 36px rgba(20,40,80,.35),0 0 0 4px rgba(255,255,255,.9);font-size:.95rem;line-height:1.55;animation:popin .18s ease-out}
+.hs-pop::before{content:"";position:absolute;top:-8px;left:var(--ax,30px);width:16px;height:16px;background:var(--primary);transform:translateX(-50%) rotate(45deg);border-radius:3px}
+.hs-pop .ph{display:flex;align-items:center;gap:10px;margin-bottom:6px;position:relative}
+.hs-pop .pn{flex:none;width:26px;height:26px;border-radius:50%;background:#fff;color:var(--primary);display:grid;place-items:center;font:700 .85rem var(--head)}
+.hs-pop h2{flex:1;font-size:1.05rem;color:inherit}
+.hs-pop .px{flex:none;width:32px;height:32px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:1.2rem;line-height:1;cursor:pointer;display:grid;place-items:center}
+.hs-pop .px:hover{background:rgba(255,255,255,.3)}
+.hs-pop p{position:relative}
+.hs-pop b{color:#fff}
+@keyframes popin{from{opacity:0;transform:translateY(-4px) scale(.97)}to{opacity:1;transform:none}}
+.hs{position:absolute;top:-14px;right:-14px;z-index:4;width:32px;height:32px;border-radius:50%;border:2px solid #fff;background:var(--primary);color:var(--on-primary);font:700 .9rem var(--head);display:grid;place-items:center;cursor:pointer;box-shadow:0 2px 6px rgba(31,52,90,.3);animation:ping 1.8s ease-out infinite}
+.hs.up{top:-40px;right:-4px}
+.hs.tabm{top:-26px;right:-8px}
+.hs:hover{background:var(--primary-hover)}
+.hs.seen{background:var(--good);animation:none}
+.hs[aria-pressed="true"]{background:var(--focus);color:#2a1d00;animation:none}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(31,95,191,.45),0 2px 6px rgba(31,52,90,.3)}80%,100%{box-shadow:0 0 0 12px rgba(31,95,191,0),0 2px 6px rgba(31,52,90,.3)}}
+.hot{position:relative;border-radius:10px;transition:box-shadow .15s}
+.hot.on{box-shadow:0 0 0 3px var(--focus)}
+
+/* Tool mock-up (Talent Workspace look) */
+.mock{background:var(--m-bg);border:1px solid var(--line);border-radius:var(--r);padding:26px 22px 22px;color:var(--m-ink);font-size:13px;line-height:1.45}
+.mock .m-eyebrow{color:var(--m-accent);font-size:10.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px}
+.mock .m-title{font:650 19px/1.2 var(--head);letter-spacing:-.02em;margin-bottom:6px}
+.mock .m-desc{color:var(--m-soft);font-size:12.5px;max-width:52ch}
+.m-tabs{display:inline-flex;flex-wrap:wrap;gap:3px;margin:18px 0 16px;padding:3px;background:var(--m-alt);border:1px solid var(--m-line);border-radius:10px;max-width:100%}
+.m-tab{display:flex;align-items:center;gap:7px;font-weight:600;font-size:12px;color:var(--m-soft);padding:7px 11px;border-radius:8px}
+.m-tab .n{width:19px;height:19px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--m-strong);font-size:9.5px}
+.m-tab.on{background:var(--m-surface);color:var(--m-ink);box-shadow:0 1px 2px rgba(16,24,40,.05), inset 0 0 0 1px var(--m-line)}
+.m-tab.on .n{background:var(--m-accent);border-color:var(--m-accent);color:#fff}
+.m-grid{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:16px;align-items:start}
+.m-col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.m-card{background:var(--m-surface);border:1px solid var(--m-line);border-radius:12px;padding:16px;box-shadow:0 1px 2px rgba(16,24,40,.04),0 6px 20px -4px rgba(16,24,40,.07)}
+.m-h{font-weight:650;font-size:13px;padding-bottom:10px;margin-bottom:12px;border-bottom:1px solid var(--m-line)}
+.m-h.plain{border:0;padding:0;margin-bottom:8px}
+.m-q{margin-bottom:14px}
+.m-q:last-child{margin-bottom:0}
+.m-qhead{padding:2px 4px 4px;margin:-2px -4px 4px}
+.m-tag{display:inline-block;font-size:9.5px;font-weight:600;letter-spacing:.06em;color:var(--m-accent);background:var(--m-accent-soft);border-radius:99px;padding:2px 8px;margin-bottom:5px}
+.m-label{font-weight:600;font-size:12px}
+.m-select{border:1px solid var(--m-strong);border-radius:8px;padding:8px 30px 8px 10px;background:var(--m-surface) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='7'><path d='M1 1l4 4 4-4' stroke='%238A9099' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>") no-repeat right 11px center;font-size:12.5px}
+.m-rows{padding:2px 4px;margin:-2px -4px}
+.m-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--m-line);font-size:11.5px}
+.m-row b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.m-row.neg b{color:var(--m-err)}
+.m-formula{background:var(--m-alt);border-radius:8px;padding:8px 10px;margin-top:10px;font-size:11px;color:var(--m-soft)}
+.m-formula i{font-style:normal;color:var(--m-accent);font-weight:700}
+.m-score{margin-top:10px;border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--m-warn-soft)}
+.m-score .num{font:650 30px/1 var(--head);color:var(--m-warn);font-variant-numeric:tabular-nums}
+.m-score .lbl{display:inline-flex;align-items:center;gap:6px;background:var(--m-surface);color:var(--m-warn);font-weight:600;font-size:11.5px;border-radius:99px;padding:4px 10px 4px 8px}
+.m-score .lbl::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.m-legend{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.m-li{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--m-soft);background:var(--m-alt);border-radius:8px;padding:6px 9px}
+.m-li i{width:7px;height:7px;border-radius:50%;flex:none}
+.m-li b{color:var(--m-ink);font-variant-numeric:tabular-nums}
+
+/* Tool screenshot */
+.shot{margin:0;display:flex;flex-direction:column;gap:8px}
+.shot-frame{position:relative;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);background:var(--m-bg)}
+.shot-frame::after{content:"";position:absolute;left:0;right:0;bottom:0;height:56px;background:linear-gradient(transparent,var(--m-bg));pointer-events:none;z-index:2}
+.shot-frame.scrolled::before{content:"";position:absolute;left:0;right:0;top:31px;height:40px;background:linear-gradient(var(--m-bg),transparent);pointer-events:none;z-index:2}
+.shot-bar{height:30px;background:var(--info-strong);display:flex;align-items:center;gap:6px;padding:0 12px;border-bottom:1px solid var(--line)}
+.shot-bar i{width:9px;height:9px;border-radius:50%;background:#c3ccd9;flex:none}
+.shot-bar span{flex:1;text-align:center;font-size:.74rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:30px}
+.mock.shot-view{border:0;border-radius:0;padding:4px 18px 18px;max-height:390px;overflow:hidden;position:relative}
+.shot-view .m-tabs{margin:14px 0 14px}
+.mock.shot-view{scroll-behavior:auto}
+.shot .dim{opacity:.38}
+.shot .m-q.sel{position:relative;background:var(--m-surface);border-radius:10px;padding:8px;margin:-8px -8px 6px;box-shadow:0 0 0 3px var(--focus)}
+.shot .m-tab.sel{position:relative;opacity:1;color:var(--m-ink);box-shadow:0 0 0 3px var(--focus);background:var(--m-surface)}
+.shot .m-tab.sel .shot-flag{white-space:nowrap}
+.shot .sel-card{position:relative;box-shadow:0 0 0 3px var(--focus)}
+.shot .sel-card .m-row{opacity:1}
+.m-score.crit{background:#FEECEB}
+.m-score.crit .num,.m-score.crit .lbl{color:var(--m-err)}
+.shot-flag{z-index:3;position:absolute;top:-11px;right:10px;background:var(--focus);color:#2a1d00;font:700 .66rem var(--head);letter-spacing:.05em;text-transform:uppercase;border-radius:99px;padding:3px 9px}
+.shot .m-row{opacity:.38}
+.shot .m-row.sel{opacity:1;background:var(--note);box-shadow:0 0 0 2px var(--focus);border-radius:6px;padding-inline:6px;margin-inline:-6px;border-bottom-color:transparent}
+.m-select.ph{color:var(--m-soft)}
+.m-row b.pend{color:var(--m-strong);font-weight:500}
+.m-score.idle{background:var(--m-alt)}
+.m-score.idle .num,.m-score.idle .lbl{color:var(--m-soft)}
+.shot figcaption{font-size:.9rem;color:var(--muted);max-width:72ch}
+
+@media (min-width:1024px){
+  body.menu-hidden .layout{grid-template-columns:minmax(0,1fr)}
+  body.menu-hidden .side{display:none}
+  body.menu-hidden .navbar{left:0}
+}
+@media (max-width:1023px){
+  .layout{grid-template-columns:1fr}
+  .side{position:fixed;inset:0 auto 0 0;top:0;height:100%;width:min(340px,88vw);z-index:30;transform:translateX(-105%);transition:transform .25s;padding-top:calc(16px + env(safe-area-inset-top,0px));box-shadow:0 0 40px rgba(0,0,0,.25)}
+  .side.open{transform:none}
+  .scrim.open{display:block;position:fixed;inset:0;z-index:25;background:rgba(10,15,30,.4)}
+  .menu-only{display:inline-flex}
+  .navbar{left:0}
+  .roadmap{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:760px){
+  .m-grid{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  body{font-size:16px}
+  .main{padding-inline:12px;padding-block:12px 120px}
+  .slide{padding:22px 18px 26px;gap:18px}
+  .topbar{padding-inline:12px}
+  .tbtn .lbl{display:none}
+  .tbtn{padding:8px 12px}
+  .navbar{padding-inline:12px}
+  .navbar .msg{font-size:.84rem}
+  .btn{padding:10px 18px}
+  .revbar .more{display:none}
+  .mock{padding:24px 14px 16px}
+  .hs{right:-8px}
+  .hs-pop{font-size:.92rem}
+  .hs.up{right:0}
+  .mock.shot-view{max-height:450px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <button class="tbtn" id="menuBtn" aria-controls="side" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="lbl" id="menuLbl">Hide Menu</span></button>
+  <span class="name">Learning &amp; Performance Prioritization Framework</span>
+  <button class="tbtn" id="unlockBtn" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span class="lbl" id="unlockLbl">Unlock All Screens</span></button>
+  <button class="tbtn" id="termsBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M9 9h6M9 13h4"/></svg><span class="lbl">Key Terms</span></button>
+</header>
+<div class="revbar" id="revbar" hidden><span><b>Reviewer mode is on.</b><span class="more"> Every screen is unlocked, and Next always appears so you can move freely.</span></span><button class="btn sm" id="revOff">Turn Off</button></div>
+<div class="layout">
+  <nav class="side" id="side" aria-label="Course menu"></nav>
+  <div class="scrim" id="scrim"></div>
+  <main class="main">
+    <div class="wrap">
+      <div class="crumb" id="crumb"></div>
+      <section class="lesson">
+        <div class="meter"><i id="prog" style="width:0%"></i></div>
+        <div class="slide" id="slide" tabindex="-1"></div>
+      </section>
+    </div>
+  </main>
+</div>
+<div class="navbar"><div class="in">
+  <button class="btn" id="back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>Back</button>
+  <span class="msg" id="gate" aria-live="polite"></span>
+  <button class="btn pri" id="next"><span id="nextLbl">Next</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+</div></div>
+
+<div class="overlay" id="terms" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="termsH">
+    <div class="sheet-h"><h2 id="termsH">Key Terms</h2><button class="btn sm" id="termsClose">Close</button></div>
+    <div class="ggroup"><dl>
+      <dt>Priority Score</dt><dd>The number the framework calculates from your answers. A higher score means the request needs attention sooner.</dd>
+      <dt>Priority Label</dt><dd>The category that goes with a score: Critical (8+), High (6–7), Medium (3–5) or Low (2 or less).</dd>
+      <dt>Factor</dt><dd>One thing the framework measures, such as Frequency or Deadline. Each factor is worth 0 to 3 points.</dd>
+      <dt>Proficiency</dt><dd>The point at which someone can perform a task correctly and consistently without help.</dd>
+      <dt>Monthly Recurring Revenue (MRR)</dt><dd>The predictable revenue the company earns each month from sources like subscriptions, service contracts or ongoing client accounts.</dd>
+      <dt>Needs Analysis</dt><dd>The early conversation with a stakeholder where you learn what's driving a request, who it affects and what's at stake.</dd>
+      <dt>Job Aid</dt><dd>A checklist, quick-reference guide or similar tool people use while doing a task, instead of relying on memory.</dd>
+    </dl></div>
+  </div>
+</div>
+
+<script>
+const PIN = '<svg class="pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6l-1 6 3 3H7l3-3z"/><path d="M12 13v7"/></svg>';
+const tip = (body, label='Tip') => `<div class="info tip"><span class="pinwrap">${PIN}</span><div class="tipbody"><span class="lab">${label}</span><p>${body}</p></div></div>`;
+const table = (heads, rows, ptCols=[1]) => `<div class="tbl-wrap"><table><thead><tr>${heads.map((h,i)=>`<th${ptCols.includes(i)?' class="pt"':''}>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr${r.cls?` class="${r.cls}"`:''}>${r.c.map((c,i)=>i===0&&!r.cls?`<td><span class="ans">${c}</span></td>`:`<td${ptCols.includes(i)?` class="pt${r.neg&&i===r.negCol?' neg':''}"`:''}>${ptCols.includes(i)&&!r.cls?`<b>${c}</b>`:c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+
+/* ---------- Hotspot content ---------- */
+const HOTSPOTS = [
+  {t:'Section Tabs', b:'Use the <b>Training Prioritization</b> tab for requests involving specific job tasks. If the request supports a broader business initiative, complete the <b>Strategic Initiative Prioritization</b> tab. For a more comprehensive assessment, use the results from both tabs to determine the request\u2019s overall priority.'},
+  {t:'Factor Tag and Question', b:'The tag identifies the factor being measured, such as Frequency. The question below explains what to evaluate.'},
+  {t:'Answer Menu', b:'Select the answer that best describes the request. Each answer is worth 0 to 3 points.'},
+  {t:'Score Breakdown', b:'Displays each answer and its points as you go, along with the scoring formula. Job Experience is multiplied by 3 and subtracted from the total, so its value appears in red.'},
+  {t:'Score and Label', b:'Appears once every question is answered. It shows your final priority score and label, color-coded to match the legend.'},
+  {t:'Score Legend', b:'Shows the score range for each label.'}
+];
+const hs = (n,cls='') => `<button class="hs${cls?' '+cls:''}" data-hs="${n}" aria-pressed="false" aria-label="Hotspot ${n+1}: ${HOTSPOTS[n].t}">${n+1}</button>`;
+const MOCK = `
+<div class="mock tour" aria-label="The Learning & Performance Prioritization Framework tool, filled in with an example">
+  <div class="m-eyebrow">Prioritization Framework</div>
+  <div class="m-title">Learning &amp; Performance Prioritization Framework</div>
+  <p class="m-desc">Score incoming requests before committing capacity. Answer every question in a section to generate a weighted priority score and label.</p>
+  <div class="m-tabs hot" data-target="0">
+    <span class="m-tab on" style="position:relative"><span class="n">01</span>Training Prioritization${hs(0,'tabm')}</span>
+    <span class="m-tab"><span class="n">02</span>Strategic Initiative Prioritization</span>
+  </div>
+  <div class="m-grid">
+    <div class="m-card">
+      <div class="m-h">Request Questions</div>
+      <div class="m-q">
+        <div class="m-qhead hot" data-target="1">${hs(1)}<span class="m-tag">FREQUENCY</span><div class="m-label">How frequently will this task be performed on the job?</div></div>
+        <div class="m-select hot" data-target="2">${hs(2)}Extremely Frequent</div>
+      </div>
+      <div class="m-q"><span class="m-tag">LEARNING DIFFICULTY</span><div class="m-label" style="margin-bottom:6px">How difficult are the tasks associated with this request to perform?</div><div class="m-select">Extremely Difficult</div></div>
+      <div class="m-q"><span class="m-tag">IMPORTANCE</span><div class="m-label" style="margin-bottom:6px">How important is this request to achieving the company's vision, goals, objectives, and business outcomes?</div><div class="m-select">Extremely Important</div></div>
+      <div class="m-q"><span class="m-tag">JOB EXPERIENCE</span><div class="m-label" style="margin-bottom:6px">What level of experience do the target learners have with the skills or tasks associated with this request?</div><div class="m-select">Moderate</div></div>
+    </div>
+    <div class="m-col">
+      <div class="m-card">
+        <div class="m-h plain">Score Breakdown</div>
+        <div class="m-rows hot" data-target="3">${hs(3,'up')}
+          <div class="m-row"><span>Frequency — Extremely Frequent</span><b>3</b></div>
+          <div class="m-row"><span>Learning Difficulty — Extremely Difficult</span><b>3</b></div>
+          <div class="m-row"><span>Importance — Extremely Important</span><b>3</b></div>
+          <div class="m-row neg"><span>Job Experience (×3, subtracted) — Moderate</span><b>3×1 = 3</b></div>
+          <div class="m-formula">Priority Score = Frequency + Learning Difficulty + Importance <i>−</i> (3 <i>×</i> Job Experience)</div>
+        </div>
+        <div class="m-score hot" data-target="4">${hs(4)}<span class="num">6</span><span class="lbl">High Priority</span></div>
+      </div>
+      <div class="m-card">
+        <div class="m-h plain">Score Legend</div>
+        <div class="m-legend hot" data-target="5">${hs(5,'up')}
+          <span class="m-li"><i style="background:var(--m-err)"></i><span><b>8+</b> Critical</span></span>
+          <span class="m-li"><i style="background:var(--m-warn)"></i><span><b>6–7</b> High</span></span>
+          <span class="m-li"><i style="background:var(--m-caution)"></i><span><b>3–5</b> Medium</span></span>
+          <span class="m-li"><i style="background:var(--m-accent)"></i><span><b>≤2</b> Low</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>`;
+
+/* ---------- Tool screenshot: Training Prioritization tab with one factor highlighted ---------- */
+const SHOT_TABS = {
+  training:{
+    formula:'Priority Score = Frequency + Learning Difficulty + Importance <i>−</i> (3 <i>×</i> Job Experience)',
+    score:{num:'6', lbl:'High Priority', cls:'high'},
+    factors:[
+      {key:'frequency', tag:'FREQUENCY', q:'How frequently will this task be performed on the job?', row:'Frequency', ans:'Extremely Frequent', pts:'3'},
+      {key:'difficulty', tag:'LEARNING DIFFICULTY', q:'How difficult are the tasks associated with this request to perform?', row:'Learning Difficulty', ans:'Extremely Difficult', pts:'3'},
+      {key:'importance', tag:'IMPORTANCE', q:"How important is this request to achieving the company's vision, goals, objectives, and business outcomes?", row:'Importance', ans:'Extremely Important', pts:'3'},
+      {key:'experience', tag:'JOB EXPERIENCE', q:'What level of experience do the target learners have with the skills or tasks associated with this request?', row:'Job Experience (×3, subtracted)', ans:'Moderate', pts:'3×1 = 3', neg:true}
+    ]},
+  strategic:{
+    formula:'Priority Score = MRR <i>+</i> Number of Employees <i>+</i> Deadline',
+    score:{num:'8', lbl:'Critical Priority', cls:'crit'},
+    factors:[
+      {key:'mrr', tag:'MRR', q:'What is the Monthly Recurring Revenue (MRR) associated with this request?', row:'MRR', ans:'$50K to under $100K', pts:'2'},
+      {key:'employees', tag:'EMPLOYEES IMPACTED', q:'How many employees will this request impact?', row:'Number of Employees', ans:'100+', pts:'3'},
+      {key:'deadline', tag:'DEADLINE', q:'When does this work need to be completed?', row:'Deadline', ans:'Less than 60 days', pts:'3'}
+    ]}
+};
+const FLAG = '<span class="shot-flag">This section</span>';
+/* focus: a factor key, 'breakdown' (the whole Score Breakdown box) or 'tab' (the section tab) */
+function toolShot(tab, focus, caption){
+  const T = SHOT_TABS[tab], F = T.factors;
+  const all = focus==='breakdown';
+  const upto = all ? F.length-1 : F.findIndex(f=>f.key===focus);
+  const qs = F.map((f,i)=>{
+    const on = f.key===focus, filled = i<=upto;
+    return `<div class="m-q ${on?'sel':'dim'}">${on?FLAG:''}<span class="m-tag">${f.tag}</span><div class="m-label" style="margin-bottom:6px">${f.q}</div><div class="m-select${filled?'':' ph'}">${filled?f.ans:'Select...'}</div></div>`;
+  }).join('');
+  const rows = F.map((f,i)=>{
+    const on = f.key===focus, filled = i<=upto;
+    return `<div class="m-row${f.neg?' neg':''}${on?' sel':''}"><span>${f.row}${filled?' — '+f.ans:''}</span><b class="${filled?'':'pend'}">${filled?f.pts:'—'}</b></div>`;
+  }).join('');
+  const score = all ? `<div class="m-score ${T.score.cls}"><span class="num">${T.score.num}</span><span class="lbl">${T.score.lbl}</span></div>`
+                    : `<div class="m-score idle dim"><span class="num">—</span><span class="lbl">Awaiting inputs</span></div>`;
+  const tabT = `<span class="m-tab${tab==='training'?' on':' dim'}"><span class="n">01</span>Training Prioritization</span>`;
+  const tabS = `<span class="m-tab${tab==='strategic'?' on':' dim'}${focus==='tab'?' sel':''}">${focus==='tab'?FLAG:''}<span class="n">02</span>Strategic Initiative Prioritization</span>`;
+  const what = focus==='tab' ? 'the Strategic Initiative Prioritization tab' : all ? 'the Score Breakdown' : `the ${F[upto].row.replace(' (×3, subtracted)','')} question`;
+  return `<figure class="shot">
+    <div class="shot-frame" role="img" aria-label="Screenshot of the ${tab==='training'?'Training':'Strategic Initiative'} Prioritization tab with ${what} highlighted">
+      <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>Learning &amp; Performance Prioritization Framework</span></div>
+      <div class="shot-view mock" aria-hidden="true">
+        <div class="m-tabs">${tabT}${tabS}</div>
+        <div class="m-grid">
+          <div class="m-card${focus==='tab'?' dim':''}"><div class="m-h">Request Questions</div>${qs}</div>
+          <div class="m-col"><div class="m-card${all?' sel-card':''}${focus==='tab'?' dim':''}">${all?FLAG:''}<div class="m-h plain">Score Breakdown</div>${rows}
+            <div class="m-formula${all?'':' dim'}">${T.formula}</div>
+            ${score}</div></div>
+        </div>
+      </div>
+    </div>
+    ${caption?`<figcaption>${caption}</figcaption>`:''}
+  </figure>`;
+}
+/* Scroll each screenshot so its highlighted part is in view */
+function fitShots(){
+  slide.querySelectorAll('.shot-view').forEach(v=>{
+    const t = v.querySelector('.sel, .sel-card'); if(!t) return;
+    v.scrollTop = 0;
+    const top = t.getBoundingClientRect().top - v.getBoundingClientRect().top;
+    const need = top + Math.min(t.offsetHeight, v.clientHeight - 60) > v.clientHeight - 36;
+    v.scrollTop = need ? Math.max(0, top - 40) : 0;
+    v.parentElement.classList.toggle('scrolled', v.scrollTop > 0);
+  });
+}
+window.addEventListener('resize', ()=>{ clearTimeout(window.__fs); window.__fs = setTimeout(fitShots, 120); });
+
+/* ---------- Course content ---------- */
+const MODULES = [
+  {name:'Introduction', screens:[
+    {id:'welcome', title:'Welcome', html:()=>`
+      <div class="titlecard">
+        <div class="eyebrow">Course · Introduction</div>
+        <h1>Learning &amp; Performance Prioritization Framework</h1>
+        <p class="lead">Learn how to use the <a class="lnk" href="https://tools.crizolp.com/training-prioritization-framework.html" target="_blank" rel="noopener">Learning &amp; Performance Prioritization Framework</a> to score incoming requests the same way every time, so you can decide what needs attention now and what can wait.</p>
+        <div class="roadmap">
+          <div class="rm"><span class="n">Section 1</span><b>Introduction</b><span>Why prioritize, and a tour of the tool</span></div>
+          <div class="rm"><span class="n">Section 2</span><b>Training Prioritization</b><span>Four factors that score a job task</span></div>
+          <div class="rm"><span class="n">Section 3</span><b>Strategic Initiatives</b><span>Three factors that score business impact</span></div>
+          <div class="rm"><span class="n">Section 4</span><b>Wrap-Up</b><span>Key takeaways</span></div>
+        </div>
+      </div>`},
+    {id:'why', title:'When Everything Is a Top Priority', html:()=>`
+      <h1>When Everything Is a Top Priority</h1>
+      <div class="prose">
+        <p class="lead">If you work in Learning &amp; Development or on any team that handles business requests, you've likely experienced a surge of requests in a short period. Managing team capacity and deciding what needs immediate attention versus what can wait can be challenging, especially when every request is labeled a top priority.</p>
+        <p>The Learning and Performance Prioritization Framework helps you navigate these challenges and make informed, consistent decisions.</p>
+        <p>Once you've completed your performance analysis and determined whether the request is a legitimate training need or an issue better addressed through other solutions, such as process improvements, the framework guides you through a series of questions to prioritize your work.</p>
+      </div>
+      <div class="key">The result? A clear, evidence-based approach to managing requests, allocating resources, and explaining why some requests take priority over others.</div>
+      <p class="prose">When a request can't be addressed immediately, you'll have the data to support your decision and communicate it confidently to stakeholders.</p>`},
+    {id:'how', title:'How the Framework Works', html:()=>`
+      <h1>How the Framework Works</h1>
+      <p class="lead">The framework is an interactive tool with two sections for evaluating and prioritizing incoming requests.</p>
+      <div class="cols">
+        <div class="col"><h2><span class="num">1</span>Training Prioritization</h2><p><b>Evaluates the Work:</b></p><ul class="blist"><li>How often the task is performed</li><li>How difficult the task is to learn</li><li>How important the task is to business goals</li><li>How much experience learners already have</li></ul></div>
+        <div class="col"><h2><span class="num">2</span>Strategic Initiative Prioritization</h2><p><b>Evaluates Business Impact:</b></p><ul class="blist"><li>Monthly recurring revenue associated with the request</li><li>Number of employees affected</li><li>Urgency of completing the work</li></ul></div>
+      </div>
+      <div class="prose">
+        <p><b>Click next to explore the tool and learn how to navigate it</b></p>
+      </div>`},
+    {id:'tour', title:'Tour the Tool', gate:'hotspots', html:()=>`
+      <h1>Tour the Tool</h1>
+      <p class="ins">Select each numbered marker to learn about that part of the tool. Open all six to continue.</p>
+      ${MOCK}
+      <p class="prose"><b>Now that you know your way around the tool, let's take a closer look at the Training Prioritization tab, starting with its first question: Frequency</b></p>`}
+  ]},
+  {name:'Training Prioritization', screens:[
+    {id:'frequency', title:'Frequency', html:()=>`
+      <h1>Frequency</h1>
+      <p class="lead">Frequency measures how often learners perform a task on the job. More frequent tasks score higher because they offer more opportunities to improve performance. You'll find Frequency as the first question on the Training Prioritization tab, with its points displayed in the first row of the Score Breakdown.</p>
+      ${toolShot('training','frequency')}
+      ${table(['Answer','Points','What it means','Example'],[
+        {c:['Extremely Frequent','3','Performed daily or many times a day. It’s a core part of the job.','A customer service rep logs every call in the CRM system.']},
+        {c:['Frequent','2','Performed weekly or several times a month.','A manager reviews and approves team timesheets each week.']},
+        {c:['Moderately Frequent','1','Performed monthly to quarterly.','A finance analyst prepares the month-end close report.']},
+        {c:['Infrequent','0','Performed a few times a year or less.','A supervisor completes annual performance reviews.']}
+      ])}
+      ${tip('Score Frequency per learner, not per team. If 50 employees each process one return a month, that’s Moderately Frequent, even if the team processes returns daily.')}
+      <div class="note"><h2>Infrequent Doesn't Mean Unimportant</h2>
+        <p>Some tasks are performed infrequently but have serious consequences if done incorrectly, such as evacuating a building, responding to a data breach, or handling a workplace injury. Although these tasks score 0 for Frequency, they can still rank high based on Importance and Learning Difficulty.</p>
+        <p>Consider the learning format, too. Skills used infrequently are easy to forget, so a job aid, checklist, or quick-reference guide may be more useful than a course or serve as a helpful companion.</p>
+      </div>`},
+    {id:'difficulty', title:'Learning Difficulty', html:()=>`
+      <h1>Learning Difficulty</h1>
+      <p class="lead">Learning Difficulty measures how challenging a task is to learn and perform well. Consider the number of steps, level of judgment required, and time needed to become proficient. More complex tasks score higher because they typically require more structured support. You'll find it as the second question on the Training Prioritization tab, with points displayed in the second row of the Score Breakdown.</p>
+      ${toolShot('training','difficulty')}
+      ${table(['Answer','Points','What it means','Example'],[
+        {c:['Extremely Difficult','3','Complex, with many variables and decisions that call for expert judgment. Becoming proficient takes months of practice and feedback.','An HR business partner investigates a harassment complaint, interviewing witnesses and weighing the evidence.']},
+        {c:['Difficult','2','Several steps with some judgment calls. Becoming proficient takes weeks, and mistakes are common at first.','A sales rep builds a custom pricing quote using tiered discount rules.']},
+        {c:['Moderately Difficult','1','A set process with a few decision points. People can learn it in a few days with a reference guide.','A new hire submits an expense report with receipts and the correct cost codes.']},
+        {c:['Easy','0','Few steps and little judgment. People can learn it from a quick demo or written instructions.','An employee resets their password through the self-service portal.']}
+      ])}
+      ${tip('Rate difficulty for the typical learner, not the expert requesting training. Experts often underestimate difficulty because the task has become second nature.')}`},
+    {id:'importance', title:'Importance', html:()=>`
+      <h1>Importance</h1>
+      <p class="lead">Importance measures how directly a request supports the company's vision, goals, and business outcomes. Consider what's at stake if employees can't perform the task well. Requests tied to critical goals or significant risks score higher. You'll find it as the third question on the Training Prioritization tab, with points displayed in the third row of the Score Breakdown.</p>
+      ${toolShot('training','importance')}
+      ${table(['Answer','Points','What it means','Example'],[
+        {c:['Extremely Important','3','Directly tied to a top company goal, or needed for legal compliance or safety. Poor performance creates serious financial, legal, safety or customer risk.','Customer-facing staff learn a new data privacy procedure that a new law requires.']},
+        {c:['Important','2','Supports a department goal or key metric. Poor performance noticeably affects results or customers.','The support team learns a new escalation process to cut ticket resolution time, a department KPI.']},
+        {c:['Moderately Important','1','Improves efficiency or quality but connects to goals only indirectly. Waiting would cause little harm.','Analysts learn advanced spreadsheet shortcuts to speed up weekly reporting.']},
+        {c:['Not Important','0','Nice to have, with no clear link to goals or outcomes.','A team asks for a course on software the company is phasing out next quarter.']}
+      ])}
+      ${tip('Ask the requester two questions: “Which goal or metric does this support?” and “What happens if we don’t do it?” If they can’t identify a specific goal or meaningful consequence, the request likely scores lower, regardless of its urgency.')}`},
+    {id:'experience', title:'Job Experience', html:()=>`
+      <h1>Job Experience</h1>
+      <p class="lead">Job Experience measures learners’ existing experience with the skills or tasks involved. Unlike other factors, it reduces the score because experienced learners typically need less training. Points are multiplied by 3 and subtracted, giving this factor the greatest weight. You'll find it as the fourth question on the Training Prioritization tab, with the deduction shown in the fourth row of the Score Breakdown.</p>
+      ${toolShot('training','experience')}
+      ${table(['Answer','Points','Effect on score','What it means','Example'],[
+        {neg:true,negCol:2,c:['Extremely High','3','−9','Learners already perform the task well, and many could teach it. Training would add little.','Veteran nurses are asked to attend training on a medication process they’ve used for years.']},
+        {neg:true,negCol:2,c:['High','2','−6','Most learners perform the task well. A few have gaps or are newer to it.','An experienced sales team learns a small update to the CRM system they use every day.']},
+        {neg:true,negCol:2,c:['Moderate','1','−3','Learners have some related experience or basic exposure but aren’t yet proficient.','Managers who give informal feedback learn to run structured performance reviews for the first time.']},
+        {c:['Low','0','0','The task is new to learners, or they have little experience with it.','New hires in their first month learn the order-entry system.']}
+      ],[1,2])}
+      <div class="prose"><h2 style="font-size:1.15rem">Why it carries so much weight</h2><p>Take a task that is Extremely Frequent, Extremely Difficult and Extremely Important. It earns 9 points before Job Experience is applied.</p></div>
+      <div class="opts-grid">
+        <div class="ocard crit"><h3>Low experience</h3><span class="stat">9 − 0 = 9</span><span class="statl">Critical Priority</span></div>
+        <div class="ocard low"><h3>Extremely High experience</h3><span class="stat">9 − 9 = 0</span><span class="statl">Low Priority</span></div>
+      </div>
+      ${tip('Base your rating on evidence, such as assessments, performance data, or manager input, rather than assumptions. For mixed audiences, score each group separately. New hires may be a Critical priority, while experienced employees may not need training.')}`},
+    {id:'breakdown', title:'Score Breakdown', html:()=>`
+      <h1>Score Breakdown</h1>
+      <p class="lead">The Score Breakdown shows how your answers contribute to the overall priority score, updating automatically with each selection. You'll find it beside the questions on the Training Prioritization tab.</p>
+      ${toolShot('training','breakdown')}
+      ${tip('Use the Score Breakdown to explain prioritization decisions to stakeholders. It shows which factors raised or lowered the score. You can also adjust answers to see how the score changes, especially when weighing options or discussing what could increase a request’s priority.')}`}
+  ]},
+  {name:'Strategic Initiative Prioritization', screens:[
+    {id:'strategic', title:'Scoring Business Impact', html:()=>`
+      <h1>Strategic Initiative Prioritization</h1>
+      <p class="lead">Some requests aren't about a specific job task. They're about supporting a larger business initiative. For those, switch to the Strategic Initiative Prioritization tab, which scores a request by its business impact.</p>
+      ${toolShot('strategic','tab')}
+      <p class="prose">This section evaluates requests based on revenue impact, number of employees affected, and urgency. Each factor scores 0 to 3 points, for a total of 0 to 9. Unlike Training Prioritization, no points are subtracted. The same priority labels apply: Critical, High, Medium, and Low.</p>
+      <div class="note"><h2>Customize It for Your Organization</h2>
+        <p>The dollar amounts, employee counts, and timeframes are starting points, not fixed rules. For example, $10K in monthly revenue may be significant for a small business but minor for a large company. Likewise, 100 employees could represent one department or an entire organization.</p>
+        <p>If these ranges don't fit your organization, or a factor doesn't apply (such as recurring revenue), <a class="lnk" href="https://www.crizolp.com/contact" target="_blank" rel="noopener">contact me</a>. I'll work with you to customize the framework and tool so your scores reflect your organization's priorities.</p>
+      </div>`},
+    {id:'mrr', title:'Monthly Recurring Revenue', html:()=>`
+      <h1>Monthly Recurring Revenue (MRR)</h1>
+      <p class="lead">Monthly Recurring Revenue (MRR) is the predictable monthly income from subscriptions, service contracts, or ongoing client accounts. This factor measures how much revenue depends on the request. You'll find it as the first question on the Strategic Initiative Prioritization tab, with points displayed in the first row of the Score Breakdown.</p>
+      ${toolShot('strategic','mrr')}
+      ${table(['Answer','Points','Example'],[
+        {c:['$100K or more','3','Account managers prepare for the renewal of an enterprise client worth $150K a month.']},
+        {c:['$50K to under $100K','2','Support staff are trained on a new product line expected to bring in $75K a month.']},
+        {c:['$10K to under $50K','1','Sales reps learn to sell an add-on service worth about $20K a month.']},
+        {c:['Less than $10K','0','Employees learn new expense-reporting software, which has no direct revenue link.']}
+      ])}
+      ${tip('Requests without a direct revenue impact score 0 for MRR, but they can still rank high based on the number of employees affected and the urgency of the deadline.')}
+      <div class="note"><h2>Customize It for Your Organization</h2>
+        <p>Not every request directly impacts revenue, but it may address business challenges such as employee turnover, retention, or morale. You can customize the MRR question to measure the financial impact of these challenges, including replacement costs, lost productivity, or costs associated with low employee engagement. This helps prioritize requests based on their potential cost savings rather than revenue alone.</p>
+      </div>`},
+    {id:'employees', title:'Employees Impacted', html:()=>`
+      <h1>Employees Impacted</h1>
+      <p class="lead">This factor measures how many employees are affected by the request, including those whose daily work will change or who need training. You'll find it as the second question on the Strategic Initiative Prioritization tab, with points displayed in the second row of the Score Breakdown.</p>
+      ${toolShot('strategic','employees')}
+      ${table(['Answer','Points','Example'],[
+        {c:['100+','3','A new HR system rolls out to all 400 employees.']},
+        {c:['50–99','2','A 75-person customer support department adopts a new ticketing workflow.']},
+        {c:['20–49','1','A 30-person regional sales team switches to a new quoting tool.']},
+        {c:['Less than 20','0','An 8-person finance team updates its month-end close process.']}
+      ])}
+      ${tip('Count everyone affected by the change, not just those receiving training. Include managers who will need to coach their teams on a new process.')}`},
+    {id:'deadline', title:'Deadline', html:()=>`
+      <h1>Deadline</h1>
+      <p class="lead">This factor measures how soon the work must be completed. Shorter deadlines score higher because they leave less time to design, develop, and deliver a solution. You'll find it as the third question on the Strategic Initiative Prioritization tab, with points displayed in the third row of the Score Breakdown.</p>
+      ${toolShot('strategic','deadline')}
+      ${table(['Answer','Points','Example'],[
+        {c:['Less than 60 days','3','A new phone system goes live in six weeks.']},
+        {c:['60–89 days','2','A new travel policy takes effect at the start of next quarter.']},
+        {c:['90–179 days','1','A product launch is planned for five months from now.']},
+        {c:['180+ days','0','A reorganization is planned for next fiscal year.']}
+      ])}
+      ${tip('Not every deadline is firm. Legal requirements and product launches may have fixed dates, while preferred completion dates may be flexible. During the needs analysis, ask stakeholders what’s driving the deadline and, “What happens if it isn’t met?” Their answers will help you assess the urgency and consequences of a delay.')}`},
+    {id:'strategic-example', title:'Putting It Together', html:()=>`
+      <h1>Putting It Together</h1>
+      <p class="lead">Here's how a strategic request is scored. Each answer contributes points, and the total determines the priority level.</p>
+      ${toolShot('strategic','breakdown')}`}
+  ]},
+  {name:'Wrap-Up', screens:[
+    {id:'takeaways', title:'Key Takeaways', html:()=>`
+      <h1>Key Takeaways</h1>
+      <ol class="recap">
+        <li><b>Score Every Request Consistently</b>The framework replaces “who asks the loudest” with a consistent set of questions, making prioritization decisions fair, objective, and easy to explain.</li>
+        <li><b>Choose Your Prioritization Approach</b>Use Training Prioritization for specific job tasks and the employees who perform them. Use Strategic Initiative Prioritization for broader business initiatives. For a more comprehensive assessment, use the results from both tabs to determine the request’s overall priority.</li>
+        <li><b>Account for Existing Experience</b>Job Experience is multiplied by 3 and subtracted from the score because training employees on skills they've already mastered is rarely the best use of resources.</li>
+        <li><b>Look Beyond the Request</b>Ask which business goal the request supports, what's driving the deadline, and what happens if the request isn't fulfilled.</li>
+        <li><b>Use the Score Breakdown to Explain Decisions</b>Show stakeholders which factors raised or lowered their request's priority.</li>
+      </ol>
+      <div class="banner"><h2>You've completed the course</h2><p>You're ready to score your next request with the Learning &amp; Performance Prioritization Framework.</p></div>`}
+  ]}
+];
+
+/* ---------- Player ---------- */
+const FLAT = []; MODULES.forEach((m,mi)=>m.screens.forEach(s=>FLAT.push({...s, mi})));
+const KEY = 'lppf-course-v1';
+let st = {i:0, visited:[0], hs:[], acc:[], unlocked:false, openMods:[0]};
+try{ const s = JSON.parse(localStorage.getItem(KEY)); if(s && typeof s.i==='number' && s.i < FLAT.length) st = Object.assign(st, s); }catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
+
+const $ = id => document.getElementById(id);
+const slide = $('slide');
+
+function gateOpen(scr){
+  if(st.unlocked) return true;
+  if(scr.gate==='hotspots') return st.hs.length >= HOTSPOTS.length;
+  if(scr.gate==='acc') return st.acc.length >= 4;
+  return true;
+}
+function maxReach(){ return Math.max(...st.visited); }
+function canOpen(idx){
+  if(st.unlocked) return true;
+  if(st.visited.includes(idx)) return true;
+  const m = maxReach();
+  return idx === m+1 && gateOpen(FLAT[m]);
+}
+
+function renderMenu(){
+  const pct = Math.round(st.visited.length / FLAT.length * 100);
+  let h = `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><div class="side-h">Course Menu</div><button class="tbtn menu-only" id="menuClose">Close</button></div>
+    <div class="overall"><div class="t"><span>Your Progress</span><span>${pct}%</span></div><div class="meter"><i style="width:${pct}%"></i></div></div>`;
+  let n = 0;
+  MODULES.forEach((m,mi)=>{
+    const idxs = m.screens.map(()=>n++);
+    const doneCt = idxs.filter(x=>st.visited.includes(x)).length;
+    const cur = FLAT[st.i].mi === mi;
+    const allDone = doneCt === idxs.length;
+    const open = st.openMods.includes(mi) || cur;
+    h += `<div><button class="mod-btn" data-mod="${mi}" aria-expanded="${open}"><span class="mod-badge ${cur?'cur':(allDone?'done':'')}">${mi+1}</span><span class="mod-name">${m.name}</span><span class="mod-meta">${doneCt}/${idxs.length}</span></button>
+      <ul class="scr-list"${open?'':' hidden'}>${idxs.map(x=>`<li><button class="scr${st.visited.includes(x)?' done':''}${x===st.i?' cur':''}" data-go="${x}"${x===st.i?' aria-current="page"':''}${canOpen(x)?'':' disabled'}><span class="dot" aria-hidden="true"></span><span>${FLAT[x].title}</span></button></li>`).join('')}</ul></div>`;
+  });
+  $('side').innerHTML = h;
+  $('side').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ go(+b.dataset.go); closeDrawer(); });
+  $('side').querySelectorAll('[data-mod]').forEach(b=>b.onclick=()=>{
+    const mi = +b.dataset.mod;
+    st.openMods = st.openMods.includes(mi) ? st.openMods.filter(x=>x!==mi) : [...st.openMods, mi];
+    save(); renderMenu();
+  });
+  const mc = $('menuClose'); if(mc) mc.onclick = closeDrawer;
+}
+
+function renderNav(){
+  const scr = FLAT[st.i];
+  $('back').hidden = st.i === 0;
+  const last = st.i === FLAT.length-1;
+  $('next').hidden = last;
+  const ok = gateOpen(scr);
+  $('next').disabled = !ok;
+  let msg = '';
+  if(!ok && scr.gate==='hotspots') msg = `Open all six markers to continue (${st.hs.length} of 6).`;
+  if(!ok && scr.gate==='acc') msg = `Open all four parts to continue (${st.acc.length} of 4).`;
+  if(last) msg = 'You’ve reached the end of the course.';
+  $('gate').textContent = msg;
+  $('nextLbl').textContent = st.i === 0 ? 'Start' : 'Next';
+}
+
+function render(focus){
+  const scr = FLAT[st.i];
+  $('crumb').innerHTML = `<span>Section ${scr.mi+1}: ${MODULES[scr.mi].name}</span>`;
+  slide.innerHTML = scr.html();
+  fitShots();
+  slide.classList.remove('enter'); void slide.offsetWidth; slide.classList.add('enter');
+  $('prog').style.width = ((st.i+1)/FLAT.length*100)+'%';
+  if(scr.gate==='hotspots') wireHotspots();
+  if(scr.gate==='acc') wireAcc();
+  renderMenu(); renderNav();
+  if(focus){ try{ window.scrollTo({top:0}); }catch(e){} slide.focus({preventScroll:true}); }
+}
+
+function go(idx){
+  if(idx<0 || idx>=FLAT.length || !canOpen(idx)) return;
+  st.i = idx;
+  if(!st.visited.includes(idx)) st.visited.push(idx);
+  const mi = FLAT[idx].mi; if(!st.openMods.includes(mi)) st.openMods.push(mi);
+  save(); render(true);
+}
+
+function wireHotspots(){
+  const mock = slide.querySelector('.mock.tour');
+  const markers = slide.querySelectorAll('.hs');
+  let active = -1, pop = null;
+  const paint = () => {
+    markers.forEach(m=>{
+      const n = +m.dataset.hs;
+      m.classList.toggle('seen', st.hs.includes(n));
+      m.setAttribute('aria-pressed', n===active ? 'true':'false');
+    });
+    slide.querySelectorAll('.hot').forEach(t=>t.classList.toggle('on', +t.dataset.target===active));
+  };
+  const place = () => {
+    if(!pop || active<0) return;
+    const m = mock.querySelector(`.hs[data-hs="${active}"]`);
+    const mr = mock.getBoundingClientRect(), r = m.getBoundingClientRect();
+    const cx = r.left + r.width/2 - mr.left;
+    const w = pop.offsetWidth;
+    const x = Math.min(Math.max(cx - w + 34, 12), mr.width - w - 12);
+    pop.style.left = x + 'px';
+    pop.style.top = (r.bottom - mr.top + 12) + 'px';
+    pop.style.setProperty('--ax', Math.min(Math.max(cx - x, 18), w - 18) + 'px');
+  };
+  const close = () => {
+    if(pop){ pop.remove(); pop = null; }
+    active = -1; paint();
+  };
+  const open = n => {
+    if(pop) pop.remove();
+    active = n;
+    if(!st.hs.includes(n)) st.hs.push(n);
+    save();
+    pop = document.createElement('div');
+    pop.className = 'hs-pop';
+    pop.setAttribute('role','dialog');
+    pop.setAttribute('aria-label', HOTSPOTS[n].t);
+    pop.innerHTML = `<div class="ph"><span class="pn">${n+1}</span><h2>${HOTSPOTS[n].t}</h2><button class="px" aria-label="Close">×</button></div><p>${HOTSPOTS[n].b}</p>`;
+    mock.appendChild(pop);
+    pop.querySelector('.px').onclick = e => { e.stopPropagation(); const m = mock.querySelector(`.hs[data-hs="${n}"]`); close(); m.focus(); };
+    pop.addEventListener('click', e=>e.stopPropagation());
+    paint(); place();
+    renderNav(); renderMenu();
+  };
+  markers.forEach(m=>m.addEventListener('click', e=>{
+    e.stopPropagation();
+    const n = +m.dataset.hs;
+    if(active === n) close(); else open(n);
+  }));
+  mock.addEventListener('click', ()=>{ if(pop) close(); });
+  window.__hsClose = () => { if(pop){ const m = mock.querySelector(`.hs[data-hs="${active}"]`); close(); if(m) m.focus(); } };
+  window.__hsPlace = place;
+  paint();
+}
+
+function wireAcc(){
+  const ds = slide.querySelectorAll('.acc details');
+  ds.forEach((d,i)=>{
+    if(st.acc.includes(i)) d.classList.add('seen');
+    d.addEventListener('toggle', ()=>{
+      if(d.open && !st.acc.includes(i)){ st.acc.push(i); d.classList.add('seen'); save(); renderNav(); renderMenu(); }
+    });
+  });
+}
+
+$('next').onclick = ()=> go(st.i+1);
+$('back').onclick = ()=> go(st.i-1);
+
+/* menu toggle: hides on desktop, drawer on smaller screens */
+const mqDrawer = window.matchMedia('(max-width:1023px)');
+function closeDrawer(){ $('side').classList.remove('open'); $('scrim').classList.remove('open'); syncMenuBtn(); }
+function syncMenuBtn(){
+  const shown = mqDrawer.matches ? $('side').classList.contains('open') : !document.body.classList.contains('menu-hidden');
+  $('menuBtn').setAttribute('aria-expanded', shown);
+  $('menuLbl').textContent = shown ? 'Hide Menu' : 'Menu';
+}
+$('menuBtn').onclick = ()=>{
+  if(mqDrawer.matches){ const o = !$('side').classList.contains('open'); $('side').classList.toggle('open', o); $('scrim').classList.toggle('open', o); }
+  else document.body.classList.toggle('menu-hidden');
+  syncMenuBtn();
+};
+$('scrim').onclick = closeDrawer;
+try{ mqDrawer.addEventListener('change', syncMenuBtn); }catch(e){}
+
+/* reviewer mode */
+function setUnlock(on){
+  st.unlocked = on; save();
+  $('unlockBtn').setAttribute('aria-pressed', on);
+  $('unlockLbl').textContent = on ? 'Lock Screens' : 'Unlock All Screens';
+  $('revbar').hidden = !on;
+  renderMenu(); renderNav();
+}
+$('unlockBtn').onclick = ()=> setUnlock(!st.unlocked);
+$('revOff').onclick = ()=> setUnlock(false);
+
+/* key terms */
+$('termsBtn').onclick = ()=>{ $('terms').hidden = false; $('termsClose').focus(); };
+$('termsClose').onclick = ()=>{ $('terms').hidden = true; $('termsBtn').focus(); };
+$('terms').addEventListener('click', e=>{ if(e.target.id==='terms'){ $('terms').hidden = true; } });
+window.addEventListener('resize', ()=>{ if(window.__hsPlace) window.__hsPlace(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ if(window.__hsClose) window.__hsClose(); if(!$('terms').hidden) $('terms').hidden = true; closeDrawer(); } });
+
+setUnlock(st.unlocked);
+syncMenuBtn();
+render(false);
+</script>
+</body>
+</html>
