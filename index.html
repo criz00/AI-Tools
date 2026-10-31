@@ -53,6 +53,26 @@
   }
   .privacy-note strong{color:var(--accent);}
 
+  /* quick nav */
+  .quicknav{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:52px;
+  }
+  .quicknav a{
+    text-decoration:none;
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--accent);
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:8px 16px;
+    transition:background .15s, border-color .15s;
+  }
+  .quicknav a:hover{background:var(--accent-soft);border-color:var(--accent);}
+
   /* category sections */
   .category{margin-bottom:52px;scroll-margin-top:24px;}
   .category h2{
@@ -184,38 +204,6 @@
   }
   .back-link:hover{text-decoration:underline;}
 
-
-  /* collapsible categories */
-  details.category{margin-bottom:14px;}
-  details.category > summary{
-    list-style:none;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    gap:12px;
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:16px 20px;
-    transition:border-color .15s, background .15s;
-  }
-  details.category > summary::-webkit-details-marker{display:none;}
-  details.category > summary::before{
-    content:"▸";
-    color:var(--accent);
-    font-size:14px;
-    display:inline-block;
-    transition:transform .15s;
-  }
-  details.category[open] > summary::before{transform:rotate(90deg);}
-  details.category > summary:hover{border-color:var(--accent);background:var(--accent-soft);}
-  details.category[open] > summary{border-color:var(--accent);border-bottom-width:2px;}
-  details.category > summary h2{border:none;padding:0;margin:0;font-size:19px;flex:1;}
-  .cat-count{font-size:12.5px;font-weight:600;color:var(--ink-soft);background:var(--bg);border-radius:20px;padding:4px 10px;white-space:nowrap;}
-  .cat-body{padding:16px 0 26px;}
-  .toggle-all{background:none;border:none;color:var(--accent);font:600 13px 'Inter',sans-serif;cursor:pointer;padding:0;margin:-24px 0 12px;display:block;margin-left:auto;}
-  .toggle-all:hover{text-decoration:underline;}
-
   footer{
     margin-top:60px;
     padding-top:24px;
@@ -247,12 +235,19 @@
     🔒 <strong>A note on your data:</strong> Nothing entered into these tools is stored, saved, or sent anywhere. Everything runs locally in your browser, and all information is lost as soon as you refresh or close the page.
   </div>
 
-  <button class="toggle-all" type="button">Expand all</button>
+  <div class="quicknav">
+    <a href="#talent-acquisition">Talent Acquisition</a>
+    <a href="#learning-development">Learning and Development</a>
+    <a href="#performance-management">Performance Management</a>
+    <a href="#career-development">Career Development</a>
+    <a href="#change-management">Change Management</a>
+    <a href="#succession-planning">Succession Planning</a>
+    <a href="#workforce-planning">Workforce Planning</a>
+  </div>
 
   <!-- TALENT ACQUISITION -->
-  <details class="category" id="talent-acquisition">
-    <summary><h2>Talent Acquisition</h2><span class="cat-count">1 tool</span></summary>
-    <div class="cat-body">
+  <div class="category" id="talent-acquisition">
+    <h2>Talent Acquisition</h2>
 
     <div class="tool-card">
       <h3>Interview Guide Generator</h3>
@@ -260,13 +255,11 @@
       <a class="tool-link" target="_blank" rel="noopener" href="interview-guide-generator.html">Try it</a>
     </div>
     <a class="back-link" href="https://www.crizolp.com/portfolio/talent-acquisition#h.o8vih6y8bbtv">← Back to Talent Acquisition</a>
-    </div>
-  </details>
+  </div>
 
   <!-- LEARNING AND DEVELOPMENT -->
-  <details class="category" id="learning-development">
-    <summary><h2>Learning and Development</h2><span class="cat-count">8 tools</span></summary>
-    <div class="cat-body">
+  <div class="category" id="learning-development">
+    <h2>Learning and Development</h2>
 
     <div class="tool-card">
       <h3>Learning &amp; Performance Prioritization Framework</h3>
@@ -356,13 +349,11 @@
       <a class="tool-link" target="_blank" rel="noopener" href="SkillsTaxonomy.html">Try it</a>
     </div>
     <a class="back-link" href="https://www.crizolp.com/portfolio/learning-and-development#h.8s7a71ara919">← Back to Learning and Development</a>
-    </div>
-  </details>
+  </div>
 
   <!-- PERFORMANCE MANAGEMENT -->
-  <details class="category" id="performance-management">
-    <summary><h2>Performance Management</h2><span class="cat-count">7 tools</span></summary>
-    <div class="cat-body">
+  <div class="category" id="performance-management">
+    <h2>Performance Management</h2>
 
     <div class="tool-card">
       <h3>Performance Review Planner</h3>
@@ -385,7 +376,7 @@
     <div class="tool-card">
       <h3>Talent Matrix: Calibration</h3>
       <p>Run a live talent review with your team on one shared 9-box grid. Add each person with their level and starting placement, then drag dots to recalibrate as the group discusses them. Dashed rings mark placements that are open to adjusting. A distribution view shows how the team is spread across the grid, and a change log records every move.</p>
-      <a class="tool-link" target="_blank" rel="noopener" href="talent-calibration-grid_17.html">Try it</a>
+      <a class="tool-link" target="_blank" rel="noopener" href="Talent%20Matrix%20-%20Calibration.html">Try it</a>
     </div>
 
     <div class="tool-card">
@@ -408,13 +399,11 @@
       <a class="tool-link" target="_blank" rel="noopener" href="calibration-course.html">Try it</a>
     </div>
     <a class="back-link" href="https://www.crizolp.com/portfolio/performance-management#h.8kbhrd9yngb">← Back to Performance Management</a>
-    </div>
-  </details>
+  </div>
 
   <!-- CAREER DEVELOPMENT -->
-  <details class="category" id="career-development">
-    <summary><h2>Career Development</h2><span class="cat-count">1 tool</span></summary>
-    <div class="cat-body">
+  <div class="category" id="career-development">
+    <h2>Career Development</h2>
 
     <div class="tool-card">
       <h3>IDP Builder</h3>
@@ -422,13 +411,11 @@
       <a class="tool-link" target="_blank" rel="noopener" href="IDP-Builder.html">Try it</a>
     </div>
     <a class="back-link" href="https://www.crizolp.com/portfolio/career-mobility#h.gh0kmmk8d92t">← Back to Career Mobility</a>
-    </div>
-  </details>
+  </div>
 
   <!-- CHANGE MANAGEMENT -->
-  <details class="category" id="change-management">
-    <summary><h2>Change Management</h2><span class="cat-count">1 tool</span></summary>
-    <div class="cat-body">
+  <div class="category" id="change-management">
+    <h2>Change Management</h2>
 
     <div class="tool-card">
       <h3>Change Management Planner</h3>
@@ -436,13 +423,11 @@
       <a class="tool-link" target="_blank" rel="noopener" href="change-management-module-v13.html">Try it</a>
     </div>
     <a class="back-link" href="https://www.crizolp.com/portfolio/organizational-development#h.e287zx2a2xno">← Back to Change Management</a>
-    </div>
-  </details>
+  </div>
 
   <!-- SUCCESSION PLANNING -->
-  <details class="category" id="succession-planning">
-    <summary><h2>Succession Planning</h2><span class="cat-count">2 tools</span></summary>
-    <div class="cat-body">
+  <div class="category" id="succession-planning">
+    <h2>Succession Planning</h2>
     <div class="tool-card">
       <h3>Succession Planning Toolkit</h3>
       <p>A guided, interactive workspace for building a complete succession plan, from identifying critical roles to tracking successor readiness over time.</p>
@@ -455,13 +440,11 @@
       <a class="tool-link" target="_blank" rel="noopener" href="succession-calibration.html">Try it</a>
     </div>
     <a class="back-link" href="https://www.crizolp.com/portfolio/succession-planning#h.apdvzzd4fc2v">← Back to Succession Planning</a>
-    </div>
-  </details>
+  </div>
 
   <!-- WORKFORCE PLANNING -->
-  <details class="category" id="workforce-planning">
-    <summary><h2>Workforce Planning</h2><span class="cat-count">1 tool</span></summary>
-    <div class="cat-body">
+  <div class="category" id="workforce-planning">
+    <h2>Workforce Planning</h2>
 
     <div class="tool-card">
       <h3>Skills Taxonomy</h3>
@@ -508,24 +491,12 @@
       <a class="tool-link" target="_blank" rel="noopener" href="SkillsTaxonomy.html">Try it</a>
     </div>
     <a class="back-link" href="https://www.crizolp.com/portfolio/workforce-planning#h.kbnezkelb81n">← Back to Workforce Planning</a>
-    </div>
-  </details>
+  </div>
 
   <footer>
     Have a challenge you'd like to solve with AI? Let's build it together.
   </footer>
 
 </div>
-<script>
-  (function(){
-    var cats=[].slice.call(document.querySelectorAll('details.category'));
-    var btn=document.querySelector('.toggle-all');
-    function sync(){btn.textContent=cats.every(function(d){return d.open;})?'Collapse all':'Expand all';}
-    btn.addEventListener('click',function(){var open=!cats.every(function(d){return d.open;});cats.forEach(function(d){d.open=open;});sync();});
-    cats.forEach(function(d){d.addEventListener('toggle',sync);});
-    function openHash(){var el=location.hash&&document.getElementById(location.hash.slice(1));if(el&&el.tagName==='DETAILS'){el.open=true;el.scrollIntoView({behavior:'smooth',block:'start'});}}
-    openHash();
-  })();
-</script>
 </body>
 </html>
