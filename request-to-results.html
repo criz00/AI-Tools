@@ -1315,7 +1315,85 @@ const SEED=[
       pFeedback:"Sellers liked the short modules and asked for a security deep-dive.",worked:"Short modules plus live certification.",improve:"Add a security objections module.",
       actions:[{a:"Build a security objections micro-module",owner:"James Porter",due:"2026-08-21",status:"Done"}],reviewAgain:""},
       track:{evalDate:"2026-08-25",evalOwner:"James Porter",stakeholderReview:"Yes"}}},
-  history:[{at:"2026-03-02",who:"Nina Shah",t:"Submitted request"},{at:"2026-05-01",who:"James Porter",t:"Launched solution"},{at:"2026-08-28",who:"James Porter",t:"Closed project · business goals achieved"}]})
+  history:[{at:"2026-03-02",who:"Nina Shah",t:"Submitted request"},{at:"2026-05-01",who:"James Porter",t:"Launched solution"},{at:"2026-08-28",who:"James Porter",t:"Closed project · business goals achieved"}]}),
+ /* 13. Atlas 3.1 Feature Training (Product): in Performance Analysis */
+ proj({id:"LPR-261003-PRD3",title:"Atlas 3.1 Feature Training",dept:"Product",stakeholder:"Carmen Ruiz",role:"Director of Product Management",email:"carmen.ruiz@example.com",consultant:"James Porter",priority:"High",status:"Active",submitted:"2026-10-03",due:"2026-12-04",current:2,
+  phases:{
+   1:{status:"Completed",data:{requested:"Product training on the Atlas 3.1 release for customer success managers and support agents.",isDecider:"Yes",successMeasure:"How-to tickets about new features each week, and workflow builder adoption in the product analytics dashboard.",budgetAvail:"Yes",title:"Atlas 3.1 Feature Training",name:"Carmen Ruiz",jobTitle:"Director of Product Management",email:"carmen.ruiz@example.com",dept:"Product",needBy:"2026-12-04",deadlineReason:"Atlas 3.1 releases to all customers on December 8.",project:"Yes",projectDetails:"Atlas 3.1 release",
+      challenge:"After the Atlas 3.0 launch, how-to tickets doubled for six weeks because support agents and customer success managers couldn't explain the new features.",
+      results:"Keep how-to tickets about new features under 150 a week after the 3.1 release, and get 40% of active accounts using the workflow builder within 60 days.",
+      impact:"Support backlogs grew after 3.0, and two enterprise renewals cited confusion about new features.",urgency:"High",
+      audience:"Customer success managers and Tier 1 and 2 support agents",headcount:85,roles:["Customer Service","Individual contributors"],
+      materials:"Yes",
+      files:[{fid:"p1",name:"Atlas 3.1 release notes (draft).pdf",size:356210,type:"application/pdf"}],
+      other:"Product managers can record a demo of each feature."},
+      track:{consultationDate:"2026-10-09",intakeNotes:"Training has to be ready a week before the December 8 release."}},
+   2:{status:"In Progress",data:{ivName:"Carmen Ruiz",ivTitle:"Director of Product Management",ivDept:"Product",paAudience:"Customer success managers and Tier 1 and 2 support agents",paHeadcount:85,
+      problem:"Customer-facing teams can't explain new Atlas features at launch, so how-to tickets spike and adoption stalls.",
+      why:"Atlas 3.1 ships to all customers on December 8, and the workflow builder is the headline feature for renewals.",
+      kpis:[{kid:"pr1",lib:"Other",metric:"How-to tickets about new features per week",unit:"#",dir:"lower",base:310,target:150},{kid:"pr2",lib:"Other",metric:"Active accounts using the workflow builder",unit:"%",dir:"higher",base:"",target:40,noBase:true}],
+      gaps:[{"current":"Learn about new features from release notes after launch","should":"Demo and explain each new feature on release day","gap":"Hands-on product knowledge before launch"},{"current":"Escalate feature questions to product managers","should":"Answer common feature questions on the first contact","gap":"Feature troubleshooting"}],
+      evidence:"Ticket volume after the 3.0 launch, and a survey where 70% of agents said they first saw new features when a customer asked about them.",
+      someBetter:"Yes",highPerformers:"Agents who joined the 3.0 beta program resolved feature questions twice as fast.",
+      rca:rcaNo(5,6,14),factors:["Knowledge & Skill","Conditions"]},
+      track:{stakeholders:"Carmen Ruiz; Jordan Blake, Support Manager"}}},
+  history:[{at:"2026-10-03",who:"Carmen Ruiz",t:"Submitted request"},{at:"2026-10-06",who:"L&D admin",t:"Assigned to James Porter · Priority High"},{at:"2026-10-09",who:"James Porter",t:"Completed Intake"},{at:"2026-10-12",who:"James Porter",t:"Started Performance Analysis"}]}),
+
+ /* 14. Collaboration Suite Migration Training (Technology): assigned, consultation scheduled */
+ proj({id:"LPR-261020-TEC2",title:"Collaboration Suite Migration Training",dept:"Information Technology",stakeholder:"Kevin Tran",role:"IT Director",email:"kevin.tran@example.com",consultant:"Alex Moreno",priority:"High",status:"Under Review",submitted:"2026-10-20",due:"2027-01-15",current:1,
+  phases:{1:{status:"In Progress",data:{requested:"Training for all employees before we move email, calendar, and chat to the new collaboration suite.",isDecider:"No",decider:"Laura Chen, CIO",successMeasure:"Help desk tickets about email, calendar, and chat in the first 30 days after cutover.",budgetAvail:"Yes",title:"Collaboration Suite Migration Training",name:"Kevin Tran",jobTitle:"IT Director",email:"kevin.tran@example.com",dept:"Information Technology",needBy:"2027-01-15",deadlineReason:"Cutover is scheduled for the weekend of January 16.",project:"Yes",projectDetails:"Collaboration suite migration",
+      challenge:"About 1,200 employees will switch email, calendar, and chat in one weekend. Our last system change created more than 900 help desk tickets in the first week.",
+      results:"Fewer than 300 help desk tickets in the first week after cutover, and no missed customer meetings because of calendar problems.",
+      impact:"The help desk can't absorb another spike, and missed customer meetings would be visible to leadership.",urgency:"High",
+      audience:"All employees, plus a group of department champions",headcount:1200,roles:["Individual contributors","Frontline managers","Senior leaders","IT"],
+      materials:"Yes",
+      files:[{fid:"t1",name:"Migration timeline.pdf",size:204880,type:"application/pdf"}],other:"We'd like department champions trained two weeks before everyone else."},
+      track:{consultationDate:"2026-10-30"}}},
+  history:[{at:"2026-10-20",who:"Kevin Tran",t:"Submitted request"},{at:"2026-10-22",who:"L&D admin",t:"Assigned to Alex Moreno · Priority High"}]}),
+
+ /* 15. Incident Response and On-Call Training (DevOps): in Training Needs Analysis */
+ proj({id:"LPR-260915-DEV4",title:"Incident Response and On-Call Training",dept:"Engineering",stakeholder:"Elena Rossi",role:"VP of Engineering",email:"elena.rossi@example.com",consultant:"Sarah Kim",priority:"High",status:"Active",submitted:"2026-09-15",due:"2026-12-18",current:3,training:true,
+  phases:{
+   1:{status:"Completed",data:{requested:"Training on incident response and safe deployments for engineers joining the on-call rotation.",isDecider:"Yes",successMeasure:"Mean time to recover and failed deployment rate from the incident dashboard.",budgetAvail:"Yes",title:"Incident Response and On-Call Training",name:"Elena Rossi",jobTitle:"VP of Engineering",email:"elena.rossi@example.com",dept:"Engineering",needBy:"2026-12-18",deadlineReason:"The expanded on-call rotation starts in January.",project:"No",
+      challenge:"Mean time to recover from production incidents rose from 45 to 110 minutes after we added 20 engineers to the on-call rotation.",
+      results:"Bring mean time to recover back under 45 minutes, and cut failed deployments from 18% to under 8%.",
+      impact:"Two outages this quarter breached customer service-level agreements and triggered service credits.",urgency:"High",
+      audience:"Software engineers on the on-call rotation",headcount:48,roles:["Product / Engineering","Individual contributors"],
+      materials:"Yes",
+      files:[{fid:"d1",name:"Incident review summary Q3.pdf",size:298112,type:"application/pdf"}],other:"Our site reliability team runs practice incidents and can help."},
+      track:{consultationDate:"2026-09-22",intakeNotes:"Ask whether runbooks are current before scoping the training."}},
+   2:{status:"Completed",data:{ivName:"Elena Rossi",ivTitle:"VP of Engineering",ivDept:"Engineering",paAudience:"Software engineers on the on-call rotation",paHeadcount:48,
+      problem:"New on-call engineers take too long to recover from production incidents, and too many deployments fail.",
+      why:"Outages are breaching customer service-level agreements, and the on-call rotation grows again in January.",
+      kpis:[{kid:"dv1",lib:"Other",metric:"Mean time to recover",unit:"min",dir:"lower",base:110,target:45},{kid:"dv2",lib:"Other",metric:"Failed deployment rate",unit:"%",dir:"lower",base:18,target:8}],
+      gaps:[{"current":"Escalate to senior engineers before checking runbooks or dashboards","should":"Triage with the runbook and dashboards within 10 minutes","gap":"Incident triage"},{"current":"Push hotfixes forward during an incident","should":"Roll back through the deployment pipeline first","gap":"Safe rollback with the CI/CD pipeline"}],
+      barriers:"Runbooks are out of date, and new engineers have never practiced handling an incident.",
+      evidence:"Reviews of the last 14 incidents. 11 involved an on-call engineer who joined in the past six months.",
+      attempted:"A wiki page of on-call tips.",
+      someBetter:"Yes",highPerformers:"Senior engineers roll back first, then follow the runbook checklist and post updates every 15 minutes.",
+      rca:rcaNo(5,6,10),factors:["Knowledge & Skill","Feedback"],
+      interventions:["Blended learning","Job aids or performance support","Coaching or mentoring"]},
+      track:{stakeholders:"Elena Rossi; Sam Okoye, Site Reliability Lead",summary:"New on-call engineers haven't been trained on incident response or practiced it, and they get no feedback after incidents. Hands-on practice incidents, updated runbooks, and shadowing senior engineers are the likely mix.",nextStep:NS_T}},
+   3:{status:"In Progress",data:{ivName:"Sam Okoye",ivTitle:"Site Reliability Lead",ivDept:"Engineering",
+      whoGroups:["Product / Engineering","Individual contributors"],howMany:48,proficiency:"Mixed",
+      prior:"All are experienced developers. Most have never been on call or used the incident tooling.",
+      groupsDiffer:"Yes",groupsDetail:"Senior engineers need to learn to lead an incident. Newer engineers need triage and rollback basics.",
+      access:"No",
+      knowledgeNeed:"Severity levels, escalation paths, where dashboards and runbooks live, and how the deployment pipeline handles rollbacks.",
+      skillsNeed:"Triaging an alert, rolling back a deployment, and communicating status during an incident."},
+      track:{start:"2026-10-14",smesYN:"Yes",smeList:[{name:"Sam Okoye",role:"Site Reliability Lead"},{name:"Ravi Menon",role:"Platform Engineering Manager"}]}}},
+  history:[{at:"2026-09-15",who:"Elena Rossi",t:"Submitted request"},{at:"2026-09-16",who:"L&D admin",t:"Assigned to Sarah Kim · Priority High"},{at:"2026-09-22",who:"Sarah Kim",t:"Completed Intake"},{at:"2026-10-10",who:"Sarah Kim",t:"Completed Performance Analysis · training need identified"},{at:"2026-10-14",who:"Sarah Kim",t:"Started Training Needs Analysis"}]}),
+
+ /* 16. Expense Policy and Reporting Training (Finance): new request, not yet assigned */
+ proj({id:"LPR-261022-EXP1",title:"Expense Policy and Reporting Training",dept:"Finance",stakeholder:"Hannah Cole",role:"Accounts Payable Manager",email:"hannah.cole@example.com",consultant:"",priority:"",status:"Submitted",submitted:"2026-10-22",due:"2027-01-29",current:1,
+  phases:{1:{status:"In Progress",data:{requested:"Training for employees and approvers on the new travel and expense policy and the updated expense tool.",isDecider:"No",decider:"Owen Burke, Controller",successMeasure:"Returned expense reports and days to reimburse, from the expense tool's monthly report.",budgetAvail:"Yes",title:"Expense Policy and Reporting Training",name:"Hannah Cole",jobTitle:"Accounts Payable Manager",email:"hannah.cole@example.com",dept:"Finance",needBy:"2027-01-29",deadlineReason:"The new policy takes effect on February 1.",project:"No",
+      challenge:"About 30% of expense reports are sent back for missing receipts or wrong categories, and approvers often sign off without checking.",
+      results:"Cut returned expense reports from 30% to under 10%, and reimburse employees within 5 business days.",
+      impact:"Accounts payable spends about 60 hours a month on corrections, and late reimbursements frustrate employees.",urgency:"Medium",
+      audience:"Employees who travel and the managers who approve their expenses",headcount:420,roles:["Individual contributors","Frontline managers","Finance"],
+      materials:"Yes",
+      files:[{fid:"e1",name:"Travel and expense policy 2027.pdf",size:241664,type:"application/pdf"}],other:""}}},
+  history:[{at:"2026-10-22",who:"Hannah Cole",t:"Submitted request"}]})
 ];
 function quickProj(o){const k=o.kpis.map(x=>({kid:x.kid,lib:x.lib,metric:x.lib,unit:LIB[x.lib].unit,dir:LIB[x.lib].dir,base:x.base,target:x.target}));const S=o.stakeholder;
  return proj({id:o.id,title:o.title,dept:o.dept,stakeholder:S,role:o.role,email:o.email,consultant:o.consultant,priority:"Medium",status:"Completed",submitted:o.submitted,closed:o.closed,due:o.closed,current:7,training:true,
@@ -1357,12 +1435,13 @@ function shiftDates(o,n){if(Array.isArray(o))return o.map(x=>shiftDates(x,n));if
 const SEED_NOTES=[
  {id:"n1",to:"sh",pid:"LPR-261011-SLS4",sh:"Dana Brooks",text:"Sarah Kim asked for more information on Sales Performance Improvement",phase:3,at:"2026-10-22",read:false},
  {id:"n2",to:"sh",pid:"LPR-260902-MGR7",sh:"Dana Brooks",text:"Alex Moreno sent a recommendation for your approval on Sales Manager Coaching Program",phase:4,at:"2026-10-23",read:false},
- {id:"n3",to:"ld",pid:"LPR-261026-SAF8",sh:"Grant Whitaker",text:"New request from Grant Whitaker: Forklift Safety Refresher",phase:1,at:"2026-10-26",read:false}];
+ {id:"n3",to:"ld",pid:"LPR-261026-SAF8",sh:"Grant Whitaker",text:"New request from Grant Whitaker: Forklift Safety Refresher",phase:1,at:"2026-10-26",read:false},
+ {id:"n4",to:"ld",pid:"LPR-261022-EXP1",sh:"Hannah Cole",text:"New request from Hannah Cole: Expense Policy and Reporting Training",phase:1,at:"2026-10-22",read:false}];
 const seedShift=()=>Math.max(0,daysBetween(ANCHOR,TODAY));
 function freshState(){const d=seedShift();return{projects:shiftDates(clone(SEED),d),notes:shiftDates(clone(SEED_NOTES),d),guideOff:false}}
 
 /* ---------- state ---------- */
-const KEY="lpcs-demo-v21";
+const KEY="lpcs-demo-v22";
 let S;try{S=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){S=null}
 if(!S||!Array.isArray(S.projects))S=freshState();
 if(!Array.isArray(S.notes))S.notes=shiftDates(clone(SEED_NOTES),seedShift());
